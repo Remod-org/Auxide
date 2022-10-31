@@ -1,12 +1,10 @@
 Auxide is a Harmony patch dll for Rust which provides a simplified alternative to Oxide/uMod/Carbon.  It offers the admin with two modes of operation:
 
 - MINIMAL
-
--- Provides basic controls for PVE.
+  - Provides basic controls for PVE.
 
 - FULL (Work in progress)
-
--- Provides full plugin support (Auxide plugins only)
+  - Provides full plugin support (Auxide plugins only)
 
 Additionally, Auxide should work just fine month to month for vanilla and staging servers without monthly updates.
 
