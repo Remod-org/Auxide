@@ -1,3 +1,4 @@
+### Overview
 Auxide is a Harmony patch dll for Rust which provides a simplified alternative to Oxide/uMod/Carbon.  It offers the admin with two modes of operation:
 
 - MINIMAL
@@ -8,7 +9,11 @@ Auxide is a Harmony patch dll for Rust which provides a simplified alternative t
 
 Additionally, Auxide should work just fine month to month for vanilla and staging servers without monthly updates.
 
-This was originally a fork of https://github.com/Facepunch/Rust.ModLoader.
+### NOTES
+
+- This was originally a fork of https://github.com/Facepunch/Rust.ModLoader.
+- This should work on either Windows or Linux Rust servers.
+- Download of the dll either pending or present at https://remod.org.
 
 ### Minimal
 
