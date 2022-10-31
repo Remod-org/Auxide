@@ -16,9 +16,12 @@ Additionally, Auxide should work just fine month to month for **vanilla and stag
 - This was originally a fork of https://github.com/Facepunch/Rust.ModLoader.
 - This should work on either Windows or Linux Rust servers.
 - Download of the dll (when ready) will be at https://remod.org.
+- As of November 2022, this has been in silent development long enough.
+- I am sure there are issues I have missed.
+- Please let me know via Discord https://discord.gg/2z736h7sMt if you encounter any major issues.
+- If you have something to contribute, changes you'd like to see, etc., please provide patches or pull requests, etc.  I would rather see this improved here rather than forked for the sake of forking.
 
 ### Folders
-
 
 The following folders are created in both modes.  Only the Logs folder is used in minimal mode:
 
