@@ -15,6 +15,19 @@ Additionally, Auxide should work just fine month to month for **vanilla and stag
 - This should work on either Windows or Linux Rust servers.
 - Download of the dll (when ready) will be at https://remod.org.
 
+### Folders
+
+
+The following folders are created in both modes.  Only the Logs folder is used in minimal mode:
+
+- TOPLEVEL
+  - auxide
+    - Bin
+    - Config
+    - Data
+    - Logs
+    - Scripts
+
 ### Minimal (working)
 
 The original goal of Auxide was to provide an alternative means of PVE access management for users of **vanilla and staging (yes, that's right)** servers.  In minimal mode, it handles this by patching the standard calls for damage, decay, loot, and mounting access.  It will also allow the admin to disable the TC decay warning for either mode.
@@ -72,16 +85,6 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 ```
 
 Configuration should be re-read on server save in case you want to make adjustments during runtime.
-
-The following folders are created in both modes.  Only the Logs folder is used in minimal mode:
-
-- TOPLEVEL
-  - auxide
-    - Bin
-    - Config
-    - Data
-    - Logs
-    - Scripts
 
 #### Hooks in Full Mode
 
