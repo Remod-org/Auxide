@@ -41,6 +41,8 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 }
 ```
 
+Configuration should be re-read on server save in case you want to make adjustments during runtime.
+
 Access control is managed by checking the playerid against the ownerid for an object.  It also by default checks for team members using the built-in Rust team functionality to also allow team member access.
 
 ### Full (Work in progress)
@@ -68,6 +70,8 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 	}
 }
 ```
+
+Configuration should be re-read on server save in case you want to make adjustments during runtime.
 
 The following folders are created in both modes.  Only the Logs folder is used in minimal mode:
 
