@@ -69,7 +69,17 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 }
 ```
 
-Hooks in Full Mode
+The following folders are created in both modes.  Only the Logs folder is used in minimal mode:
+
+- TOPLEVEL
+  - auxide
+    - Bin
+    - Config
+    - Data
+    - Logs
+    - Scripts
+
+#### Hooks in Full Mode
 
 ```cs
 void Broadcast("OnServerInitialized");
@@ -114,3 +124,5 @@ void Broadcast("OnPlayerLeave", player);
 
 void Broadcast("OnChatCommand", player, chat, args);
 ```
+
+More about plugins, etc., when the compilation is working consistently.
