@@ -15,7 +15,7 @@ Additionally, Auxide should work just fine month to month for vanilla and stagin
 - This should work on either Windows or Linux Rust servers.
 - Download of the dll (when ready) will be at https://remod.org.
 
-### Minimal
+### Minimal (working)
 
 The original goal of Auxide was to provide an alternative means of PVE access management for users of vanilla and staging (yes, that right) servers.  In minimal mode, it handles this by patching the standard calls for damage, decay, loot, and mounting access.  It will also allow the admin to disable the TC decay warning for either mode.
 
