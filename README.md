@@ -13,7 +13,7 @@ Additionally, Auxide should work just fine month to month for vanilla and stagin
 
 - This was originally a fork of https://github.com/Facepunch/Rust.ModLoader.
 - This should work on either Windows or Linux Rust servers.
-- Download of the dll either pending or present at https://remod.org.
+- Download of the dll (when ready) will be at https://remod.org.
 
 ### Minimal
 
