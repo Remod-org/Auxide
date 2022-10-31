@@ -35,7 +35,8 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 ```
 
 Access control is managed by checking the playerid against the ownerid for an object.  It also by default checks for team members using the built-in Rust team functionality to also allow team member access.
-Full (Work in progress)
+
+### Full (Work in progress)
 
 Full mode intends to enable the same vanilla and staging servers to also use plugins customized for use with Auxide to allow for extended functions such as teleport, item spawning, etc.  This is still a work in progress primarily due to major issues trying to get our code compiler to work in a non-hackish and consistent way.  Barring that major issue, it has been shown to work, offering several internal hook calls for these plugins to use as with other modding platforms.
 
