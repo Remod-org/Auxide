@@ -65,45 +65,45 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 Hooks in Full Mode
 
 ```cs
-Broadcast("OnServerInitialized");
+void Broadcast("OnServerInitialized");
 
-Broadcast("OnServerShutdown");
+void Broadcast("OnServerShutdown");
 
-Broadcast("OnServerSave");
+void Broadcast("OnServerSave");
 
-Broadcast("OnGroupCreated", group, title, rank);
+void Broadcast("OnGroupCreated", group, title, rank);
 
-Broadcast("OnUserGroupAdded", id, name);
+void Broadcast("OnUserGroupAdded", id, name);
 
-return BroadcastReturn("CanAdminTC", bp, player);
+object Broadcastobject("CanAdminTC", bp, player);
 
-return BroadcastReturn("CanToggleSwitch", oven, player);
+object Broadcastobject("CanToggleSwitch", oven, player);
 
-return BroadcastReturn("CanToggleSwitch", sw, player);
+object Broadcastobject("CanToggleSwitch", sw, player);
 
-Broadcast("OnToggleSwitch", oven, player);
+void Broadcast("OnToggleSwitch", oven, player);
 
-Broadcast("OnToggleSwitch", sw, player);
+void Broadcast("OnToggleSwitch", sw, player);
 
-return BroadcastReturn("CanMount", entity, player);
+object Broadcastobject("CanMount", entity, player);
 
-Broadcast("OnMounted", entity, player);
+void Broadcast("OnMounted", entity, player);
 
-return BroadcastReturn("CanLoot", entity, player, panelName);
+object Broadcastobject("CanLoot", entity, player, panelName);
 
-Broadcast("OnLooted", entity, player);
+void Broadcast("OnLooted", entity, player);
 
-return BroadcastReturn("CanPickup", entity, player);
+object Broadcastobject("CanPickup", entity, player);
 
-return BroadcastReturn("CanPickup", entity, player);
+object Broadcastobject("CanPickup", entity, player);
 
-return BroadcastReturn("CanPickup", entity, player);
+object Broadcastobject("CanPickup", entity, player);
 
-return BroadcastReturn("OnTakeDamage", target, info);
+object Broadcastobject("OnTakeDamage", target, info);
 
-Broadcast("OnPlayerJoin", player);
+void Broadcast("OnPlayerJoin", player);
 
-Broadcast("OnPlayerLeave", player);
+void Broadcast("OnPlayerLeave", player);
 
-Broadcast("OnChatCommand", player, chat, args);
+void Broadcast("OnChatCommand", player, chat, args);
 ```
