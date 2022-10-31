@@ -8,6 +8,8 @@ Auxide is a Harmony patch dll for Rust which provides a simplified alternative t
 
 Additionally, Auxide should work just fine month to month for vanilla and staging servers without monthly updates.
 
+This was originally a fork of https://github.com/Facepunch/Rust.ModLoader.
+
 ### Minimal
 
 The original goal of Auxide was to provide an alternative means of PVE access management for users of vanilla and staging (yes, that right) servers.  In minimal mode, it handles this by patching the standard calls for damage, decay, loot, and mounting access.  It will also allow the admin to disable the TC decay warning for either mode.
