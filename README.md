@@ -22,11 +22,11 @@ The following folders are created in both modes.  Only the Logs folder is used i
 
 - TOPLEVEL
   - auxide
-    - Bin
-    - Config
-    - Data
-    - Logs
-    - Scripts
+    - Bin (temporary download location for the compiler when using external)
+    - Config (plugin config files)
+    - Data (plugin data files)
+    - Logs (Auxide logging, especially in verbose mode)
+    - Scripts (plugins)
 
 ### Minimal (working)
 
