@@ -140,3 +140,6 @@ void Broadcast("OnChatCommand", player, chat, args);
 ```
 
 More about plugins, etc., when the compilation is working consistently.
+
+Many thanks to SureL0ck for testing and patience.
+
