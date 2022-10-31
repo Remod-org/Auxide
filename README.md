@@ -17,7 +17,7 @@ Additionally, Auxide should work just fine month to month for vanilla and stagin
 
 ### Minimal (working)
 
-The original goal of Auxide was to provide an alternative means of PVE access management for users of vanilla and staging (yes, that right) servers.  In minimal mode, it handles this by patching the standard calls for damage, decay, loot, and mounting access.  It will also allow the admin to disable the TC decay warning for either mode.
+The original goal of Auxide was to provide an alternative means of PVE access management for users of vanilla and staging (yes, that's right) servers.  In minimal mode, it handles this by patching the standard calls for damage, decay, loot, and mounting access.  It will also allow the admin to disable the TC decay warning for either mode.
 
 Configuration is handled via Auxide.json, also contained in the HarmonyMods folder.  In this example, minimal mode would be used, and the minimal section will be used. useInternalCompiler will be ignored:
 
