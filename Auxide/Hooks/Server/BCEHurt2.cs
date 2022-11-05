@@ -7,9 +7,11 @@ using Rust;
 
 namespace Auxide.Hooks.Server
 {
+    // THIS IS FOR DECAY
     [HarmonyPatch(typeof(BaseCombatEntity), "Hurt", new Type[] { typeof(float), typeof(DamageType), typeof(BaseEntity), typeof(bool) })]
     public class BCEHurt2
     {
+        // WORKING 11-03-2022
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {
             if (!Auxide.full) return instr;

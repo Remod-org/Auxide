@@ -5,9 +5,11 @@ using Harmony;
 
 namespace Auxide.Hooks.Server
 {
+    // THIS IS FOR PVP DAMAGE
     [HarmonyPatch(typeof(BaseCombatEntity), "Hurt", typeof(HitInfo))]
     public class BCEHurt1
     {
+        // NOT WORKING 11-03-2022
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {
             if (!Auxide.full) return instr;
@@ -71,11 +73,13 @@ namespace Auxide.Hooks.Server
             }
             else if (info?.Initiator is BasePlayer)
             {
-                BasePlayer attacker = info?.Initiator as BasePlayer;
+                //BasePlayer attacker = info?.Initiator as BasePlayer;
+                BasePlayer attacker = info?.InitiatorPlayer;// as BasePlayer;
                 BasePlayer attacked = info?.HitEntity as BasePlayer;
                 DamageCheck(__instance, info, attacker, attacked);
             }
         }
+
         static void DamageCheck(BaseCombatEntity entity, HitInfo info, BasePlayer attacker, BasePlayer attacked, BaseEntity te = null)
         {
             bool isFriend = false;
@@ -86,18 +90,21 @@ namespace Auxide.Hooks.Server
                 isFriend2 = Utils.IsFriend(info.Initiator.OwnerID, entity.OwnerID);
             }
             string weapon = te != null ? " using " + te?.GetType() : "";
-            if (Auxide.verbose) Utils.DoLog($"DamageCheck for {info?.Initiator?.GetType()}({attacker?.displayName}) to {entity?.ShortPrefabName}({attacked?.displayName}){weapon}");
+            //if (Auxide.verbose) Utils.DoLog($"DamageCheck for {info?.Initiator?.GetType()}({attacker?.displayName}) to {entity?.ShortPrefabName}({attacked?.displayName}){weapon}");
+            //if (Auxide.verbose) Utils.DoLog($"DamageCheck for {info?.Initiator?.GetType()}({(info?.Initiator as BasePlayer)?.displayName}) to {entity?.GetType()}({attacked?.displayName}){weapon}");
+            if (Auxide.verbose) Utils.DoLog($"DamageCheck for {info?.Initiator?.GetType()}({attacker?.displayName}) to {entity?.GetType()}({attacked?.displayName}){weapon}");
             if (attacked != null)
             {
                 // Attacked is a player, but are they a real player and a friend, etc.
-                if (attacker != null && attacked?.userID != attacker?.userID && !isFriend && attacked?.userID > 76560000000000000L)
+                if (attacker != null && attacked?.userID != attacker?.userID && !isFriend)// && attacked?.userID > 76560000000000000L)
                 {
                     // Attacker is a player
                     if (attacker.IsAdmin && Auxide.config.Options.minimal.allowAdminPVP)
                     {
                         if (Auxide.verbose) Utils.DoLog($"Allowing admin damage by {attacker?.displayName}{weapon} to '{attacked?.displayName}'");
+                        return;
                     }
-                    else if (!Auxide.config.Options.minimal.allowPVP)
+                    if (!Auxide.config.Options.minimal.allowPVP)
                     {
                         Utils.DoLog($"Blocking PVP damage by {attacker?.displayName}{weapon} to '{attacked?.displayName}'");
                         te?.Kill();
@@ -119,8 +126,9 @@ namespace Auxide.Hooks.Server
                 if (attacker.IsAdmin && Auxide.config.Options.minimal.allowAdminPVP)
                 {
                     if (Auxide.verbose) Utils.DoLog($"Allowing admin damage by {attacker?.displayName}{weapon} to '{entity?.ShortPrefabName}' owned by {owner?.displayName}");
+                    return;
                 }
-                else if (!Auxide.config.Options.minimal.allowPVP)
+                if (!Auxide.config.Options.minimal.allowPVP)
                 {
                     Utils.DoLog($"Blocking PVP damage by {attacker?.displayName}{weapon} to '{entity?.ShortPrefabName}' owned by {owner?.displayName}");
                     te?.Kill();
@@ -135,8 +143,9 @@ namespace Auxide.Hooks.Server
                 if (attackr != null && owner != null && attackr.IsAdmin && Auxide.config.Options.minimal.allowAdminPVP)
                 {
                     if (Auxide.verbose) Utils.DoLog($"Allowing admin damage by {attackr?.displayName}{weapon} to '{entity?.ShortPrefabName}' owned by {owner?.displayName}");
+                    return;
                 }
-                else if (!Auxide.config.Options.minimal.allowPVP)
+                if (!Auxide.config.Options.minimal.allowPVP)
                 {
                     Utils.DoLog($"Blocking PVP damage from {info?.Initiator?.ShortPrefabName} owned by {attackr?.displayName}{weapon} to '{entity?.ShortPrefabName}'");// owned by {owner?.displayName}");
                     te?.Kill();

@@ -1,0 +1,891 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Westwind.Scripting</name>
+    </assembly>
+    <members>
+        <member name="T:Westwind.Scripting.CSharpScriptExecution">
+             <summary>
+             Class that can be used to execute code snippets or entire blocks of methods
+             dynamically. Two methods are provided:
+            
+             * ExecuteCode -  executes code. Pass parameters and return a value
+             * ExecuteMethod - lets you provide one or more method bodies to execute
+             * Evaluate - Evaluates an expression on the fly (uses ExecuteCode internally)
+             * CompileClass - compiles a class and returns the a class instance
+            
+             Assemblies used for execution are cached and are reused for a given block
+             of code provided.
+             </summary>
+        </member>
+        <member name="F:Westwind.Scripting.CSharpScriptExecution.CachedAssemblies">
+            <summary>
+            Internal list of assemblies that are cached for snippets of the same type.
+            List holds a list of cached assemblies with a hash code for the code executed as
+            the key.
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.Namespaces">
+            <summary>
+            List of additional namespaces to add to the script
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.References">
+            <summary>
+            List of additional assembly references that are added to the
+            compiler parameters in order to execute the script code.
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.GeneratedClassCodeWithLineNumbers">
+            <summary>
+            Last generated code for this code snippet with line numbers
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.GeneratedNamespace">
+            <summary>
+            Name of the namespace that a class is generated in
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.GeneratedClassName">
+            <summary>
+            Name of the class to generate. By default a unique name
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.GeneratedClassCode">
+            <summary>
+            Last generated code for this code snippet
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.SaveGeneratedCode">
+            <summary>
+            Determines whether GeneratedCode will be set with the source
+            code for the full generated class
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.ThrowExceptions">
+            <summary>
+            If true throws exceptions when executing the code rather
+            than setting the `Error`, `ErrorMessage` and `LastException`
+            properties.
+            
+            Note: Compilation errors will not throw, but always set properties!
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.AllowReferencesInCode">
+            <summary>
+            If true parses references in code that are referenced with:
+            #r assembly.dll
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.OutputAssembly">
+            <summary>
+            Filename for the output assembly to generate. If empty the
+            assembly is generated in memory (dynamic filename managed by
+            the .NET runtime)
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.CompileWithDebug">
+             <summary>
+             Determines whether the code is compiled in Debug or Release mode
+             Defaults to Release and there's no good reason for scripts to use
+             anything else since debug info is not available in Reflection invoked
+             or dynamically invoked methods.
+            
+             Useful only when generating classes with OutputAssembly set when
+             creating self-contained assemblies for other uses.
+             </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.ErrorMessage">
+            <summary>
+            Error message if an error occurred during the invoked
+            method or script call
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.Error">
+            <summary>
+            Error flag that is set if an error occurred during the invoked
+            method or script call
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.ErrorType">
+            <summary>
+            Determines whether the error is a compile time
+            error or runtime error
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.LastException">
+             <summary>
+             Last Exception fired when a runtime error occurs
+            
+             Generally this only contains the error message, but
+             there's no call stack information available due
+             to the Reflection or dynamic code invocation
+             </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.Assembly">
+            <summary>
+            Internal reference to the Assembly Generated
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.CSharpScriptExecution.ObjectInstance">
+            <summary>
+            Internal reference to the generated type that
+            is to be invoked
+            </summary>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.CreateDefault(System.String[],System.String[],System.Type[])">
+             <summary>
+             Creates a default Execution Engine which has:
+            
+             * AddDefaultReferences and Namespaces set
+             * SaveGeneratedCode = true
+            
+             Optionally allows to pass in references and namespaces
+             </summary>
+             <param name="references"></param>
+             <param name="namespaces"></param>
+             <param name="referenceTypes"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteMethod(System.String,System.String,System.Object[])">
+             <summary>
+             Executes a complete method by wrapping it into a class, compiling
+             and instantiating the class and calling the method.
+            
+             Class should include full class header (instance type, return value and parameters)
+            
+             Example:
+             "public string HelloWorld(string name) { return name; }"
+            
+             "public async Task&lt;string&gt; HelloWorld(string name) { await Task.Delay(1); return name; }"
+            
+             Async Method Note: Keep in mind that
+             the method is not cast to that result - it's cast to object so you
+             have to unwrap it:
+             var objTask = script.ExecuteMethod(asyncCodeMethod); // object result
+             var result = await (objTask as Task&lt;string&gt;);  //  cast and unwrap
+             </summary>
+             <param name="code">One or more complete methods.</param>
+             <param name="methodName">Name of the method to call.</param>
+             <param name="parameters">any number of variable parameters</param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteMethod``1(System.String,System.String,System.Object[])">
+             <summary>
+             Executes a complete method by wrapping it into a class, compiling
+             and instantiating the class and calling the method.
+            
+             Class should include full class header (instance type, return value and parameters)
+            
+             Example:
+             "public string HelloWorld(string name) { return name; }"
+            
+             "public async Task&lt;string&gt; HelloWorld(string name) { await Task.Delay(1); return name; }"
+            
+             Async Method Note: Keep in mind that
+             the method is not cast to that result - it's cast to object so you
+             have to unwrap it:
+             var objTask = script.ExecuteMethod(asyncCodeMethod); // object result
+             var result = await (objTask as Task&lt;string&gt;);  //  cast and unwrap
+             </summary>
+             <param name="code">One or more complete methods.</param>
+             <param name="methodName">Name of the method to call.</param>
+             <param name="parameters">any number of variable parameters</param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteMethodAsync(System.String,System.String,System.Object[])">
+             <summary>
+             Executes a complete async method by wrapping it into a class, compiling
+             and instantiating the class and calling the method and unwrapping the
+             task result.
+            
+             Class should include full class header (instance type, return value and parameters)
+            
+             "public async Task&lt;object&gt; HelloWorld(string name) { await Task.Delay(1); return name; }"
+             "public async Task HelloWorld(string name) { await Task.Delay(1); Console.WriteLine(name); }"
+             
+             Async Method Note: Keep in mind that
+             the method is not cast to that result - it's cast to object so you
+             have to unwrap it:
+             var objTask = script.ExecuteMethod(asyncCodeMethod); // object result
+             var result = await (objTask as Task&lt;string&gt;);  //  cast and unwrap
+             </summary>
+             <param name="code">One or more complete methods.</param>
+             <param name="methodName">Name of the method to call.</param>
+             <param name="parameters">any number of variable parameters</param>
+             <returns>result value of the method</returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteMethodAsync``1(System.String,System.String,System.Object[])">
+             <summary>
+             Executes a complete async method by wrapping it into a class, compiling
+             and instantiating the class and calling the method and unwrapping the
+             task result.
+            
+             Class should include full class header (instance type, return value and parameters)
+            
+             "public async Task&lt;string&gt; HelloWorld(string name) { await Task.Delay(1); return name; }"
+            
+             Async Method Note: Keep in mind that
+             the method is not cast to that result - it's cast to object so you
+             have to unwrap it:
+             var objTask = script.ExecuteMethod(asyncCodeMethod); // object result
+             var result = await (objTask as Task&lt;string&gt;);  //  cast and unwrap
+             </summary>
+             <param name="code">One or more complete methods.</param>
+             <param name="methodName">Name of the method to call.</param>
+             <param name="parameters">any number of variable parameters</param>
+             <typeparam name="TResult">The result type (string, object, etc.) of the method</typeparam>
+             <returns>result value of the method</returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.Evaluate(System.String,System.Object[])">
+            <summary>
+            Evaluates a single value or expression that returns a value.
+            </summary>
+            <param name="code"></param>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.Evaluate``1(System.String,System.Object[])">
+            <summary>
+            Evaluates a single value or expression that returns a value.
+            </summary>
+            <param name="code"></param>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.EvaluateAsync(System.String,System.Object[])">
+             <summary>
+             Evaluates an awaitable expression that returns a value
+            
+             Example:
+             script.EvaluateAsync("await ActiveEditor.GetSelection()",model);
+             </summary>
+             <param name="code">Code to execute</param>
+             <param name="parameters">Optional parameters to pass. Access as `object parameters[]` in expression</param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.EvaluateAsync``1(System.String,System.Object[])">
+             <summary>
+             Evaluates an awaitable expression that returns a value
+            
+             Example:
+             script.EvaluateAsync<string></string>("await ActiveEditor.GetSelection()",model);
+             </summary>
+             <param name="code">code to execute</param>
+             <param name="parameters">Optional parameters to pass. Access as `object parameters[]` in expression</param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteCode(System.String,System.Object[])">
+            <summary>
+            Executes a snippet of code. Pass in a variable number of parameters
+            (accessible via the parameters[0..n] array) and return an object parameter.
+            Code should include:  return (object) SomeValue as the last line or return null
+            </summary>
+            <param name="code">The code to execute</param>
+            <param name="parameters">The parameters to pass the code
+            You can reference parameters as @0, @1, @2 in code to map
+            to the parameter array items (ie. @1 instead of parameters[1])
+            </param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteCode``1(System.String,System.Object[])">
+            <summary>
+            Executes a snippet of code. Pass in a variable number of parameters
+            (accessible via the parameters[0..n] array) and return an object parameter.
+            Code should include:  return (object) SomeValue as the last line or return null
+            </summary>
+            <param name="code">The code to execute</param>
+            <param name="parameters">The parameters to pass the code
+            You can reference parameters as @0, @1, @2 in code to map
+            to the parameter array items (ie. @1 instead of parameters[1])
+            </param>
+            <returns>Result cast to a type you specify</returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteCode``2(System.String,``1)">
+            <summary>
+            Executes a snippet of code. Pass in a variable number of parameters
+            (accessible via the parameters[0..n] array) and return an object parameter.
+            Code should include:  return (object) SomeValue as the last line or return null
+            </summary>
+            <param name="code">The code to execute</param>
+            <param name="parameters">The parameters to pass the code
+            You can reference parameters as @0, @1, @2 in code to map
+            to the parameter array items (ie. @1 instead of parameters[1])
+            </param>
+            <returns>Result cast to a type you specify</returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteCodeAsync(System.String,System.Object[])">
+             <summary>
+             Executes a snippet of code. Pass in a variable number of parameters
+             (accessible via the parameters[0..n] array) and return an `object` value.
+            
+             Code should always return a result:
+             include:  `return (object) SomeValue` or `return null`
+             </summary>
+             <param name="code">The code to execute</param>
+             <param name="parameters">The parameters to pass the code
+             You can reference parameters as @0, @1, @2 in code to map
+             to the parameter array items (ie. @1 instead of parameters[1])
+             </param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteCodeAsync``1(System.String,System.Object[])">
+             <summary>
+             Executes a snippet of code. Pass in a variable number of parameters
+             (accessible via the parameters[0..n] array) and return an `object` value.
+            
+             Code should always return a result:
+             include:  `return (object) SomeValue` or `return null`
+             </summary>
+             <param name="code">The code to execute</param>
+             <param name="parameters">The parameters to pass the code
+             You can reference parameters as @0, @1, @2 in code to map
+             to the parameter array items (ie. @1 instead of parameters[1])
+             </param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteCodeAsync``2(System.String,``1)">
+             <summary>
+             Executes a snippet of code. Pass in a variable number of parameters
+             (accessible via the parameters[0..n] array) and return an `object` value.
+            
+             Code should always return a result:
+             include:  `return (object) SomeValue` or `return null`
+             </summary>
+             <param name="code">The code to execute</param>
+             <param name="model">an optional model to pass to the code which is
+             then accessible as a `Model` property in the code.
+             </param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteCodeFromAssembly(System.String,System.Reflection.Assembly,System.Object[])">
+            <summary>
+            Executes a method from an assembly that was previously compiled
+            </summary>
+            <param name="code"></param>
+            <param name="assembly"></param>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteCodeFromAssemblyAsync``1(System.String,System.Reflection.Assembly,System.Object[])">
+             <summary>
+             Executes a method from an assembly that was previously compiled.
+            
+             Creates the instance based on the current settings of this class.
+             </summary>
+             <param name="code"></param>
+             <param name="assembly"></param>
+             <param name="parameters"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteScript``1(System.String,``0)">
+            <summary>
+            Executes a script template that interpolates `{{ }}` C# expressions
+            and `{{% }}` C# code blocks in a string.
+            </summary>
+            <param name="csharpTemplate"></param>
+            <param name="model"></param>
+            <typeparam name="TModelType"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ExecuteScriptAsync``1(System.String,``0)">
+            <summary>
+            Executes a script template that interpolates `{{ }}` C# expressions
+            and `{{% }}` C# code blocks in a string.
+            </summary>
+            <param name="csharpTemplate"></param>
+            <param name="model"></param>
+            <typeparam name="TModelType"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.CompileAssembly(System.String,System.Boolean)">
+             <summary>
+             Compiles a class and creates an assembly from the compiled class.
+            
+             Assembly is stored on the `.Assembly` property. Use `noLoad()`
+             to bypass loading of the assembly
+            
+             Must include parameterless ctor()
+             </summary>
+             <param name="source">Source code</param>
+             <param name="noLoad">if set doesn't load the assembly (useful only when OutputAssembly is set)</param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.CompileAssembly(System.IO.Stream,System.Boolean)">
+             <summary>
+             Compiles the source code for a complete class and then loads the
+             resulting assembly. 
+            
+             Loads the generated assembly and sets the `.Assembly` property if successful.
+             
+             If `OutputAssembly` is set, the assembly is compiled to the specified file.
+             Otherwise the assembly is compiled 'in-memory' and cleaned up by the host
+             application/runtime.
+            
+             Must include parameterless ctor()
+             </summary>
+             <param name="codeInputStream">Stream that contains C# code</param>
+             <param name="noLoad">If set won't load the assembly and just compiles it. Useful only if OutputAssembly is set so you can explicitly load the assembly later.</param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.CompileClass(System.String)">
+             <summary>
+             This method compiles a class and hands back a
+             dynamic reference to that class that you can
+             call members on.
+            
+             Must have include parameterless ctor()
+             </summary>
+             <param name="code">Fully self-contained C# class</param>
+             <returns>Instance of that class or null</returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.CompileClass(System.IO.Stream)">
+            <summary>
+            This method compiles a class and hands back a
+            dynamic reference to that class that you can
+            call members on.
+            
+            Must have include parameterless ctor()
+            </summary>
+            <param name="code">Fully self-contained C# class</param>
+            <returns>Instance of that class or null</returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.CompileClassToType(System.String)">
+            <summary>
+            This method compiles a class and hands back a
+            dynamic reference to that class that you can
+            call members on.
+            </summary>
+            <param name="code">Fully self-contained C# class</param>
+            <returns>Instance of that class or null</returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.CompileClassToType(System.IO.Stream)">
+            <summary>
+            This method expects a fully self-contained class file
+            including namespace and using wrapper to compile
+            from an input stream.
+            </summary>
+            <param name="codeStream">Fully self-contained C# class</param>
+            <returns>A type reference to the generated class</returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.GenerateClass(System.String)">
+             <summary>
+             This method creates a class wrapper around a passed in class body.
+            
+             The wrapper creates the namespace, adds usings, and creates
+             the class header based on the property settings for the instance.
+            
+             You pass in the 'body' of the class which is properties, constants, methods etc.
+             to fill out the class
+             </summary>
+             <param name="classBody">The class body - methods, properties, constants etc. without a class header</param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.AddDefaultReferencesAndNamespaces">
+             <summary>
+             Adds core system assemblies and namespaces for basic operation.
+            
+             Any additional references need to be explicitly added.
+            
+             Alternatelively use: AddLoadedReferences()
+             </summary>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.AddDefaultReferencesAndNamespaces(System.Boolean)">
+             <summary>
+             Adds basic System assemblies and namespaces so basic
+             operations work.
+             </summary>
+             <param name="dontLoadLoadedAssemblies">
+             In .NET Core it's recommended you add all host assemblies to ensure
+             that any referenced assemblies are also accessible in your
+             script code. Important as in Core there are many small libraries
+             that comprise the core BCL/FCL.
+            
+             For .NET Full this is not as important as most BCL/FCL features
+             are automatically pulled by the System and System.Core default
+             inclusions.
+            
+             By default host assemblies are loaded.
+             </param>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.AddLoadedReferences">
+             <summary>
+             Explicitly adds all referenced assemblies of the currently executing
+             process. Also adds default namespaces.
+            
+             Useful in .NET Core to ensure that all those little tiny system assemblies
+             that comprise NetCoreApp.App etc. dependencies get pulled in.
+            
+             For full framework this is less important as the base runtime pulls
+             in all the system and system.core types.
+            
+             Alternative: use LoadDefaultReferencesAndNamespaces() and manually add
+                           
+             </summary>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.AddAssembly(System.String)">
+            <summary>
+            Adds an assembly from disk. Provide a full path if possible
+            or a path that can resolve as part of the application folder
+            or the runtime folder.
+            </summary>
+            <param name="assemblyDll">assembly DLL name. Path is required if not in startup or .NET assembly folder</param>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.AddAssembly(System.Type)">
+            <summary>
+            Adds an assembly reference from an existing type
+            </summary>
+            <param name="type">any .NET type that can be referenced in the current application</param>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.AddAssemblies(System.Collections.Generic.IEnumerable{Microsoft.CodeAnalysis.PortableExecutableReference})">
+             <summary>
+             Add several reference assemblies in batch.
+            
+             Useful for use with  Basic.ReferenceAssemblies from Nuget
+             to load framework dependencies in Core
+            
+             Example:
+             ReferenceAssemblies.Net60
+             ReferenceAssemblies.NetStandard20 
+             </summary>
+             <param name="references">MetaDataReference or PortableExecutiveReference</param>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.AddAssemblies(System.String[])">
+            <summary>
+            Adds a list of assemblies to the References
+            collection.
+            </summary>
+            <param name="assemblies"></param>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.AddNamespace(System.String)">
+            <summary>
+            Adds a namespace to the referenced namespaces
+            used at compile time.
+            </summary>
+            <param name="nameSpace"></param>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.AddNamespaces(System.String[])">
+            <summary>
+            Adds a set of namespace to the referenced namespaces
+            used at compile time.
+            </summary>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.ParseReferencesInCode(System.String)">
+             <summary>
+             Parses references with this syntax:
+            
+             #r assembly.dll
+            
+             Each match found is added to the assembly list
+             </summary>
+             <param name="code"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.GetLines(System.String,System.Int32)">
+            <summary>
+            Parses a string into an array of lines broken
+            by \r\n or \n
+            </summary>
+            <param name="s">String to check for lines</param>
+            <param name="maxLines">Optional - max number of lines to return</param>
+            <returns>array of strings, or null if the string passed was a null</returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.FindCodeLine(System.String,System.String)">
+            <summary>
+            Returns 0 offset line number where matched line lives
+            </summary>
+            <param name="code"></param>
+            <param name="matchLine"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.InvokeMethod(System.Object,System.String,System.Object[])">
+            <summary>
+            Helper method to invoke a method on an object using Reflection
+            </summary>
+            <param name="instance">An object instance. null uses ObjectInstance property if set.</param>
+            <param name="method">The method name as a string</param>
+            <param name="parameters">a variable list of parameters to pass</param>
+            <exception cref="T:System.ArgumentNullException">Throws if the instance is null</exception>
+            <returns>result from method call or null.</returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.CreateInstance(System.Boolean)">
+             <summary>
+             Creates an instance of the object specified
+             by the GeneratedNamespace and GeneratedClassName.
+            
+             Sets the ObjectInstance member which is returned
+             </summary>
+             <param name="force">If true force to create a new instance regardless whether an instance is already loaded</param>
+             <returns>Instance of the class or null on error</returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.GenerateHashCode(System.String)">
+            <summary>
+            Generates a hashcode for a block of code
+            in combination with the compiler mode.
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.CSharpScriptExecution.GetRuntimePath">
+            <summary>
+            Returns path of the runtime or in self contained install local folder
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:Westwind.Scripting.CSharpScriptExecution.DefaultNamespaces">
+            <summary>
+            List of default namespaces that are added when adding default references and namespaces
+            </summary>
+        </member>
+        <member name="T:Westwind.Scripting.NamespaceList">
+            <summary>
+            HashSet of namespaces
+            </summary>
+        </member>
+        <member name="T:Westwind.Scripting.ReferenceList">
+            <summary>
+            HashSet of References
+            </summary>
+        </member>
+        <member name="T:Westwind.Scripting.RoslynLifetimeManager">
+            <summary>
+            This helper can help start up Roslyn before first call so that there's no
+            long startup delay for first script execution and you can also optionally
+            shut Roslyn down and kill the VBCSCompiler that otherwise stays loaded
+            even after shutting down your application.
+            </summary>
+        </member>
+        <member name="M:Westwind.Scripting.RoslynLifetimeManager.WarmupRoslyn">
+             <summary>
+             Run a script execution asynchronously in the background to warm up Roslyn.
+             Call this during application startup or anytime before you run the first
+             script to ensure scripts execute quickly.
+            
+             Although this method returns `Task` so it can be tested
+             for success, in applications you typically will call this
+             without `await` on the result task and just let it operate
+             in the background.
+             </summary>
+        </member>
+        <member name="M:Westwind.Scripting.RoslynLifetimeManager.ShutdownRoslyn(System.String)">
+            <summary>
+            Call this method to shut down the VBCSCompiler if our
+            application started it.
+            </summary>
+        </member>
+        <member name="T:Westwind.Scripting.ScriptParser">
+             <summary>
+             A very simple C# script parser that parses the provided script
+             as a text string with embedded expressions and code blocks.
+            
+             Literal text:
+            
+             Parsed as plain text into the script output.
+             
+             Expressions:
+            
+             {{ DateTime.Now.ToString("d") }}
+            
+             Code Blocks:
+            
+             {{% for(int x; x&lt;10; x++  { }}
+                 {{ x }}. Hello World
+             {{% } }}
+            
+             Uses the `.ScriptEngine` property for execution and provides
+             error information there.
+             </summary>
+        </member>
+        <member name="P:Westwind.Scripting.ScriptParser.ScriptEngine">
+            <summary>
+            Script Engine used if none is passed in
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.ScriptParser.Error">
+            <summary>
+            Determines whether the was a compile time or runtime error
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.ScriptParser.ErrorMessage">
+            <summary>
+            Error Message if an error occurred
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.ScriptParser.ErrorType">
+            <summary>
+            Type of error that occurred during compilation or execution of the template
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.ScriptParser.GeneratedClassCode">
+            <summary>
+            Generated code that is compiled
+            </summary>
+        </member>
+        <member name="P:Westwind.Scripting.ScriptParser.GeneratedClassCodeWithLineNumbers">
+            <summary>
+            Generated code with line numbers that is compiled. You can use this
+            to match error messages to code lines.
+            </summary>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.ExecuteScript(System.String,System.Object,Westwind.Scripting.CSharpScriptExecution,System.String,System.String,System.String)">
+             <summary>
+             Executes a script that supports {{ expression }} and {{% code block }} syntax
+             and returns a string result.
+            
+             You can optionally pass in a pre-configured `CSharpScriptExecution` instance
+             which allows setting references/namespaces and can capture error information.
+            
+             Function returns `null` on error and `scriptEngine.Error` is set to `true`
+             along with the error message and the generated code.
+             </summary>
+             <param name="script">The template to execute that contains C# script</param>
+             <param name="model">A model that can be accessed in the template as `Model`. Pass null if you don't need to access values.</param>
+             <param name="scriptEngine">Optional CSharpScriptEngine so you can customize configuration and capture result errors</param>
+             <param name="startDelim">Optional start delimiter for script tags</param>
+             <param name="endDelim">Optional end delimiter for script tags</param>
+             <param name="codeIndicator">Optional Code block indicator that indicates raw code to create in the template (ie. `%` which uses `{{% }}`)</param>
+             <returns>expanded template or null. On null check `scriptEngine.Error` and `scriptEngine.ErrorMessage`</returns>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.ExecuteScript``1(System.String,``0,Westwind.Scripting.CSharpScriptExecution,System.String,System.String,System.String)">
+             <summary>
+             Executes a script that supports {{ expression }} and {{% code block }} syntax
+             and returns a string result.
+            
+             You can optionally pass in a pre-configured `CSharpScriptExecution` instance
+             which allows setting references/namespaces and can capture error information.
+            
+             Function returns `null` on error and `scriptEngine.Error` is set to `true`
+             along with the error message and the generated code.
+             </summary>
+             <param name="script">The template to execute that contains C# script</param>
+             <param name="model">A model that can be accessed in the template as `Model`. Pass null if you don't need to access values.</param>
+             <param name="scriptEngine">Optional CSharpScriptEngine so you can customize configuration and capture result errors</param>
+             <param name="startDelim">Optional start delimiter for script tags</param>
+             <param name="endDelim">Optional end delimiter for script tags</param>
+             <param name="codeIndicator">Optional Code block indicator that indicates raw code to create in the template (ie. `%` which uses `{{% }}`)</param>
+             <returns>expanded template or null. On null check `scriptEngine.Error` and `scriptEngine.ErrorMessage`</returns>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.ExecuteScriptAsync(System.String,System.Object,Westwind.Scripting.CSharpScriptExecution,System.String,System.String,System.String)">
+             <summary>
+             Executes a script that supports {{ expression }} and {{% code block }} syntax
+             and returns a string result. This version allows for `async` code inside of
+             the template.
+            
+             You can optionally pass in a pre-configured `CSharpScriptExecution` instance
+             which allows setting references/namespaces and can capture error information.
+            
+             Function returns `null` on error and `scriptEngine.Error` is set to `true`
+             along with the error message and the generated code.
+             </summary>
+             <param name="script">The template to execute that contains C# script</param>
+             <param name="model">A model that can be accessed in the template as `Model`. Model is exposed as `dynamic`
+             which allows passing any value without requiring type dependencies at compile time.
+             
+             Pass null if you don't need to access values.</param>
+             <param name="scriptEngine">Optional CSharpScriptEngine so you can customize configuration and capture result errors</param>
+             <param name="startDelim">Optional start delimiter for script tags</param>
+             <param name="endDelim">Optional end delimiter for script tags</param>
+             <param name="codeIndicator">Optional Code block indicator that indicates raw code to create in the template (ie. `%` which uses `{{% }}`)</param>
+             <returns>expanded template or null. On null check `scriptEngine.Error` and `scriptEngine.ErrorMessage`</returns>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.ExecuteScriptAsync``1(System.String,``0,Westwind.Scripting.CSharpScriptExecution,System.String,System.String,System.String)">
+             <summary>
+             Executes a script that supports {{ expression }} and {{% code block }} syntax
+             and returns a string result. This version allows for `async` code inside of
+             the template.
+            
+             You can optionally pass in a pre-configured `CSharpScriptExecution` instance
+             which allows setting references/namespaces and can capture error information.
+            
+             Function returns `null` on error and `scriptEngine.Error` is set to `true`
+             along with the error message and the generated code.
+             </summary>
+             <param name="script">The template to execute that contains C# script</param>
+             <param name="model">A model that can be accessed in the template as `Model`. Model is exposed as `dynamic`
+             which allows passing any value without requiring type dependencies at compile time.
+             
+             Pass null if you don't need to access values.</param>
+             <param name="scriptEngine">Optional CSharpScriptEngine so you can customize configuration and capture result errors</param>
+             <param name="startDelim">Optional start delimiter for script tags</param>
+             <param name="endDelim">Optional end delimiter for script tags</param>
+             <param name="codeIndicator">Optional Code block indicator that indicates raw code to create in the template (ie. `%` which uses `{{% }}`)</param>
+             <returns>expanded template or null. On null check `scriptEngine.Error` and `scriptEngine.ErrorMessage`</returns>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.ParseScriptToCode(System.String,System.String,System.String,System.String)">
+            <summary>
+            Passes in a block of 'script' code into a string using
+            code that uses a text writer to output. You can feed the
+            output from this method in `ExecuteCode()` or similar to
+            parse the script into an output string that includes the
+            processed text.
+            </summary>
+            <param name="scriptText"></param>
+            <param name="startDelim">code and expression start delimiter</param>
+            <param name="endDelim">code and expression end delimiter</param>
+            <param name="codeIndicator">code block indicator that combines the start delim plus this character (ie. default of `%` combines to `{{%`)</param>
+            <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.CreateScriptEngine(System.String[],System.String[],System.Type[])">
+             <summary>
+             Creates an instance of a script engine with default configuration settings
+             set and the abililty to quickly specify addition references and namespaces.
+            
+             You can pass this to ExecuteScript()/ExecuteScriptAsync()
+             </summary>
+             <param name="references">optional list of string assembly file names</param>
+             <param name="namespaces">optional list of name spaces</param>
+             <param name="referenceTypes">optional list of reference types</param>
+             <returns></returns>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.AddAssembly(System.String)">
+            <summary>
+            Adds an assembly to the list of references for compilation
+            using a dll filename
+            </summary>
+            <param name="assemblyFile">Assembly filenames</param>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.AddAssembly(System.Type)">
+            <summary>
+            Adds an assembly to the list of references for compilation
+            using a type that is loaded and contained in the assembly
+            </summary>
+            <param name="typeInAssembly">type loaded and contained in the target assembly</param>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.AddAssemblies(System.String[])">
+            <summary>
+            Adds several assembly to the list of references for compilation
+            using a dll filenames.
+            </summary>
+            <param name="assemblies">Assembly file names</param>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.AddAssemblies(Microsoft.CodeAnalysis.PortableExecutableReference[])">
+            <summary>
+            list of meta references to assemblies. Can be used with `Basic.References
+            </summary>
+            <param name="metaAssemblies"></param>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.AddNamespace(System.String)">
+            <summary>
+            Add a namespace for compilation of the template
+            </summary>
+            <param name="nameSpace"></param>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.AddNamespaces(System.String[])">
+            <summary>
+            Add a list of namespaces for compilation of the template
+            </summary>
+            <param name="nameSpaces"></param>
+        </member>
+        <member name="M:Westwind.Scripting.ScriptParser.EncodeStringLiteral(System.String,System.Boolean)">
+             <summary>
+             Encodes a string to be represented as a C# style string literal. 
+            
+             Example output:
+             "Hello \"Rick\"!\r\nRock on"
+             </summary>
+             <param name="plainString">string to encode</param>
+             <param name="addQuotes">if true adds quotes around the encoded text</param>
+             <returns></returns>
+        </member>
+    </members>
+</doc>

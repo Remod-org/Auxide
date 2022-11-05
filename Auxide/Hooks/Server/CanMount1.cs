@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using Harmony;
@@ -65,6 +64,7 @@ namespace Auxide.Hooks.Server
             if (__instance?.OwnerID == 0) return true;
             if (player?.userID == __instance?.OwnerID) return true;
 
+            if (__instance.OwnerID == player.userID) return true;
             bool isFriend = Utils.IsFriend(player.userID, __instance.OwnerID);
             if (!isFriend && Auxide.config.Options.minimal.protectMount)
             {

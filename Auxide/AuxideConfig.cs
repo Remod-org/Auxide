@@ -24,6 +24,8 @@ namespace Auxide
             public bool blockBuildingDecay;
             public bool blockDeployablesDecay;
             public bool protectLoot;
+            public bool protectCorpse;
+            public bool protectSleeper;
             public bool protectMount;
         }
 
@@ -43,6 +45,8 @@ namespace Auxide
                     blockBuildingDecay = false,
                     blockDeployablesDecay = false,
                     protectLoot = false,
+                    protectCorpse = false,
+                    protectSleeper = false,
                     protectMount = false
                 }
             };

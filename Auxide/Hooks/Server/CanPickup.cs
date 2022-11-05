@@ -2,6 +2,7 @@
 
 namespace Auxide.Hooks.Server
 {
+    // UNTESTED 11-03-2022
     [HarmonyPatch(typeof(ContainerIOEntity), "CanPickup", typeof(BasePlayer))]
     public class CanPickup1
     {
@@ -18,8 +19,11 @@ namespace Auxide.Hooks.Server
                 return true;
             }
 
+            if (__instance.OwnerID == player.userID) return true;
+
             bool isFriend = Utils.IsFriend(player.userID, __instance.OwnerID);
-            if (player.userID != __instance.OwnerID && __instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectLoot)
+            //if (player.userID != __instance.OwnerID && __instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectLoot)
+            if (__instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectLoot)
             {
                 if (!(player.IsAdmin && Auxide.config.Options.minimal.allowAdminPVP))
                 {
@@ -48,6 +52,8 @@ namespace Auxide.Hooks.Server
                 }
                 return true;
             }
+
+            if (__instance.OwnerID == player.userID) return true;
 
             bool isFriend = Utils.IsFriend(player.userID, __instance.OwnerID);
             if (player.userID != __instance.OwnerID && __instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectLoot)
@@ -79,6 +85,8 @@ namespace Auxide.Hooks.Server
                 }
                 return true;
             }
+
+            if (__instance.OwnerID == player.userID) return true;
 
             bool isFriend = Utils.IsFriend(player.userID, __instance.OwnerID);
             if (player.userID != __instance.OwnerID && __instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectLoot)

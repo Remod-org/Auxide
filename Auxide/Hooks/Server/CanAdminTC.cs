@@ -5,6 +5,7 @@ namespace Auxide.Hooks.Server
     [HarmonyPatch(typeof(BuildingPrivlidge), "CanAdministrate", typeof(BasePlayer))]
     public class CanAdminTC
     {
+        // Working 11-03-2022 (minimal)
         public static bool Prefix(BuildingPrivlidge __instance, ref bool __result, ref BasePlayer player)
         {
             if (Auxide.full)
@@ -25,13 +26,12 @@ namespace Auxide.Hooks.Server
                 if (player.IsAdmin && Auxide.config.Options.minimal.allowAdminPVP)
                 {
                     if (Auxide.verbose) Utils.DoLog($"Allowing administration access by ADMIN {player?.displayName} to TC owned by {owner?.displayName}");
+                    return true;
                 }
-                else
-                {
-                    if (Auxide.verbose) Utils.DoLog($"Blocking administration access for {player?.displayName} to TC owned by {owner?.displayName}");
-                    __result = false;
-                    return false;
-                }
+
+                if (Auxide.verbose) Utils.DoLog($"Blocking administration access for {player?.displayName} to TC owned by {owner?.displayName}");
+                __result = false;
+                return false;
             }
             return true;
         }
