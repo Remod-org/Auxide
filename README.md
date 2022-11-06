@@ -46,6 +46,7 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 			"verbose": true,
 			"useInternalCompiler": true,
 			"disableTCWarning": true,
+			"hideGiveNotices": false,
 			"minimal": {
 				"blockTCMenu": true,
 				"allowPVP": false,
@@ -53,13 +54,14 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 				"blockBuildingDecay": true,
 				"blockDeployablesDecay": true,
 				"protectLoot": true,
-				"protectMount":true
+				"protectMount":true,
+				"allowNPCDamage": true
 			}
 	}
 }
 ```
 
-Configuration should be re-read on server save in case you want to make adjustments during runtime.
+The configuration is re-read on server save in case you want to make adjustments during runtime.
 
 Access control is managed by checking the playerid against the ownerid for an object.  It also by default checks for team members using the built-in Rust team functionality to also allow team member access.
 
@@ -78,6 +80,7 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 			"verbose": true,
 			"useInternalCompiler": true,
 			"disableTCWarning": true,
+			"hideGiveNotices": false,
 			"minimal": {
 				"blockTCMenu": true,
 				"allowPVP": false,
@@ -85,13 +88,14 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 				"blockBuildingDecay": true,
 				"blockDeployablesDecay": true,
 				"protectLoot": true,
-				"protectMount":true
+				"protectMount":true,
+				"allowNPCDamage": true
 			}
 	}
 }
 ```
 
-Configuration should be re-read on server save in case you want to make adjustments during runtime.
+The configuration is re-read on server save in case you want to make adjustments during runtime.
 
 #### Hooks in Full Mode
 
@@ -138,6 +142,11 @@ void Broadcast("OnPlayerLeave", player);
 
 void Broadcast("OnChatCommand", player, chat, args);
 ```
+
+### NOTES
+hideGiveNotices not yet working.
+
+PVP damage prevention still being tested.
 
 More about plugins, etc., when the compilation is working consistently.
 
