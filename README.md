@@ -18,6 +18,9 @@ Additionally, Auxide should work just fine month to month for **vanilla and stag
 - Download of the dll (when ready) will be at https://remod.org.
 - As of November 2022, this has been in silent development long enough.
 - I am sure there are issues I have missed.
+- hideGiveNotices not yet working.
+- If following things here at least in the pre-release versions, verify that your Auxide.json is up to date with new or changed configuration items.  Otherwise, the dll may fail to load.
+- PVP damage prevention still being tested.
 - Please let me know via Discord https://discord.gg/2z736h7sMt if you encounter any major issues.
 - If you have something to contribute, changes you'd like to see, etc., please provide patches or pull requests, etc.  I would rather see this improved here rather than forked for the sake of forking.
 
@@ -143,10 +146,7 @@ void Broadcast("OnPlayerLeave", player);
 void Broadcast("OnChatCommand", player, chat, args);
 ```
 
-### NOTES
-hideGiveNotices not yet working.
-
-PVP damage prevention still being tested.
+### CREDITS, ETC.
 
 More about plugins, etc., when the compilation is working consistently.
 
