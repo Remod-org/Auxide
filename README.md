@@ -12,6 +12,7 @@ It offers the admin with two modes of operation:
 Additionally, Auxide should work just fine month to month for **vanilla and staging** servers without monthly updates.
 
 ### NOTES
+AS OF 5 Nov 2022, some new files leaked into staging in the Managed folder.  These prevent loading although unassociated with our mod.  Ticket open with FP.
 
 - This was originally a fork of https://github.com/Facepunch/Rust.ModLoader.
 - This should work on either Windows or Linux Rust servers.
