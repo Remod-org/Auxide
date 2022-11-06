@@ -6,11 +6,11 @@ namespace Auxide.Hooks.Server
     [HarmonyPatch(typeof(PlayerCorpse), "OnStartBeingLooted", new Type[] { typeof(BasePlayer) })]
     public class CorpseLoot
     {
-        public static bool Prefix(StorageContainer __instance, ref bool __result, ref BasePlayer player, ref string panelName)
+        public static bool Prefix(PlayerCorpse __instance, ref bool __result, ref BasePlayer baseEntity)
         {
             if (Auxide.full)
             {
-                object res = Auxide.Scripts.CanLootHook(__instance, player, panelName);
+                object res = Auxide.Scripts.CanLootHook(__instance, baseEntity, "");
                 if (res is bool)
                 {
                     // FIXME : RPC ERROR :(
@@ -22,16 +22,21 @@ namespace Auxide.Hooks.Server
             }
 
             if (!Auxide.config.Options.minimal.protectCorpse) return true;
-            if (__instance.OwnerID == player.userID) return true;
+            if (__instance.OwnerID == baseEntity.userID)
+            {
+                __result = true;
+                return true;
+            }
 
-            bool isFriend = Utils.IsFriend(player.userID, __instance.OwnerID);
+            bool isFriend = Utils.IsFriend(baseEntity.userID, __instance.OwnerID);
+            BasePlayer owner = BasePlayer.FindByID(__instance.OwnerID);
+            if (Auxide.verbose) Utils.DoLog($"{baseEntity?.displayName} trying to loot corpse of {owner?.displayName}");
             //if (player.userID != __instance.OwnerID && __instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectLoot)
             if (__instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectLoot)
             {
-                if (!(player.IsAdmin && Auxide.config.Options.minimal.allowAdminPVP))
+                if (!(baseEntity.IsAdmin && Auxide.config.Options.minimal.allowAdminPVP))
                 {
-                    BasePlayer owner = BasePlayer.FindByID(__instance.OwnerID);
-                    if (Auxide.verbose) Utils.DoLog($"Blocking access for {player?.displayName} to {__instance?.ShortPrefabName}({panelName}) owned by {owner?.displayName}");
+                    if (Auxide.verbose) Utils.DoLog($"Blocking access for {baseEntity?.displayName} to {__instance?.ShortPrefabName} of {owner?.displayName}");
                     __result = false;
                     return false;
                 }
@@ -39,11 +44,11 @@ namespace Auxide.Hooks.Server
             return true;
         }
 
-        public static void Postfix(StorageContainer __instance, ref BasePlayer player)
+        public static void Postfix(PlayerCorpse __instance, ref BasePlayer baseEntity)
         {
             if (Auxide.full)
             {
-                Auxide.Scripts.OnLootedHook(__instance, player);
+                Auxide.Scripts.OnLootedHook(__instance, baseEntity);
             }
         }
     }

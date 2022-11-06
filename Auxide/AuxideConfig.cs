@@ -13,20 +13,22 @@ namespace Auxide
             public bool useInternalCompiler;
             public bool useWestWindCompiler;
             public bool disableTCWarning;
+            public bool hideGiveNotices;
             public AuxideMinimal minimal;
         }
 
         public class AuxideMinimal
         {
-            public bool blockTCMenu;
-            public bool allowPVP;
-            public bool allowAdminPVP;
-            public bool blockBuildingDecay;
-            public bool blockDeployablesDecay;
-            public bool protectLoot;
-            public bool protectCorpse;
-            public bool protectSleeper;
-            public bool protectMount;
+            public bool blockTCMenu { get; set; }
+            public bool allowPVP { get; set; }
+            public bool allowAdminPVP { get; set; }
+            public bool blockBuildingDecay { get; set; }
+            public bool blockDeployablesDecay { get; set; }
+            public bool protectLoot { get; set; }
+            public bool protectCorpse { get; set; }
+            public bool protectSleeper { get; set; }
+            public bool protectMount { get; set; }
+            public bool allowDamageToNPC { get; set; }
         }
 
         public AuxideConfig(string filename) : base(filename)
@@ -37,6 +39,7 @@ namespace Auxide
                 verbose = false,
                 useInternalCompiler = true,
                 disableTCWarning = false,
+                hideGiveNotices = false,
                 minimal = new AuxideMinimal()
                 {
                     blockTCMenu = false,
@@ -47,7 +50,8 @@ namespace Auxide
                     protectLoot = false,
                     protectCorpse = false,
                     protectSleeper = false,
-                    protectMount = false
+                    protectMount = false,
+                    allowDamageToNPC = true
                 }
             };
         }

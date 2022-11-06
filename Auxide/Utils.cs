@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -26,11 +27,13 @@ namespace Auxide
         public static void DoLog(string tolog, bool logCaller = true)
         {
             string caller = logCaller ? GetCaller() : "Auxide";
+            string now = DateTime.Now.ToShortTimeString();
+
             using (FileStream fs = new FileStream(LogFile, FileMode.Append, FileAccess.Write))
             {
                 using (StreamWriter sw = new StreamWriter(fs))
                 {
-                    sw.WriteLine($"[{caller}] {tolog}");
+                    sw.WriteLine($"[{caller} ({now})] {tolog}");
                 }
             }
         }

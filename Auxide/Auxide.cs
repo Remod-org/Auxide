@@ -25,6 +25,7 @@ namespace Auxide
         private static bool initialized;
         public static bool full;
         public static bool verbose;
+        public static bool hideGiveNotices { get; internal set; }
         public static bool useInternal = false;
 
         static Auxide()
@@ -40,11 +41,12 @@ namespace Auxide
 
             try
             {
+                string now = DateTime.Now.ToShortTimeString();
                 configFile = Path.Combine(AppContext.BaseDirectory, "HarmonyMods", "Auxide.json");
-                UnityEngine.Debug.LogWarning($"Opening config file: {configFile}");
+                UnityEngine.Debug.LogWarning($"[Auxide ({now})] Opening config file: {configFile}");
                 LoadConfig();
 
-                UnityEngine.Debug.LogWarning(full ? "Operating in full mode with plugins..." : "Operating in minimal mode with no plugins...");
+                UnityEngine.Debug.LogWarning(full ? $"[Auxide ({now})] Operating in full mode with plugins..." : $"[Auxide ({now})] Operating in minimal mode with no plugins...");
                 TopPath = Path.Combine(AppContext.BaseDirectory, "auxide");
                 BinPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Bin");
                 ScriptPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Scripts");
@@ -55,11 +57,11 @@ namespace Auxide
 
                 if (verbose)
                 {
-                    UnityEngine.Debug.LogWarning($"BinPath: {BinPath}");
-                    UnityEngine.Debug.LogWarning($"ScriptPath: {ScriptPath}");
-                    UnityEngine.Debug.LogWarning($"ConfigPath: {ConfigPath}");
-                    UnityEngine.Debug.LogWarning($"DataPath: {DataPath}");
-                    UnityEngine.Debug.LogWarning($"LogPath: {LogPath}");
+                    UnityEngine.Debug.LogWarning($"[Auxide ({now})] BinPath: {BinPath}");
+                    UnityEngine.Debug.LogWarning($"[Auxide ({now})] ScriptPath: {ScriptPath}");
+                    UnityEngine.Debug.LogWarning($"[Auxide ({now})] ConfigPath: {ConfigPath}");
+                    UnityEngine.Debug.LogWarning($"[Auxide ({now})] DataPath: {DataPath}");
+                    UnityEngine.Debug.LogWarning($"[Auxide ({now})] LogPath: {LogPath}");
                 }
 
                 if (!Directory.Exists(BinPath))
@@ -108,6 +110,13 @@ namespace Auxide
             full = config.Options.full;
             verbose = config.Options.verbose;
             useInternal = config.Options.useInternalCompiler;
+            hideGiveNotices = config.Options.hideGiveNotices;
+
+            if (verbose)
+            {
+                string now = DateTime.Now.ToShortTimeString();
+                UnityEngine.Debug.LogWarning($"[Auxide ({now})] Re-read config");
+            }
         }
 
         public static void Dispose()

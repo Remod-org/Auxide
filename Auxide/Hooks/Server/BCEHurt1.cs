@@ -56,9 +56,10 @@ namespace Auxide.Hooks.Server
             {
                 BaseEntity te = info?.WeaponPrefab;// as TimedExplosive;
                 //BasePlayer attacker = info?.InitiatorPlayer;
+                BasePlayer attacker = info?.InitiatorPlayer;// as BasePlayer;
                 BasePlayer attacked = info?.HitEntity as BasePlayer;
                 //DamageCheck(__instance, info, attacker, attacked, te);
-                DamageCheck(__instance, info, null, attacked, te);
+                DamageCheck(__instance, info, attacker, attacked, te);
             }
             else if (info?.Initiator is FireBall || info?.Initiator is FlameTurret || info?.Initiator is FlameThrower)
             {
@@ -71,7 +72,7 @@ namespace Auxide.Hooks.Server
                 catch { }
                 DamageCheck(__instance, info, null, attacked, null);
             }
-            else if (info?.Initiator is BasePlayer)
+            else if (info?.InitiatorPlayer != null)
             {
                 //BasePlayer attacker = info?.Initiator as BasePlayer;
                 BasePlayer attacker = info?.InitiatorPlayer;// as BasePlayer;
@@ -98,6 +99,18 @@ namespace Auxide.Hooks.Server
                 // Attacked is a player, but are they a real player and a friend, etc.
                 if (attacker != null && attacked?.userID != attacker?.userID && !isFriend)// && attacked?.userID > 76560000000000000L)
                 {
+                    if (attacked?.userID < 76560000000000000L)
+                    {
+                        if (Auxide.config.Options.minimal.allowDamageToNPC)
+                        {
+                            Utils.DoLog($"Allowing PVP damage by {attacker?.displayName}{weapon} to NPC");
+                            return;
+                        }
+                        Utils.DoLog($"Blocking PVP damage by {attacker?.displayName}{weapon} to NPC");
+                        info.damageTypes.ScaleAll(0);
+                        return;
+                    }
+
                     // Attacker is a player
                     if (attacker.IsAdmin && Auxide.config.Options.minimal.allowAdminPVP)
                     {

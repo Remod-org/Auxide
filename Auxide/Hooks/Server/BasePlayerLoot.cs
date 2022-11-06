@@ -7,11 +7,11 @@ namespace Auxide.Hooks.Server
     public class BasePlayerLoot
     {
         // Need to test
-        public static bool Prefix(StorageContainer __instance, ref bool __result, ref BasePlayer player, ref string panelName)
+        public static bool Prefix(StorageContainer __instance, ref bool __result, ref BasePlayer player)
         {
             if (Auxide.full)
             {
-                object res = Auxide.Scripts.CanLootHook(__instance, player, panelName);
+                object res = Auxide.Scripts.CanLootHook(__instance, player, "");
                 if (res is bool)
                 {
                     // FIXME : RPC ERROR :(
@@ -26,17 +26,17 @@ namespace Auxide.Hooks.Server
             if (__instance.OwnerID == player.userID) return true;
 
             bool isFriend = Utils.IsFriend(player.userID, __instance.OwnerID);
-            if (Auxide.verbose) Utils.DoLog($"Trying to loot {player.displayName}.");
+            BasePlayer owner = BasePlayer.FindByID(__instance.OwnerID);
+            if (Auxide.verbose) Utils.DoLog($"{player?.displayName} trying to loot {owner?.displayName}");
             if (__instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectLoot)
             {
-                BasePlayer owner = BasePlayer.FindByID(__instance.OwnerID);
                 if (player.IsAdmin && Auxide.config.Options.minimal.allowAdminPVP)
                 {
-                    if (Auxide.verbose) Utils.DoLog($"Allowing admin access for {player?.displayName} to {__instance?.ShortPrefabName}({panelName}) owned by {owner?.displayName}");
+                    if (Auxide.verbose) Utils.DoLog($"Allowing admin access for {player?.displayName} to {__instance?.ShortPrefabName} owned by {owner?.displayName}");
                     return true;
                 }
 
-                if (Auxide.verbose) Utils.DoLog($"Blocking access for {player?.displayName} to {__instance?.ShortPrefabName}({panelName}) owned by {owner?.displayName}");
+                if (Auxide.verbose) Utils.DoLog($"Blocking access for {player?.displayName} to {__instance?.ShortPrefabName} owned by {owner?.displayName}");
                 __result = false;
                 return false;
             }
