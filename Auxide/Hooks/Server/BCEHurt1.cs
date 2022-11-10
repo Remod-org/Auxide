@@ -117,14 +117,14 @@ namespace Auxide.Hooks.Server
                         if (Auxide.verbose) Utils.DoLog($"Allowing admin damage by {attacker?.displayName}{weapon} to '{attacked?.displayName}'");
                         return;
                     }
-                    if (!Auxide.config.Options.minimal.allowPVP)
+                    if (!Auxide.config.Options.minimal.allowPVP && attacker.userID > 76560000000000000L)
                     {
                         Utils.DoLog($"Blocking PVP damage by {attacker?.displayName}{weapon} to '{attacked?.displayName}'");
                         te?.Kill();
                         info.damageTypes.ScaleAll(0);
                     }
                 }
-                else if (!(info?.Initiator is BasePlayer) && !Auxide.config.Options.minimal.allowPVP && !isFriend)
+                else if (!(info?.Initiator is BasePlayer) && !Auxide.config.Options.minimal.allowPVP && !isFriend && attacker.userID > 76560000000000000L)
                 {
                     // Attacker is not a player
                     Utils.DoLog($"Blocking PVP damage by {info?.Initiator?.GetType()}{weapon} to '{attacked?.displayName}'");
@@ -141,7 +141,7 @@ namespace Auxide.Hooks.Server
                     if (Auxide.verbose) Utils.DoLog($"Allowing admin damage by {attacker?.displayName}{weapon} to '{entity?.ShortPrefabName}' owned by {owner?.displayName}");
                     return;
                 }
-                if (!Auxide.config.Options.minimal.allowPVP)
+                if (!Auxide.config.Options.minimal.allowPVP && attacker.userID > 76560000000000000L)
                 {
                     Utils.DoLog($"Blocking PVP damage by {attacker?.displayName}{weapon} to '{entity?.ShortPrefabName}' owned by {owner?.displayName}");
                     te?.Kill();
@@ -158,7 +158,7 @@ namespace Auxide.Hooks.Server
                     if (Auxide.verbose) Utils.DoLog($"Allowing admin damage by {attackr?.displayName}{weapon} to '{entity?.ShortPrefabName}' owned by {owner?.displayName}");
                     return;
                 }
-                if (!Auxide.config.Options.minimal.allowPVP)
+                if (!Auxide.config.Options.minimal.allowPVP && attacker.userID > 76560000000000000L)
                 {
                     Utils.DoLog($"Blocking PVP damage from {info?.Initiator?.ShortPrefabName} owned by {attackr?.displayName}{weapon} to '{entity?.ShortPrefabName}'");// owned by {owner?.displayName}");
                     te?.Kill();
