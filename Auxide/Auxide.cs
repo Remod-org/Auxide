@@ -39,6 +39,7 @@ namespace Auxide
         {
             if (initialized) return;
 
+            //CosturaUtility.Initialize();
             try
             {
                 string now = DateTime.Now.ToShortTimeString();

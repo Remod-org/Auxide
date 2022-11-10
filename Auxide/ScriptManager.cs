@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
@@ -10,7 +11,8 @@ namespace Auxide
     public class ScriptManager : IDisposable
     {
         private const string ScriptExtension = ".cs";
-        private const string ScriptFilter = "*" + ScriptExtension;
+        private const string DLLExtension = ".dll";
+        private string ScriptFilter = "*" + ScriptExtension;
         private const double UpdateFrequency = 1.0 / 1; // per sec
         private const double ChangeCooldown = 1; // seconds
         private static readonly char[] NameTrimChars = { '_' };
@@ -51,6 +53,11 @@ namespace Auxide
 
         public ScriptManager(string sourcePath)//, string configPath, string dataPath)
         {
+            if (!Auxide.config.Options.cSharpScripts)
+            {
+                ScriptFilter = "*" + DLLExtension;
+            }
+
             _sync = new object();
             _sourcePath = sourcePath ?? throw new ArgumentNullException(nameof(sourcePath));
             //_configPath = configPath ?? throw new ArgumentNullException(nameof(configPath));
@@ -441,7 +448,7 @@ namespace Auxide
         {
             lock (_sync)
             {
-                foreach (Script script in _scripts.Values)
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
                     script.InvokeProcedure(methodName);
                 }
@@ -452,7 +459,7 @@ namespace Auxide
         {
             lock (_sync)
             {
-                foreach (Script script in _scripts.Values)
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
                     script.InvokeProcedure(methodName, arg0);
                 }
@@ -463,7 +470,7 @@ namespace Auxide
         {
             lock (_sync)
             {
-                foreach (Script script in _scripts.Values)
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
                    script.InvokeProcedure(methodName, arg0, arg1);
                 }
@@ -474,7 +481,7 @@ namespace Auxide
         {
             lock (_sync)
             {
-                foreach (Script script in _scripts.Values)
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
                    script.InvokeProcedure(methodName, arg0, arg1, arg2);
                 }
@@ -485,7 +492,7 @@ namespace Auxide
         {
             lock (_sync)
             {
-                foreach (Script script in _scripts.Values)
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
                    script.InvokeProcedure(methodName, arg0, arg1, arg2, arg3);
                 }
@@ -496,7 +503,7 @@ namespace Auxide
         {
             lock (_sync)
             {
-                foreach (Script script in _scripts.Values)
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
                    script.InvokeProcedure(methodName, arg0, arg1, arg2, arg3, arg4);
                 }
@@ -512,7 +519,7 @@ namespace Auxide
 
             lock (_sync)
             {
-                foreach (Script script in _scripts.Values)
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
                     rtrn = script.InvokeFunction<object>(methodName);
                     if (lastRet != null && !rtrn.Equals(lastRet))
@@ -536,7 +543,7 @@ namespace Auxide
 
             lock (_sync)
             {
-                foreach (Script script in _scripts.Values)
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
                     rtrn = script.InvokeFunction<object, T0>(methodName, arg0);
                     if (lastRet != null && !rtrn.Equals(lastRet))
@@ -560,7 +567,7 @@ namespace Auxide
 
             lock (_sync)
             {
-                foreach (Script script in _scripts.Values)
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
                     rtrn = (object) script.InvokeFunction<T0, T1, object>(methodName, arg0, arg1);
                     if (lastRet != null && !rtrn.Equals(lastRet))
@@ -584,7 +591,7 @@ namespace Auxide
 
             lock (_sync)
             {
-                foreach (Script script in _scripts.Values)
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
                     rtrn = script.InvokeFunction<T0, T1, T2, object>(methodName, arg0, arg1, arg2);
                     if (lastRet != null && !rtrn.Equals(lastRet))
@@ -608,7 +615,7 @@ namespace Auxide
 
             lock (_sync)
             {
-                foreach (Script script in _scripts.Values)
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
                     rtrn = script.InvokeFunction<T0, T1, T2, T3, object>(methodName, arg0, arg1, arg2, arg3);
                     if (lastRet != null && !rtrn.Equals(lastRet))
@@ -632,7 +639,7 @@ namespace Auxide
 
         //    lock (_sync)
         //    {
-        //        foreach (Script script in _scripts.Values)
+        //        foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
         //        {
         //            rtrn = script.InvokeFunction<T0, T1, T2, T3, T4, object>(methodName, arg0, arg1, arg2, arg3, arg4);
         //            if (lastRet != null && !rtrn.Equals(lastRet))

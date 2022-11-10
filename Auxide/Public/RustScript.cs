@@ -15,6 +15,9 @@ public abstract class RustScript : IDisposable
     public DataFileSystem data { get; set; }
     //public LangFileSystem lang { get; set; }
 
+    //public RustScript()
+    //{
+    //}
     public virtual void Initialize() { }
 
     public virtual void Dispose() { }

@@ -1,4 +1,6 @@
 /AuxideCompiler
 /Auxide/bin/Debug
+/Auxide/bin/Release
 /Auxide/obj/Debug
+/Auxide/obj/Release
 /.vs
