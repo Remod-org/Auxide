@@ -82,19 +82,19 @@ namespace Auxide
             //}
             //else
             //{
-                try
-                {
-                    Utils.DoLog($"Trying to load dll from {path}");
-                    Assembly assembly = Assembly.LoadFile(path);
-                    Utils.DoLog($"Loaded assembly!");
+            try
+            {
+                Utils.DoLog($"Trying to load dll from {path}");
+                Assembly assembly = Assembly.LoadFile(path);
+                Utils.DoLog($"Loaded assembly!");
 
-                    Initialize(path, code, assembly);
-                }
-                catch (Exception e)
-                {
-                    Utils.DoLog($"Failed to load dll at path: {path}: {e}");
-                    throw new ScriptLoadException(Name, $"Failed to load script dll at path: {path}", e);
-                }
+                Initialize(path, code, assembly);
+            }
+            catch (Exception e)
+            {
+                Utils.DoLog($"Failed to load dll at path: {path}: {e}");
+                throw new ScriptLoadException(Name, $"Failed to load script dll at path: {path}", e);
+            }
             //}
         }
 
@@ -157,6 +157,7 @@ namespace Auxide
 
         private void Initialize(string path, string code, Assembly assembly)
         {
+            Utils.DoLog($"Initializing assembly");
             Dispose();
 
             Type type = assembly.GetType(Name);
@@ -172,8 +173,8 @@ namespace Auxide
             try
             {
                 Utils.DoLog($"Attempting to create instance of type {type}");
-                instance = Activator.CreateInstance(type) as RustScript;
-                Utils.DoLog($"Created instance of type {type} as RustScript");
+                instance = Activator.CreateInstance(type);// as RustScript;
+                Utils.DoLog($"Created instance of type {type}");
             }
             catch (Exception e)
             {
@@ -181,28 +182,28 @@ namespace Auxide
                 throw new ScriptLoadException(Name, $"Exception thrown in script '{Name}' constructor.", e);
             }
 
-            //RustScript scriptInstance = instance as RustScript;
-            //if (scriptInstance == null)
-            if (!(instance is RustScript scriptInstance))
+            RustScript scriptInstance = instance as RustScript;
+            if (scriptInstance == null)
+            //if (!(instance is RustScript scriptInstance))
             {
-                Utils.DoLog($"Script class ({type.FullName}) must derive from RustScript. Found: {instance.GetType()}");
-                throw new ScriptLoadException(Name, $"Script class ({type.FullName}) must derive from RustScript.");
+                Utils.DoLog($"Script class ({type.FullName}) must derive from RustScript.  Found: {instance.GetType()}");
+                throw new ScriptLoadException(Name, $"Script class ({type.FullName}) must derive from RustScript.  Found: {instance.GetType()}");
             }
 
-            Utils.DoLog("GOT HERE");
-            initialized = true;
             scriptInstance.Manager = Manager;
+            Utils.DoLog("GOT HERE");
 
+            initialized = true;
             Assembly = assembly;
             Instance = scriptInstance;
             Path = path;
             SourceCode = code;
 
             string BaseName = Name.Replace(".dll", "");
-            if (Auxide.config.Options.cSharpScripts)
-            {
-                BaseName = Name.Replace(".cs", "");
-            }
+            //if (Auxide.config.Options.cSharpScripts)
+            //{
+            //    BaseName = Name.Replace(".cs", "");
+            //}
 
             ConfigPath = System.IO.Path.Combine(Auxide.ConfigPath, $"{BaseName}.json");
             DataPath = System.IO.Path.Combine(Auxide.DataPath, BaseName);

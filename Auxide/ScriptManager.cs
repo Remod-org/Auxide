@@ -10,8 +10,9 @@ namespace Auxide
 {
     public class ScriptManager : IDisposable
     {
-        private const string ScriptExtension = ".cs";
-        private const string DLLExtension = ".dll";
+        //private const string ScriptExtension = ".cs";
+        private const string ScriptExtension = ".dll";
+        //private const string DLLExtension = ".dll";
         private string ScriptFilter = "*" + ScriptExtension;
         private const double UpdateFrequency = 1.0 / 1; // per sec
         private const double ChangeCooldown = 1; // seconds
@@ -53,10 +54,10 @@ namespace Auxide
 
         public ScriptManager(string sourcePath)//, string configPath, string dataPath)
         {
-            if (!Auxide.config.Options.cSharpScripts)
-            {
-                ScriptFilter = "*" + DLLExtension;
-            }
+            //if (!Auxide.config.Options.cSharpScripts)
+            //{
+            //    ScriptFilter = "*" + DLLExtension;
+            //}
 
             _sync = new object();
             _sourcePath = sourcePath ?? throw new ArgumentNullException(nameof(sourcePath));

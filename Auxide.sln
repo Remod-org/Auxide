@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HNoDecay", "HNoDecay\HNoDec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTeleport", "HTeleport\HTeleport\HTeleport.csproj", "{065D6564-B964-44BA-83E7-5D636CE367E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestScript", "TestScript\TestScript\TestScript.csproj", "{F7862F6A-25AE-4EFA-9E3F-74AFB8E7340C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{065D6564-B964-44BA-83E7-5D636CE367E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{065D6564-B964-44BA-83E7-5D636CE367E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{065D6564-B964-44BA-83E7-5D636CE367E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7862F6A-25AE-4EFA-9E3F-74AFB8E7340C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7862F6A-25AE-4EFA-9E3F-74AFB8E7340C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7862F6A-25AE-4EFA-9E3F-74AFB8E7340C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7862F6A-25AE-4EFA-9E3F-74AFB8E7340C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
