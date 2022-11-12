@@ -325,6 +325,16 @@ namespace Auxide
             Broadcast("OnPlayerLeave", player);
         }
 
+        public object OnConsoleCommandHook(string command, bool isServer = false)
+        {
+            if (Auxide.full)
+            {
+                return BroadcastReturn("OnConsoleCommand", command, isServer);
+            }
+            //OnChatCommandHook(null, command);
+            return null;
+        }
+
         internal void OnChatCommandHook(BasePlayer player, string chat, object[] args = null)
         {
             Match m = Regex.Match(chat, @"^/a\.", RegexOptions.IgnoreCase);

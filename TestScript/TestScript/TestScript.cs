@@ -67,5 +67,18 @@ public class TestScript : RustScript
         Utils.DoLog($"OnTakeDamage called for {hitInfo.damageTypes.GetMajorityDamageType()}.");
         return null;
     }
+
+    public object OnConsoleCommand(string command, bool isServer)
+    {
+        Utils.DoLog($"OnConsoleCommand called for '{command}' with isServer={isServer}");
+        if (command == "testfail") return false;
+        return null;
+    }
+
+    public void OnChatCommand(BasePlayer player, string command, string[] args = null)
+    {
+        string arginfo = string.Join(",", args);
+        Utils.DoLog($"OnChatCommand called for '{command}' with args='{arginfo}'");
+    }
 }
 

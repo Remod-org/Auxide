@@ -10,6 +10,7 @@ public class DayNight : RustScript
     {
         Author = "RFC1920";
         Version = new VersionNumber(1, 0, 1);
+        Description = "Provides day, night, and timeset/settime commands, with a limit timer.";
     }
 
     public class ConfigData

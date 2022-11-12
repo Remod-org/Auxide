@@ -1,5 +1,7 @@
 ﻿using Harmony;
-using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Emit;
 
 namespace Auxide.Hooks.Server
 {
@@ -7,17 +9,27 @@ namespace Auxide.Hooks.Server
     public class ConsoleHook
     {
         // NOT YET WORKING DO NOT COMPILE
-        //public static bool Prefix(ref ConsoleSystem.Option options, string strCommand, ref object[] args)
-        public static bool Prefix(ConsoleSystem.Option options, string strCommand, object[] args)
+        public static bool Prefix(ConsoleSystem __instance, ref bool __result, ref ConsoleSystem.Option options, string strCommand, ref object[] args)
         {
-            ConsoleSystem.Arg currentArgs = ConsoleSystem.CurrentArgs;
-            if (strCommand != null)
+            object res = Auxide.Scripts.OnConsoleCommandHook(strCommand, options.IsServer);
+            if (res is bool)
             {
-                //if (Auxide.verbose) currentArgs.ReplyWith($"I heard you say '{strCommand}' in console!");
-                Auxide.Scripts?.OnChatCommandHook(currentArgs.Player(), strCommand, currentArgs.Args);
+                __result = false;
+                return false;
             }
             return true;
         }
+        //public static bool Prefix(ConsoleSystem __instance, ConsoleSystem.Option options, string strCommand, object[] args)
+        //{
+        //    //ConsoleSystem.Arg currentArgs = ConsoleSystem.CurrentArgs;
+        //    __instance.BuildC
+        //    if (strCommand != null)
+        //    {
+        //        //if (Auxide.verbose) currentArgs.ReplyWith($"I heard you say '{strCommand}' in console!");
+        //        Auxide.Scripts?.OnChatCommandHook(currentArgs.Player(), strCommand, currentArgs.Args);
+        //    }
+        //    return true;
+        //}
         //static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         //{
         //    List<CodeInstruction> codes = new List<CodeInstruction>(instr);
@@ -27,7 +39,7 @@ namespace Auxide.Hooks.Server
         //    int i;
         //    for (i = 0; i < codes.Count; i++)
         //    {
-        //        if (codes[i].opcode == OpCodes.Unbox_Any)
+        //        if (codes[i].opcode == OpCodes.Stsfld && codes[i -1].opcode == OpCodes.Ldstr)
         //        {
         //            startIndex = i - 1;
         //            codes[startIndex].labels.Add(newLabel);
@@ -41,7 +53,7 @@ namespace Auxide.Hooks.Server
         //        List<CodeInstruction> instructionsToInsert = new List<CodeInstruction>()
         //        {
         //            new CodeInstruction(OpCodes.Newobj, constr),
-        //            new CodeInstruction(OpCodes.Ldarg_0),
+        //            new CodeInstruction(OpCodes.Ldarg_1),
         //            new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(ScriptManager), "OnConsoleCommandHook")),
         //            new CodeInstruction(OpCodes.Ldnull),
         //            new CodeInstruction(OpCodes.Beq_S, newLabel),

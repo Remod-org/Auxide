@@ -143,6 +143,8 @@ void Broadcast("OnPlayerJoin", player);
 void Broadcast("OnPlayerLeave", player);
 
 void Broadcast("OnChatCommand", player, chat, args);
+
+object BroadcastReturn("OnConsoleCommand", command, isServer);
 ```
 
 ### CREDITS, ETC.

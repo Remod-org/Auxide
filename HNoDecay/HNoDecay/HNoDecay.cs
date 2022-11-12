@@ -3,8 +3,13 @@ using Rust;
 
 public class HNoDecay : RustScript
 {
-    private static new VersionNumber Version = new VersionNumber(1, 0, 1);
     private static ConfigData configData;
+
+    public HNoDecay()
+    {
+        Author = "RFC1920";
+        Version = new VersionNumber(1, 0, 2);
+    }
 
     public class ConfigData
     {
