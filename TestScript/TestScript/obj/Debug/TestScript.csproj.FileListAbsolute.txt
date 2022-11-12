@@ -35,10 +35,6 @@ C:\Users\mlott\Source\Repos\Auxide\TestScript\TestScript\bin\Debug\LZ4.dll
 C:\Users\mlott\Source\Repos\Auxide\TestScript\TestScript\bin\Debug\LZ4pn.dll
 C:\Users\mlott\Source\Repos\Auxide\TestScript\TestScript\bin\Debug\Melanchall.DryWetMidi.dll
 C:\Users\mlott\Source\Repos\Auxide\TestScript\TestScript\bin\Debug\MidiJack.dll
-C:\Users\mlott\Source\Repos\Auxide\TestScript\TestScript\bin\Debug\Mono.Cecil.dll
-C:\Users\mlott\Source\Repos\Auxide\TestScript\TestScript\bin\Debug\Mono.Cecil.Mdb.dll
-C:\Users\mlott\Source\Repos\Auxide\TestScript\TestScript\bin\Debug\Mono.Cecil.Pdb.dll
-C:\Users\mlott\Source\Repos\Auxide\TestScript\TestScript\bin\Debug\Mono.Cecil.Rocks.dll
 C:\Users\mlott\Source\Repos\Auxide\TestScript\TestScript\bin\Debug\Mono.Data.Sqlite.dll
 C:\Users\mlott\Source\Repos\Auxide\TestScript\TestScript\bin\Debug\Mono.Posix.dll
 C:\Users\mlott\Source\Repos\Auxide\TestScript\TestScript\bin\Debug\Mono.Security.dll

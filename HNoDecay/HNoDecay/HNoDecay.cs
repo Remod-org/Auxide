@@ -3,7 +3,7 @@ using Rust;
 
 public class HNoDecay : RustScript
 {
-    private static VersionNumber Version = new VersionNumber(1, 0, 1);
+    private static new VersionNumber Version = new VersionNumber(1, 0, 1);
     private static ConfigData configData;
 
     public class ConfigData
@@ -13,18 +13,10 @@ public class HNoDecay : RustScript
         public bool blockDeployableDecay;
     }
 
-    //static void Main()
-    //{
-    //    //Utils.DoLog("HNoDecay loading...");
-    //}
-
     public override void Initialize()
     {
+        Utils.DoLog("HNoDecay loading...");
         LoadConfig();
-    }
-
-    public override void Dispose()
-    {
     }
 
     public void LoadConfig()

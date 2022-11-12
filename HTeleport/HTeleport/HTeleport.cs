@@ -1,4 +1,5 @@
 ﻿using Auxide;
+using Harmony;
 using Network;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -34,10 +35,6 @@ public class HTeleport : RustScript
         public int Timestamp { get; set; }
     }
 
-    static void Main()
-    {
-    }
-
     public override void Initialize()
     {
         FindMonuments();
@@ -50,16 +47,20 @@ public class HTeleport : RustScript
         public System.Timers.Timer timer;
     }
 
-    public override void Dispose()
-    {
-    }
-
     public void LoadData()
     {
+        playerHomes = data.ReadObject<Dictionary<ulong,HomeData>>(Name);
     }
+
+    public void SaveData()
+    {
+        data.WriteObject(Name, playerHomes);
+    }
+
     public void OnChatCommand(BasePlayer player, string chat, object[] args = null)
     {
-        Utils.DoLog($"Heard: {chat}");
+        string arginfo = string.Join(",", args);
+        Utils.DoLog($"Heard: {chat}/{arginfo}");
         Connection connection = player.net.connection;
         object[] objArray = new object[] { 2, 0, null };
         if (chat == "/outpost" && outpost != default(Vector3))
@@ -82,9 +83,37 @@ public class HTeleport : RustScript
         }
         else if (chat.Contains("/sethome"))
         {
+            if (!playerHomes.ContainsKey(player.userID))
+            {
+                playerHomes.Add(player.userID, new HomeData());
+            }
+
+            playerHomes[player.userID].Locations.TryGetValue(args[0].ToString(), out Vector3 location);
+            if (location == default)
+            {
+                playerHomes[player.userID].Locations.Add(args[0].ToString(), player.transform.position);
+                objArray[2] = $"Added home {args[0]}";
+                ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
+                return;
+            }
+            objArray[2] = $"Home {args[0]} already exists!";
+            ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
         }
         else if (chat.Contains("/home"))
         {
+            if (!playerHomes.ContainsKey(player.userID))
+            {
+                playerHomes.Add(player.userID, new HomeData());
+            }
+
+            playerHomes[player.userID].Locations.TryGetValue(args[0].ToString(), out Vector3 location);
+            if (location != default)
+            {
+                objArray[2] = $"Teleporting to home {args[0]} in 5 seconds";
+                ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
+
+                AddTimer(player, location);
+            }
         }
     }
 

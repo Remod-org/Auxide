@@ -24,6 +24,23 @@ namespace Auxide
             return false;
         }
 
+        public static void GetNewLog()
+        {
+            string now = DateTime.Now.ToString("yyyyMdd-HH:mm");
+            LogFile = Path.Combine(LogPath, $"auxide_{now}.log");
+        }
+
+        public static void TruncateLog()
+        {
+            if (File.Exists(LogFile))
+            {
+                using (FileStream fs = new FileStream(LogPath, FileMode.Truncate))
+                {
+                    fs.SetLength(0);
+                }
+            }
+        }
+
         public static void DoLog(string tolog, bool logCaller = true)
         {
             string caller = logCaller ? GetCaller() : "Auxide";

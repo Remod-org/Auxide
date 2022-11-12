@@ -36,13 +36,7 @@ C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\Ionic.Zip.Reduc
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\LZ4.dll
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\LZ4pn.dll
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\Melanchall.DryWetMidi.dll
-C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\Microsoft.CodeAnalysis.CSharp.dll
-C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\Microsoft.CodeAnalysis.dll
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\MidiJack.dll
-C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\Mono.Cecil.dll
-C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\Mono.Cecil.Mdb.dll
-C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\Mono.Cecil.Pdb.dll
-C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\Mono.Cecil.Rocks.dll
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\Mono.Data.Sqlite.dll
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\Mono.Posix.dll
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\Mono.Security.dll
@@ -132,8 +126,6 @@ C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\UnityEngine.VRM
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\UnityEngine.WindModule.dll
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\UnityEngine.XRModule.dll
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\System.Memory.dll
-C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\System.Threading.Tasks.Extensions.dll
-C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\System.Text.Encoding.CodePages.dll
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\bin\Debug\System.Numerics.Vectors.dll
 C:\Users\mlott\Source\Repos\Auxide\HTeleport\HTeleport\obj\Debug\HTeleport.csproj.AssemblyReference.cache

@@ -46,6 +46,7 @@ namespace Auxide
         /// </summary>
         public event Action<IScriptReference> OnScriptUnloaded;
 
+        // This was added for the compilers as a test.  Possibly can or should remove.
         public ScriptManager()
         {
             _sync = new object();
@@ -390,12 +391,22 @@ namespace Auxide
                 else if (chat.Contains("info"))
                 {
                     string verbose = Auxide.verbose.ToString();
-                    string useint = Auxide.useInternal.ToString();
+                    //string useint = Auxide.useInternal.ToString();
                     string runMode = Auxide.full ? "full" : "minimal";
                     Assembly assem = Assembly.GetExecutingAssembly();
                     AssemblyName assemName = assem.GetName();
                     Version ver = assemName.Version;
-                    string message = $"{assemName} {ver}\nRun Mode: {runMode}\nUseInternalCompiler: {useint}\nVerboseLogging: {verbose}";
+                    string message = $"{assemName} {ver}\nRun Mode: {runMode}\nVerboseLogging: {verbose}";
+                    player.ChatMessage(message);
+                    return;
+                }
+                else if (chat.Contains("list"))
+                {
+                    string message = "";
+                    foreach(KeyValuePair<string, Script> script in _scripts)
+                    {
+                        message += $"{script.Key}, {script.Value.Instance.Version}\n";
+                    }
                     player.ChatMessage(message);
                     return;
                 }

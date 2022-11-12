@@ -11,8 +11,8 @@ namespace Auxide
             public bool full; // If false, additonally use settings in minimal
             public bool verbose;
             //public bool cSharpScripts;
-            public bool useInternalCompiler;
-            public bool useWestWindCompiler;
+            //public bool useInternalCompiler;
+            //public bool useWestWindCompiler;
             public bool disableTCWarning;
             public bool hideGiveNotices;
             public AuxideMinimal minimal;
@@ -39,7 +39,7 @@ namespace Auxide
                 full = false,
                 verbose = false,
                 //cSharpScripts = false,
-                useInternalCompiler = true,
+                //useInternalCompiler = true,
                 disableTCWarning = false,
                 hideGiveNotices = false,
                 minimal = new AuxideMinimal()

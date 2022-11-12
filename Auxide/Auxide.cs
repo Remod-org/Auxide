@@ -54,7 +54,7 @@ namespace Auxide
                 ConfigPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Config");
                 DataPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Data");
                 LogPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Logs");
-                LogFile = Path.Combine(LogPath, "auxide.log");
+                //LogFile = Path.Combine(LogPath, "auxide.log");
 
                 if (verbose)
                 {
@@ -86,9 +86,12 @@ namespace Auxide
                     Directory.CreateDirectory(LogPath);
                 }
 
+                Utils.GetNewLog();
+                //Utils.TruncateLog();
+
                 Scripts = new ScriptManager(ScriptPath);//, ConfigPath, DataPath);
                 initialized = true;
-                if (verbose) Utils.DoLog("Initialized!", false);
+                if (verbose) Utils.DoLog(full ? "Initialized full mode with plugins..." : "Initialized minimal mode with no plugins...", false);
             }
             catch (Exception e)
             {

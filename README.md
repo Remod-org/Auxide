@@ -8,11 +8,11 @@ It offers the admin with two modes of operation:
 
 - FULL (Work in progress)
   - Provides full plugin support (Auxide plugins only)
+  - Plugins are currently required to be in DLL form, and 3 examples are provided.
 
 Additionally, Auxide should work just fine month to month for **vanilla and staging** servers without monthly updates.
 
 ### NOTES
-AS OF 5 Nov 2022, some new files leaked into staging in the Managed folder.  These prevent loading although unassociated with our mod.  Ticket open with FP.
 
 - This was originally a fork of https://github.com/Facepunch/Rust.ModLoader.
 - This should work on either Windows or Linux Rust servers.
@@ -47,20 +47,19 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 {
 	"Options": {
 		"full": false,
-			"verbose": true,
-			"useInternalCompiler": true,
-			"disableTCWarning": true,
-			"hideGiveNotices": false,
-			"minimal": {
-				"blockTCMenu": true,
-				"allowPVP": false,
-				"allowAdminPVP": true,
-				"blockBuildingDecay": true,
-				"blockDeployablesDecay": true,
-				"protectLoot": true,
-				"protectMount":true,
-				"allowNPCDamage": true
-			}
+		"verbose": true,
+		"disableTCWarning": true,
+		"hideGiveNotices": false,
+		"minimal": {
+			"blockTCMenu": true,
+			"allowPVP": false,
+			"allowAdminPVP": true,
+			"blockBuildingDecay": true,
+			"blockDeployablesDecay": true,
+			"protectLoot": true,
+			"protectMount":true,
+			"allowNPCDamage": true
+		}
 	}
 }
 ```
@@ -71,7 +70,7 @@ Access control is managed by checking the playerid against the ownerid for an ob
 
 ### Full (Work in progress)
 
-Full mode intends to enable the same vanilla and staging servers to also use plugins customized for use with Auxide to allow for extended functions such as teleport, item spawning, etc.  This is still a work in progress primarily due to major issues trying to get our code compiler to work in a non-hackish and consistent way.  Barring that major issue, it has been shown to work, offering several internal hook calls for these plugins to use as with other modding platforms.
+Full mode intends to enable the same vanilla and staging servers to also use plugins customized for use with Auxide to allow for extended functions such as teleport, item spawning, etc.  This is still a work in progress.  But, the included examples in dll form do actually work.  For now, we have opted to NOT support C# compilation on the fly.  This is now working as of 11/11/2022, and we offer several internal hook calls for these plugins to use as with other modding platforms.
 
 **THIS IS NOT COMPATIBLE WITH ANY EXISTING PLUGIN FOR RUST**, whether used by Oxide, uMod, or Carbon, or derivatives.
 
@@ -81,20 +80,19 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 {
 	"Options": {
 		"full": true,
-			"verbose": true,
-			"useInternalCompiler": true,
-			"disableTCWarning": true,
-			"hideGiveNotices": false,
-			"minimal": {
-				"blockTCMenu": true,
-				"allowPVP": false,
-				"allowAdminPVP": true,
-				"blockBuildingDecay": true,
-				"blockDeployablesDecay": true,
-				"protectLoot": true,
-				"protectMount":true,
-				"allowNPCDamage": true
-			}
+		"verbose": true,
+		"disableTCWarning": true,
+		"hideGiveNotices": false,
+		"minimal": {
+			"blockTCMenu": true,
+			"allowPVP": false,
+			"allowAdminPVP": true,
+			"blockBuildingDecay": true,
+			"blockDeployablesDecay": true,
+			"protectLoot": true,
+			"protectMount":true,
+			"allowNPCDamage": true
+		}
 	}
 }
 ```
@@ -114,31 +112,31 @@ void Broadcast("OnGroupCreated", group, title, rank);
 
 void Broadcast("OnUserGroupAdded", id, name);
 
-object Broadcastobject("CanAdminTC", bp, player);
+object BroadcastReturn("CanAdminTC", bp, player);
 
-object Broadcastobject("CanToggleSwitch", oven, player);
+object BroadcastReturn("CanToggleSwitch", oven, player);
 
-object Broadcastobject("CanToggleSwitch", sw, player);
+object BroadcastReturn("CanToggleSwitch", sw, player);
 
 void Broadcast("OnToggleSwitch", oven, player);
 
 void Broadcast("OnToggleSwitch", sw, player);
 
-object Broadcastobject("CanMount", entity, player);
+object BroadcastReturn("CanMount", entity, player);
 
 void Broadcast("OnMounted", entity, player);
 
-object Broadcastobject("CanLoot", entity, player, panelName);
+object BroadcastReturn("CanLoot", entity, player, panelName);
 
 void Broadcast("OnLooted", entity, player);
 
-object Broadcastobject("CanPickup", entity, player);
+object BroadcastReturn("CanPickup", entity, player);
 
-object Broadcastobject("CanPickup", entity, player);
+object BroadcastReturn("CanPickup", entity, player);
 
-object Broadcastobject("CanPickup", entity, player);
+object BroadcastReturn("CanPickup", entity, player);
 
-object Broadcastobject("OnTakeDamage", target, info);
+object BroadcastReturn("OnTakeDamage", target, info);
 
 void Broadcast("OnPlayerJoin", player);
 

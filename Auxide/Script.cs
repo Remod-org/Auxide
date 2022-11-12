@@ -89,11 +89,13 @@ namespace Auxide
                 Utils.DoLog($"Loaded assembly!");
 
                 Initialize(path, code, assembly);
+                initialized = true;
             }
             catch (Exception e)
             {
+                initialized = false;
                 Utils.DoLog($"Failed to load dll at path: {path}: {e}");
-                throw new ScriptLoadException(Name, $"Failed to load script dll at path: {path}", e);
+                throw new ScriptLoadException(Name, $"Failed to load dll at path: {path}", e);
             }
             //}
         }
@@ -191,9 +193,7 @@ namespace Auxide
             }
 
             scriptInstance.Manager = Manager;
-            Utils.DoLog("GOT HERE");
 
-            initialized = true;
             Assembly = assembly;
             Instance = scriptInstance;
             Path = path;
@@ -208,29 +208,33 @@ namespace Auxide
             ConfigPath = System.IO.Path.Combine(Auxide.ConfigPath, $"{BaseName}.json");
             DataPath = System.IO.Path.Combine(Auxide.DataPath, BaseName);
 
-            (instance as RustScript).config = new DynamicConfigFile(ConfigPath);
-            (instance as RustScript).data = new DataFileSystem(DataPath);
+            scriptInstance.config = new DynamicConfigFile(ConfigPath);
+            scriptInstance.data = new DataFileSystem(DataPath);
 
             SoftDependencies.Clear();
             List<string> allSoftReferences = Manager.PopulateScriptReferences(Instance).ToList();
             SoftDependencies.UnionWith(allSoftReferences);
 
+            if (Auxide.verbose) Utils.DoLog("Running ScriptLoading");
             Manager.ScriptLoading(this);
+            Utils.DoLog("Ran ScriptLoading");
 
             try
             {
+                if (Auxide.verbose) Utils.DoLog("Initializing Instance");
                 Instance.Initialize();
+                if (Auxide.verbose) Utils.DoLog("Initialized Instance");
             }
             catch (Exception e)
             {
-                Utils.DoLog("Initialize error");
+                if (Auxide.verbose) Utils.DoLog("Initialize error");
                 ReportError("Initialize", e);
             }
 
             Debug.LogWarning($"Script {path} loaded!");
             Manager.ScriptLoaded(this);
 
-            config.Load();
+            //config.Load();
             //data.GetFile(Name).Load();
             //config.Save();
         }

@@ -1,14 +1,14 @@
 using Auxide;
-using Auxide.Scripting;
 
-internal class TestScript : RustScript
+public class TestScript : RustScript
 {
-    private static VersionNumber Version = new VersionNumber(1, 0, 1);
-	static void Main()
-	{
-	}
+	//public TestScript()
+	//{
+    //    Author = "RFC1920";
+    //    Version = new VersionNumber(1, 0, 1);
+    //}
 
-	public override void Initialize()
+    public override void Initialize()
 	{
         Utils.DoLog("Let's test some hooks!");
 	}
@@ -60,6 +60,12 @@ internal class TestScript : RustScript
     public void OnPlayerLeave(BasePlayer player)
     {
         Utils.DoLog($"{player.userID} disconnected.");
+    }
+
+    public object OnTakeDamage(BaseCombatEntity entity, HitInfo hitInfo)
+    {
+        Utils.DoLog($"OnTakeDamage called for {hitInfo.damageTypes.GetMajorityDamageType()}.");
+        return null;
     }
 }
 

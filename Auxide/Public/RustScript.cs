@@ -13,6 +13,40 @@ public abstract class RustScript : IDisposable
     internal ScriptManager Manager { get; set; }
     public DynamicConfigFile config { get; set; }
     public DataFileSystem data { get; set; }
+
+    private string name;
+
+    public string Title { get; protected set; }
+
+    public string Description { get; protected set; }
+
+    public string Author { get; protected set; }
+
+    public VersionNumber Version { get; protected set; }
+
+    public RustScript()
+    {
+        Name = GetType().Name;
+        Title = Name.Substring(0,1).ToUpper() + Name.Substring(1);
+        Author = "UNKNOWN";
+        Version = new VersionNumber(1, 0, 0);
+    }
+
+    public string Name
+    {
+        get
+        {
+            return name;
+        }
+        set
+        {
+            if (string.IsNullOrEmpty(Name) || name == GetType().Name)
+            {
+                name = value;
+            }
+        }
+    }
+
     //public LangFileSystem lang { get; set; }
 
     public virtual void Initialize() { }
