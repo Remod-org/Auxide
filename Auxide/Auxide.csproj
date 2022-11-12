@@ -587,7 +587,7 @@
     <None Include="FodyWeavers.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Hooks\Server\GiveAnnounce.cs" />
+    <Compile Include="Hooks\Server\GiveAnnounce.cs" />
     <Compile Include="Hooks\Server\Init.cs" />
     <Compile Include="Hooks\Server\OnServerInitialized.cs" />
     <Compile Include="Hooks\Server\OnServerSave.cs" />

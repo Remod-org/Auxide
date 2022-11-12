@@ -11,6 +11,8 @@ namespace Auxide.Hooks.Server
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {
+            if (!Auxide.hideGiveNotices) return instr;
+
             List<CodeInstruction> codes = new List<CodeInstruction>(instr);
 
             Label newLabel = il.DefineLabel();
@@ -29,13 +31,9 @@ namespace Auxide.Hooks.Server
 
             if (startIndex > -1)
             {
-                System.Reflection.ConstructorInfo constr = typeof(ScriptManager).GetConstructors().First();
                 List<CodeInstruction> instructionsToInsert = new List<CodeInstruction>()
                 {
-                    new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Auxide), "hideGiveNotices")),
-                    new CodeInstruction(OpCodes.Ldc_I4_1),
-                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(UnityEngine.Object), "op_Equality")),
-                    new CodeInstruction(OpCodes.Brfalse_S, newLabel),
+                    new CodeInstruction(OpCodes.Nop),
                     new CodeInstruction(OpCodes.Ret)
                 };
                 codes.InsertRange(startIndex, instructionsToInsert);

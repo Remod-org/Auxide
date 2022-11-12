@@ -26,7 +26,7 @@ namespace Auxide
         public static bool full;
         public static bool verbose;
         public static bool hideGiveNotices { get; internal set; }
-        public static bool useInternal = false;
+        //public static bool useInternal = false;
 
         static Auxide()
         {

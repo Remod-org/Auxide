@@ -2,11 +2,11 @@ using Auxide;
 
 public class TestScript : RustScript
 {
-	//public TestScript()
-	//{
-    //    Author = "RFC1920";
-    //    Version = new VersionNumber(1, 0, 1);
-    //}
+	public TestScript()
+	{
+        Author = "RFC1920";
+        Version = new VersionNumber(1, 0, 1);
+    }
 
     public override void Initialize()
 	{

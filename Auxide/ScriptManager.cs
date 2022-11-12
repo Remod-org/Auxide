@@ -329,10 +329,11 @@ namespace Auxide
         {
             Match m = Regex.Match(chat, @"^/a\.", RegexOptions.IgnoreCase);
             Match m2 = Regex.Match(chat, @"^/auxide\.", RegexOptions.IgnoreCase);
+            string[] hookArgs = chat.Split(' ');
+            string command = hookArgs[0].Replace("/", "");
             if (player.IsAdmin && (m.Success || m2.Success))
             {
-                // regex.match ?
-                if (chat.Contains("version"))
+                if (command.Equals("a.version") || command.Equals("auxide.version"))
                 {
                     Assembly assem = Assembly.GetExecutingAssembly();
                     AssemblyName assemName = assem.GetName();
@@ -340,13 +341,13 @@ namespace Auxide
                     player.ChatMessage($"{assemName} {ver}");
                     return;
                 }
-                else if (chat.Contains("verbose"))
+                else if (command.Equals("a.verbose") || command.Equals("auxide.verbose"))
                 {
                     Auxide.verbose = !Auxide.verbose;
                     player.ChatMessage($"Verbose is now {Auxide.verbose}");
                     return;
                 }
-                else if (chat.Contains("unload"))
+                else if (command.Equals("a.unload") || command.Equals("auxide.unload"))
                 {
                     string[] chatElements = chat.Split(' ');
                     if (chatElements.Length == 2)
@@ -358,37 +359,36 @@ namespace Auxide
                         }
                     }
                 }
-                else if (chat.Contains("reload"))
+                else if (command.Equals("a.reload") || command.Equals("auxide.reload"))
                 {
-                    string[] chatElements = chat.Split(' ');
-                    if (chatElements.Length == 2)
+                    if (hookArgs.Length == 2)
                     {
-                        if (_scripts.TryGetValue(chatElements[1], out Script script))
+                        string scriptName = hookArgs[1].Replace(".dll", "");
+                        if (_scripts.TryGetValue(scriptName, out Script script))
                         {
                             script.Dispose();
-                            _scripts.Remove(chatElements[1]);
+                            _scripts.Remove(scriptName);
 
-                            // Work in progress here
-                            Script newScript = new Script(this, Path.Combine(Auxide.ScriptPath, chatElements[1]));
-                            _scripts.Add(chatElements[1], newScript);
-                            UpdateScript(newScript, chatElements[1]);
+                            Script newScript = new Script(this, Path.Combine(Auxide.ScriptPath, $"{scriptName}.dll"));
+                            _scripts.Add(scriptName, newScript);
+                            UpdateScript(newScript, scriptName);
                         }
                     }
                 }
-                else if (chat.Contains("load"))
+                else if (command.Equals("a.load") || command.Equals("auxide.load"))
                 {
-                    string[] chatElements = chat.Split(' ');
-                    if (chatElements.Length == 2)
+                    if (hookArgs.Length == 2)
                     {
-                        if (!_scripts.TryGetValue(chatElements[1], out Script script))
+                        string scriptName = hookArgs[1].Replace(".dll", "");
+                        if (!_scripts.TryGetValue(scriptName, out _))
                         {
-                            Script newScript = new Script(this, Path.Combine(Auxide.ScriptPath, chatElements[1]));
-                            _scripts.Add(chatElements[1], newScript);
-                            UpdateScript(newScript, chatElements[1]);
+                            Script newScript = new Script(this, Path.Combine(Auxide.ScriptPath, $"{scriptName}.dll"));
+                            _scripts.Add(scriptName, newScript);
+                            UpdateScript(newScript, scriptName);
                         }
                     }
                 }
-                else if (chat.Contains("info"))
+                else if (command.Equals("a.info") || command.Equals("auxide.info"))
                 {
                     string verbose = Auxide.verbose.ToString();
                     //string useint = Auxide.useInternal.ToString();
@@ -400,7 +400,7 @@ namespace Auxide
                     player.ChatMessage(message);
                     return;
                 }
-                else if (chat.Contains("list"))
+                else if (command.Equals("a.list") || command.Equals("auxide.list"))
                 {
                     string message = "";
                     foreach(KeyValuePair<string, Script> script in _scripts)
@@ -411,7 +411,7 @@ namespace Auxide
                     return;
                 }
             }
-            if (Auxide.full) Broadcast("OnChatCommand", player, chat, args);
+            if (Auxide.full) Broadcast("OnChatCommand", player, command, hookArgs);
         }
         #endregion
 

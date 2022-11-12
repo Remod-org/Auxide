@@ -26,7 +26,8 @@ namespace Auxide
 
         public static void GetNewLog()
         {
-            string now = DateTime.Now.ToString("yyyyMdd-HH:mm");
+            //string now = DateTime.Now.ToString("yyyyMdd-HH:mm");
+            string now = DateTime.Now.ToString("yyyyMdd");
             LogFile = Path.Combine(LogPath, $"auxide_{now}.log");
         }
 
