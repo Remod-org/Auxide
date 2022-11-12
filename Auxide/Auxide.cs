@@ -113,7 +113,7 @@ namespace Auxide
 
             full = config.Options.full;
             verbose = config.Options.verbose;
-            useInternal = config.Options.useInternalCompiler;
+            //useInternal = config.Options.useInternalCompiler;
             hideGiveNotices = config.Options.hideGiveNotices;
 
             if (verbose)
