@@ -16,6 +16,7 @@ namespace Auxide
         public static string ScriptPath { get; internal set; }
         public static string ConfigPath { get; internal set; }
         public static string DataPath { get; internal set; }
+        public static string LangPath { get; internal set; }
         public static string LogPath { get; internal set; }
         public static string LogFile { get; internal set; }
 
@@ -53,8 +54,8 @@ namespace Auxide
                 ScriptPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Scripts");
                 ConfigPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Config");
                 DataPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Data");
+                LangPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Lang");
                 LogPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Logs");
-                //LogFile = Path.Combine(LogPath, "auxide.log");
 
                 if (verbose)
                 {
@@ -62,6 +63,7 @@ namespace Auxide
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] ScriptPath: {ScriptPath}");
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] ConfigPath: {ConfigPath}");
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] DataPath: {DataPath}");
+                    UnityEngine.Debug.LogWarning($"[Auxide ({now})] LangPath: {LangPath}");
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] LogPath: {LogPath}");
                 }
 
@@ -80,6 +82,10 @@ namespace Auxide
                 if (!Directory.Exists(DataPath))
                 {
                     Directory.CreateDirectory(DataPath);
+                }
+                if (!Directory.Exists(LangPath))
+                {
+                    Directory.CreateDirectory(LangPath);
                 }
                 if (!Directory.Exists(LogPath))
                 {

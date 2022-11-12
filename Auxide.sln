@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTeleport", "HTeleport\HTel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestScript", "TestScript\TestScript\TestScript.csproj", "{F7862F6A-25AE-4EFA-9E3F-74AFB8E7340C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DayNight", "DayNight\DayNight\DayNight.csproj", "{B51611AA-3F41-4F25-8B27-2D074AF3B2D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{F7862F6A-25AE-4EFA-9E3F-74AFB8E7340C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7862F6A-25AE-4EFA-9E3F-74AFB8E7340C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7862F6A-25AE-4EFA-9E3F-74AFB8E7340C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B51611AA-3F41-4F25-8B27-2D074AF3B2D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B51611AA-3F41-4F25-8B27-2D074AF3B2D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B51611AA-3F41-4F25-8B27-2D074AF3B2D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B51611AA-3F41-4F25-8B27-2D074AF3B2D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

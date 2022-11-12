@@ -42,6 +42,12 @@ namespace Auxide
             }
         }
 
+        public static void SendReply(BasePlayer player, string text)
+        {
+            object[] objArray = new object[] { 2, 0, text };
+            ConsoleNetwork.SendClientCommand(player.net.connection, "chat.add", objArray);
+        }
+
         public static void DoLog(string tolog, bool logCaller = true)
         {
             string caller = logCaller ? GetCaller() : "Auxide";

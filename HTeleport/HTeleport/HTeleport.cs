@@ -10,11 +10,11 @@ public class HTeleport : RustScript
     private static Dictionary<ulong, TpTimer> playerTP = new Dictionary<ulong, TpTimer>();
     private static Dictionary<ulong, HomeData> playerHomes = new Dictionary<ulong, HomeData>();
 
-    //public HTeleport()
-    //{
-    //    Author = "RFC1920";
-    //    Version = new VersionNumber(1, 0, 2);
-    //}
+    public HTeleport()
+    {
+        Author = "RFC1920";
+        Version = new VersionNumber(1, 0, 2);
+    }
 
     public class HomeData
     {
@@ -88,6 +88,10 @@ public class HTeleport : RustScript
         public System.Timers.Timer timer;
     }
 
+    //public void LoadLang()
+    //{
+    //    lang.ReadObject<>(Name, "en");
+    //}
     public void LoadData()
     {
         playerHomes = data.ReadObject<Dictionary<ulong, HomeData>>(Name);
@@ -102,8 +106,6 @@ public class HTeleport : RustScript
     {
         //string arginfo = string.Join(",", args);
         //Utils.DoLog($"Heard: {command}/{arginfo}");
-        Connection connection = player.net.connection;
-        object[] objArray = new object[] { 2, 0, null };
 
         if (!playerHomes.ContainsKey(player.userID))
         {
@@ -115,31 +117,30 @@ public class HTeleport : RustScript
         {
             case "town":
                 {
+                    if (args.Length < 2 &&configData.server.Locations["town"] != default && configData.server.Locations["town"] != null)
+                    {
+                        Utils.SendReply(player, $"Teleporting to town in {configData.countdownSeconds} seconds");
+
+                        AddTimer(player, configData.server.Locations["town"]);
+                        return;
+                    }
+
                     if (args[1] == "set" && player.IsAdmin)
                     {
                         configData.server.Locations["town"] = player.transform.position;
                         SaveConfig(configData);
-                        objArray[2] = $"Town set!";
-                        ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
+                        Utils.SendReply(player, "Town set!");
                         return;
-                    }
-                    if (configData.server.Locations["town"] != default)
-                    {
-                        objArray[2] = $"Teleporting to town in {configData.countdownSeconds} seconds";
-                        ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
-
-                        AddTimer(player, configData.server.Locations["town"]);
                     }
                 }
                 break;
             case "outpost":
                 {
-                    if (configData.server.Locations["outpost"] != default)
+                    if (configData.server.Locations["outpost"] != default && configData.server.Locations["outpost"] != null)
                     {
                         if (configData.debug) Utils.DoLog($"Player {player.displayName} selected outpost");
 
-                        objArray[2] = $"Teleporting to outpost in {configData.countdownSeconds} seconds";
-                        ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
+                        Utils.SendReply(player, $"Teleporting to outpost in {configData.countdownSeconds} seconds");
 
                         AddTimer(player, configData.server.Locations["outpost"]);
                     }
@@ -147,12 +148,11 @@ public class HTeleport : RustScript
                 break;
             case "bandit":
                 {
-                    if (configData.server.Locations["bandit"] != default)
+                    if (configData.server.Locations["bandit"] != default && configData.server.Locations["bandit"] != null)
                     {
                         if (configData.debug) Utils.DoLog($"Player {player.displayName} selected bandit");
 
-                        objArray[2] = $"Teleporting to bandit town in {configData.countdownSeconds} seconds";
-                        ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
+                        Utils.SendReply(player, $"Teleporting to bandit town in {configData.countdownSeconds} seconds");
 
                         AddTimer(player, configData.server.Locations["bandit"]);
                     }
@@ -165,12 +165,10 @@ public class HTeleport : RustScript
                     {
                         playerHomes[player.userID].Locations.Add(args[1].ToString(), player.transform.position);
                         SaveData();
-                        objArray[2] = $"Added home {args[1]}";
-                        ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
+                        Utils.SendReply(player, $"Added home {args[1]}");
                         return;
                     }
-                    objArray[2] = $"Home {args[1]} already exists!";
-                    ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
+                    Utils.SendReply(player, $"Home {args[1]} already exists!");
                 }
                 break;
             case "removehome":
@@ -181,24 +179,21 @@ public class HTeleport : RustScript
                     {
                         playerHomes[player.userID].Locations.Remove(args[1]);
                         SaveData();
-                        objArray[2] = $"Removed home {args[1]}";
-                        ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
+                        Utils.SendReply(player, $"Removed home {args[1]}");
                     }
                 }
                 break;
             case "home":
                 {
                     playerHomes[player.userID].Locations.TryGetValue(args[1].ToString(), out Vector3 location);
-                    if (location != default)
+                    if (location != default && location != null)
                     {
-                        objArray[2] = $"Teleporting to home {args[1]} in {configData.countdownSeconds} seconds";
-                        ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
+                        Utils.SendReply(player, $"Teleporting to home {args[1]} in {configData.countdownSeconds} seconds");
 
                         AddTimer(player, location);
                         return;
                     }
-                    objArray[2] = $"No such home {args[1]}";
-                    ConsoleNetwork.SendClientCommand(connection, "chat.add", objArray);
+                    Utils.SendReply(player, $"No such home {args[1]}");
                 }
                 break;
         }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using Auxide.Exceptions;
 using Auxide.Scripting;
@@ -17,6 +15,7 @@ namespace Auxide
         public string Path { get; private set; }
         public string ConfigPath { get; private set; }
         public string DataPath { get; private set; }
+        public string LangPath { get; private set; }
         public string SourceCode { get; private set; }
         public Assembly Assembly { get; private set; }
         public RustScript Instance { get; private set; }
@@ -159,8 +158,8 @@ namespace Auxide
 
         private void Initialize(string path, string code, Assembly assembly)
         {
-            Utils.DoLog($"Initializing assembly");
             Dispose();
+            Utils.DoLog($"Initializing assembly");
 
             Type type = assembly.GetType(Name);
 
@@ -207,9 +206,12 @@ namespace Auxide
 
             ConfigPath = System.IO.Path.Combine(Auxide.ConfigPath, $"{BaseName}.json");
             DataPath = System.IO.Path.Combine(Auxide.DataPath, BaseName);
+            // Yes, this will need to be extended...
+            LangPath = System.IO.Path.Combine(Auxide.LangPath, "en");//, $"{BaseName}.json");
 
             scriptInstance.config = new DynamicConfigFile(ConfigPath);
             scriptInstance.data = new DataFileSystem(DataPath);
+            scriptInstance.lang = new LangFileSystem(LangPath);
 
             SoftDependencies.Clear();
             List<string> allSoftReferences = Manager.PopulateScriptReferences(Instance).ToList();

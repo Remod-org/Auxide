@@ -13,6 +13,7 @@ public abstract class RustScript : IDisposable
     internal ScriptManager Manager { get; set; }
     public DynamicConfigFile config { get; set; }
     public DataFileSystem data { get; set; }
+    public LangFileSystem lang { get; set; }
 
     private string name;
 
