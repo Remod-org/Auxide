@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -135,6 +136,21 @@ namespace Auxide.Scripting
             {
                 callback?.Invoke(file.ReadObject<T>());
             }
+        }
+
+        public void RegisterMessages(Dictionary<string, string> messages, string plugin, string language = null)
+        {
+            if (language == null) language = defaultLanguage;
+
+            JObject msgPayload = new JObject();
+            foreach (KeyValuePair<string, string> message in messages)
+            {
+                JProperty msg = new JProperty(message.Key, message.Value);
+                msgPayload.Add(msg);
+                phrases.Add(message.Key, message.Value);
+            }
+            string fileData = JsonConvert.SerializeObject(msgPayload);
+            File.WriteAllText(Path.Combine(Directory, language, plugin), fileData);
         }
     }
 }

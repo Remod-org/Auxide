@@ -51,7 +51,7 @@ public abstract class RustScript : IDisposable
     //public LangFileSystem lang { get; set; }
 
     public virtual void Initialize() { }
-
+    public virtual void LoadDefaultMessages() { }
     public virtual void Dispose() { }
     //{
     //    Dispose(disposing: true);

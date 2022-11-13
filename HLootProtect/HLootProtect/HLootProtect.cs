@@ -24,6 +24,7 @@ public class HLootProtect : RustScript
         public bool debug;
         public bool HonorRelationships;
         public bool protectCorpse;
+        public bool TCAuthedUserAccess;
         public float protectedDays;
         public Dictionary<string, bool> Rules = new Dictionary<string, bool>();
     }
@@ -47,6 +48,39 @@ public class HLootProtect : RustScript
         base.Dispose();
     }
 
+    public string Lang(string input, params object[] args)
+    {
+        return string.Format(lang.Get(input), args);
+    }
+
+    public void Message(BasePlayer player, string input, params object[] args)
+    {
+        Utils.SendReply(player, string.Format(lang.Get(input), args));
+    }
+
+    public override void LoadDefaultMessages()
+    {
+        lang.RegisterMessages(new Dictionary<string, string>
+        {
+            ["checkinglocal"] = "[LootProtect] Checking {0} local entities",
+            ["enabled"] = "LootProtect enabled.",
+            ["disabled"] = "LootProtect disabled.",
+            ["status"] = "LootProtect enable is set to {0}.",
+            ["logging"] = "Logging set to {0}",
+            ["all"] = "all",
+            ["friends"] = "friends",
+            ["nonefound"] = "No entity found.",
+            ["settings"] = "{0} Settings:\n{1}",
+            ["shared"] = "{0} shared with {1}.",
+            ["sharedf"] = "{0} shared with friends.",
+            ["removeshare"] = "Sharing removed.",
+            ["removesharefor"] = "Sharing removed for {0} entities.",
+            ["shareinfo"] = "Share info for {0}",
+            ["lpshareinfo"] = "[LootProtect] Share info for {0}",
+            ["notauthorized"] = "You don't have permission to use this command.",
+        }, Name);
+    }
+
     public void LoadConfig()
     {
         if (config.Exists())
@@ -64,6 +98,7 @@ public class HLootProtect : RustScript
             debug = false,
             HonorRelationships = true,
             protectCorpse = true,
+            TCAuthedUserAccess = true,
             protectedDays = 0f,
             Rules = new Dictionary<string, bool>
             {
@@ -123,7 +158,7 @@ public class HLootProtect : RustScript
         BaseEntity ent = container?.GetComponentInParent<BaseEntity>();
         if (ent == null) return null;
         Utils.DoLog($"Player {player.displayName} looting StorageContainer {ent.ShortPrefabName}");
-        //if (CheckCupboardAccess(ent, player)) return null;
+        if (CheckCupboardAccess(ent, player)) return null;
         if (CanAccess(ent.ShortPrefabName, player.userID, ent.OwnerID)) return null;
         if (CheckShare(ent, player.userID)) return null;
 
@@ -132,7 +167,11 @@ public class HLootProtect : RustScript
 
     public object CanLoot(PlayerCorpse corpse, BasePlayer player, string panelName)
     {
-        return null;
+        if (player == null || corpse == null) return null;
+        Utils.DoLog($"Player {player.displayName}:{player.UserIDString} looting corpse {corpse.name}:{corpse.playerSteamID}");
+        if (CanAccess(corpse.ShortPrefabName, player.userID, corpse.playerSteamID)) return null;
+
+        return true;
     }
 
     public void OnChatCommand(BasePlayer player, string command, string[] args = null)
@@ -162,7 +201,8 @@ public class HLootProtect : RustScript
                             string ename = ent.ShortPrefabName;
                             sharing[player.userID].Add(new Share { netid = ent.net.ID, name = ename, sharewith = 0 });
                             SaveData();
-                            Utils.SendReply(player, $"Shared {ename} with all");
+                            //Utils.SendReply(player, $"Shared {ename} with all");
+                            Message(player, "shared", ename, Lang("all"));
                         }
                     }
                 }
@@ -198,12 +238,14 @@ public class HLootProtect : RustScript
                                             message += $"\t{x.sharewith}\n";
                                         }
                                     }
-                                    Utils.SendReply(player, $"lpshareinfo: {message}");
+                                    //Utils.SendReply(player, $"lpshareinfo: {message}");
+                                    Message(player, "lpshareinfo", message);
                                 }
                             }
                             else
                             {
-                                Utils.SendReply(player, "nonefound");
+                                //Utils.SendReply(player, "nonefound");
+                                Message(player, "nonefound");
                             }
                         }
                     }
@@ -219,7 +261,8 @@ public class HLootProtect : RustScript
                                 string ename = ent.ShortPrefabName;
                                 sharing[player.userID].Add(new Share { netid = ent.net.ID, name = ename, sharewith = 1 });
                                 SaveData();
-                                Utils.SendReply(player, $"sharedf {ename}");
+                                //Utils.SendReply(player, $"sharedf {ename}");
+                                Message(player, "sharedf", ename);
                             }
                         }
                     }
@@ -243,7 +286,8 @@ public class HLootProtect : RustScript
                                     sharing[player.userID].Add(new Share { netid = ent.net.ID, name = ename, sharewith = sharewith.userID });
                                 }
                                 SaveData();
-                                Utils.SendReply(player, $"Shared {ename} with {sharewith.displayName}");
+                                //Utils.SendReply(player, $"Shared {ename} with {sharewith.displayName}");
+                                Message(player, "shared", ename, sharewith.displayName);
                             }
                         }
                     }
@@ -273,7 +317,8 @@ public class HLootProtect : RustScript
                             sharing[player.userID] = repl;
                             SaveData();
                             //LoadData();
-                            Utils.SendReply(player, "removeshare");
+                            //Utils.SendReply(player, "removeshare");
+                            Message(player, "removeshare");
                         }
                     }
                 }
@@ -323,6 +368,31 @@ public class HLootProtect : RustScript
             }
         }
         return result;
+    }
+
+    private bool CheckCupboardAccess(BaseEntity entity, BasePlayer player)
+    {
+        if (!configData.TCAuthedUserAccess) return false;
+
+        BuildingPrivlidge tc = entity.GetBuildingPrivilege();
+        if (tc == null)
+        {
+            Utils.DoLog($"CheckCupboardAccess:     Unable to find building privilege in range of {entity.ShortPrefabName}.");
+            return false; // NO TC to check...
+        }
+
+        foreach (ProtoBuf.PlayerNameID p in tc.authorizedPlayers.ToArray())
+        {
+            float distance = (float)Math.Round(Vector3.Distance(tc.transform.position, entity.transform.position), 2);
+            if (p.userid == player.userID)
+            {
+                Utils.DoLog($"CheckCupboardAccess:     Found authorized cupboard {distance}m from {entity.ShortPrefabName}!");
+                return true;
+            }
+        }
+
+        Utils.DoLog($"CheckCupboardAccess:     Unable to find authorized cupboard for {entity.ShortPrefabName}.");
+        return false;
     }
 
     private bool CheckShare(BaseEntity target, ulong userid)
