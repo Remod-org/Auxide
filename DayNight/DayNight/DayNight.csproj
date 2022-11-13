@@ -140,26 +140,8 @@
     <Reference Include="Melanchall.DryWetMidi">
       <HintPath>H:\staging\RustDedicated_Data\Managed\Melanchall.DryWetMidi.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>H:\staging\RustDedicated_Data\Managed\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>H:\staging\RustDedicated_Data\Managed\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-    </Reference>
     <Reference Include="MidiJack">
       <HintPath>H:\staging\RustDedicated_Data\Managed\MidiJack.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>H:\staging\RustDedicated_Data\Managed\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>H:\staging\RustDedicated_Data\Managed\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>H:\staging\RustDedicated_Data\Managed\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>H:\staging\RustDedicated_Data\Managed\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Data.Sqlite">
       <HintPath>H:\staging\RustDedicated_Data\Managed\Mono.Data.Sqlite.dll</HintPath>

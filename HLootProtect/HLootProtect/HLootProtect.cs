@@ -140,48 +140,18 @@ public class HLootProtect : RustScript
         if (player == null) return;
 
         //string debug = string.Join(",", args); Utils.DoLog($"{command} {debug}");
+        if (!sharing.ContainsKey(player.userID))
+        {
+            Utils.DoLog($"Creating new sharing data for {player.displayName}");
+            sharing.Add(player.userID, new List<Share>());
+            SaveData();
+        }
 
+        Utils.DoLog($"Args length is {args.Length}");
         switch (command)
         {
-            case "unshare":
-                if (!sharing.ContainsKey(player.userID))
-                {
-                    sharing.Add(player.userID, new List<Share>());
-                }
-                if (args.Length == 0)
-                {
-                    if (Physics.Raycast(player.eyes.HeadRay(), out RaycastHit hit, 2.2f))
-                    {
-                        BaseEntity ent = hit.GetEntity();
-                        if (ent != null)
-                        {
-                            if (ent.OwnerID != player.userID && !Utils.IsFriend(player.userID, ent.OwnerID)) return;
-                            List<Share> repl = new List<Share>();
-                            foreach (Share x in sharing[player.userID])
-                            {
-                                if (x.netid != ent.net.ID)
-                                {
-                                    repl.Add(x);
-                                }
-                                else
-                                {
-                                    Utils.DoLog($"Removing {ent.net.ID} from sharing list...");
-                                }
-                            }
-                            sharing[player.userID] = repl;
-                            SaveData();
-                            LoadData();
-                            Utils.SendReply(player, "removeshare");
-                        }
-                    }
-                }
-                break;
             case "share":
-                if (!sharing.ContainsKey(player.userID))
-                {
-                    sharing.Add(player.userID, new List<Share>());
-                }
-                if (args.Length == 0)
+                if (args.Length == 1)
                 {
                     if (Physics.Raycast(player.eyes.HeadRay(), out RaycastHit hit, 2.2f))
                     {
@@ -196,12 +166,11 @@ public class HLootProtect : RustScript
                         }
                     }
                 }
-                else if (args.Length == 1)
+                else if (args.Length == 2)
                 {
-                    if (args[0] == "?")
+                    if (args[1] == "?")
                     {
-                        RaycastHit hit;
-                        if (Physics.Raycast(player.eyes.HeadRay(), out hit, 2.2f))
+                        if (Physics.Raycast(player.eyes.HeadRay(), out RaycastHit hit, 2.2f))
                         {
                             BaseEntity ent = hit.GetEntity();
                             string message = "";
@@ -238,11 +207,10 @@ public class HLootProtect : RustScript
                             }
                         }
                     }
-                    else if (args[0] == "friends")
+                    else if (args[1] == "friends")
                     {
                         if (!configData.HonorRelationships) return;
-                        RaycastHit hit;
-                        if (Physics.Raycast(player.eyes.HeadRay(), out hit, 2.2f))
+                        if (Physics.Raycast(player.eyes.HeadRay(), out RaycastHit hit, 2.2f))
                         {
                             BaseEntity ent = hit.GetEntity();
                             if (ent != null)
@@ -257,9 +225,8 @@ public class HLootProtect : RustScript
                     }
                     else
                     {
-                        BasePlayer sharewith = FindPlayerByName(args[0]);
-                        RaycastHit hit;
-                        if (Physics.Raycast(player.eyes.HeadRay(), out hit, 2.2f))
+                        BasePlayer sharewith = FindPlayerByName(args[1]);
+                        if (Physics.Raycast(player.eyes.HeadRay(), out RaycastHit hit, 2.2f))
                         {
                             BaseEntity ent = hit.GetEntity();
                             if (ent != null)
@@ -282,13 +249,43 @@ public class HLootProtect : RustScript
                     }
                 }
                 break;
+            case "unshare":
+                if (args.Length == 1)
+                {
+                    if (Physics.Raycast(player.eyes.HeadRay(), out RaycastHit hit, 2.2f))
+                    {
+                        BaseEntity ent = hit.GetEntity();
+                        if (ent != null)
+                        {
+                            if (ent.OwnerID != player.userID && !Utils.IsFriend(player.userID, ent.OwnerID)) return;
+                            List<Share> repl = new List<Share>();
+                            foreach (Share x in sharing[player.userID])
+                            {
+                                if (x.netid != ent.net.ID)
+                                {
+                                    repl.Add(x);
+                                }
+                                else
+                                {
+                                    Utils.DoLog($"Removing {ent.net.ID} from sharing list...");
+                                }
+                            }
+                            sharing[player.userID] = repl;
+                            SaveData();
+                            //LoadData();
+                            Utils.SendReply(player, "removeshare");
+                        }
+                    }
+                }
+                break;
+
         }
     }
 
     private void SaveData()
     {
-        data.WriteObject(Name, sharing);
-        data.WriteObject(Name, lastConnected);
+        data.WriteObject("sharing", sharing);
+        data.WriteObject("lastConnected", lastConnected);
     }
 
     private void LoadData()
@@ -303,8 +300,8 @@ public class HLootProtect : RustScript
         }
         else
         {
-            lastConnected = data.ReadObject<Dictionary<string, long>>(Name);
-            sharing = data.ReadObject<Dictionary<ulong, List<Share>>>(Name);
+            lastConnected = data.ReadObject<Dictionary<string, long>>("lastConnected");
+            sharing = data.ReadObject<Dictionary<ulong, List<Share>>>("sharing");
         }
         if (sharing == null)
         {
@@ -358,8 +355,7 @@ public class HLootProtect : RustScript
 
         if (configData.protectedDays > 0 && target > 76560000000000000L)
         {
-            long lc = 0;
-            lastConnected.TryGetValue(target.ToString(), out lc);
+            lastConnected.TryGetValue(target.ToString(), out long lc);
             if (lc > 0)
             {
                 long now = ToEpochTime(DateTime.UtcNow);
@@ -420,23 +416,23 @@ public class HLootProtect : RustScript
         return ticks / TimeSpan.TicksPerSecond;
     }
 
-    private BasePlayer FindPlayerByID(ulong userid)
-    {
-        foreach (BasePlayer activePlayer in BasePlayer.activePlayerList)
-        {
-            if (activePlayer.userID.Equals(userid))
-            {
-                return activePlayer;
-            }
-        }
-        foreach (BasePlayer sleepingPlayer in BasePlayer.sleepingPlayerList)
-        {
-            if (sleepingPlayer.userID.Equals(userid))
-            {
-                return sleepingPlayer;
-            }
-        }
-        return null;
-    }
+    //private BasePlayer FindPlayerByID(ulong userid)
+    //{
+    //    foreach (BasePlayer activePlayer in BasePlayer.activePlayerList)
+    //    {
+    //        if (activePlayer.userID.Equals(userid))
+    //        {
+    //            return activePlayer;
+    //        }
+    //    }
+    //    foreach (BasePlayer sleepingPlayer in BasePlayer.sleepingPlayerList)
+    //    {
+    //        if (sleepingPlayer.userID.Equals(userid))
+    //        {
+    //            return sleepingPlayer;
+    //        }
+    //    }
+    //    return null;
+    //}
 }
 
