@@ -216,6 +216,11 @@ namespace Auxide
             Broadcast("OnServerSave");
         }
 
+        public void OnNewSaveHook()
+        {
+            Broadcast("OnNewSave");
+        }
+
         public void OnGroupCreatedHook(string group, string title, int rank)
         {
             Broadcast("OnGroupCreated", group, title, rank);

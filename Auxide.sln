@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DayNight", "DayNight\DayNig
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPVE", "HPVE\HPVE\HPVE.csproj", "{14D523C1-D24F-4D50-BBDA-9FD42E848997}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HLootProtect", "HLootProtect\HLootProtect\HLootProtect.csproj", "{1AD3784F-2632-4E49-B34D-29FDBE58E066}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{14D523C1-D24F-4D50-BBDA-9FD42E848997}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14D523C1-D24F-4D50-BBDA-9FD42E848997}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14D523C1-D24F-4D50-BBDA-9FD42E848997}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AD3784F-2632-4E49-B34D-29FDBE58E066}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AD3784F-2632-4E49-B34D-29FDBE58E066}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AD3784F-2632-4E49-B34D-29FDBE58E066}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AD3784F-2632-4E49-B34D-29FDBE58E066}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

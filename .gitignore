@@ -3,4 +3,17 @@
 /Auxide/bin/Release
 /Auxide/obj/Debug
 /Auxide/obj/Release
+/DayNight/obj/Debug
+/HLootProtect/obj/
+/HNoDecay/obj/Debug
+/HPVE/obj/Debug
+/HTeleport/obj/Debug
+/TestScript/obj/Debug
+/DayNight/obj/Release
+/HLootProtect/obj/Release
+/HNoDecay/obj/Release
+/HPVE/obj/Release
+/HTeleport/obj/Release
+/TestScript/obj/Release
+ThisUsesCostura.txt
 /.vs
