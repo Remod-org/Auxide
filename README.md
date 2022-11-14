@@ -158,6 +158,7 @@ The following were borrowed from Oxide, and I believe their licensing allows thi
 
 - Fix plugin updating, which in one case can crash the server.  The other case is a failure to detect the included plugin class when loading a new version.
 - Language files and translation
+- Add permissions for plugin access
 - Revisit cs file compilation
 - Fix hideGiveNotices
 - I am sure there are issues I have missed.
