@@ -1,14 +1,14 @@
 ### Overview
-Auxide is a Harmony patch dll for Rust which provides a simplified alternative to Oxide/uMod/Carbon.  It is not a compatible replacement for them and should be used on its own.
+Auxide is a Harmony patch dll for Rust which provides a simplified alternative to Oxide/uMod/Carbon.  It is not a compatible replacement for them and should be used on its own.  Many of the features of those other systems are available here.  But, the primary goal is to provide a way for vanilla and staging servers to have more control than what they get out of the box without having to install a larger package.
 
-It offers the admin with two modes of operation:
+It offers the admin two modes of operation:
 
 - MINIMAL
-  - Provides basic controls for PVE.
+  - Provides basic controls for PVE, decay management, and access control.
 
 - FULL (Work in progress)
   - Provides full plugin support (Auxide plugins only)
-  - Plugins are currently required to be in DLL form, and 3 examples are provided.
+  - Plugins are currently required to be in DLL form, and several examples are provided.
 
 Additionally, Auxide should work just fine month to month for **vanilla and staging** servers without monthly updates.
 
@@ -99,6 +99,8 @@ Configuration is handled via Auxide.json, also contained in the HarmonyMods fold
 
 The configuration is re-read on server save in case you want to make adjustments during runtime.
 
+We have included some mostly working plugins in the source code as examples for improvement, etc.
+
 #### Hooks in Full Mode
 
 ```cs
@@ -147,9 +149,20 @@ void Broadcast("OnChatCommand", player, chat, args);
 object BroadcastReturn("OnConsoleCommand", command, isServer);
 ```
 
-### CREDITS, ETC.
+### Available Utilities and Classes for Plugins
 
-More about plugins, etc., when the compilation is working consistently.
+The following were borrowed from Oxide, and I believe their licensing allows this:
+- DynamicConfigFile
+- DataFileSystem
+- CuiHelper
+
+### TODO
+
+- Fix plugin updating, which in one case can crash the server.  The other case is a failure to detect the included plugin class when loading a new version.
+- Language files and translation
+- Revisit cs file compilation
+
+### CREDITS, ETC.
 
 Many thanks to SureL0ck for testing and patience.
 
