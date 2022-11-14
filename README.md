@@ -16,10 +16,8 @@ Additionally, Auxide should work just fine month to month for **vanilla and stag
 
 - This was originally a fork of https://github.com/Facepunch/Rust.ModLoader.
 - This should work on either Windows or Linux Rust servers.
-- Download of the dll (when ready) will be at https://remod.org.
+- Download of the production releases (when ready) will be at https://remod.org.
 - As of November 2022, this has been in silent development long enough.
-- I am sure there are issues I have missed.
-- hideGiveNotices not yet working.
 - If following things here at least in the pre-release versions, verify that your Auxide.json is up to date with new or changed configuration items.  Otherwise, the dll may fail to load.
 - PVP damage prevention still being tested.
 - Please let me know via Discord https://discord.gg/2z736h7sMt if you encounter any major issues.
@@ -31,9 +29,9 @@ The following folders are created in both modes.  Only the Logs folder is used i
 
 - TOPLEVEL
   - auxide
-    - Bin (temporary download location for the compiler when using external)
+    - Bin (temporary download location for the compiler when using external, currently unused and will be temporarily removed)
     - Config (plugin config files)
-    - Data (plugin data files)
+    - Data (plugin data files including automatic creation of subfolders for each plugin)
     - Logs (Auxide logging, especially in verbose mode)
     - Scripts (plugins)
 
@@ -161,6 +159,9 @@ The following were borrowed from Oxide, and I believe their licensing allows thi
 - Fix plugin updating, which in one case can crash the server.  The other case is a failure to detect the included plugin class when loading a new version.
 - Language files and translation
 - Revisit cs file compilation
+- Fix hideGiveNotices
+- I am sure there are issues I have missed.
+
 
 ### CREDITS, ETC.
 
