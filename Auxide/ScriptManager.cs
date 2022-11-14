@@ -231,6 +231,16 @@ namespace Auxide
             Broadcast("OnUserGroupAdded", id, name);
         }
 
+        public object CanUseUIHook(BasePlayer player, string json)
+        {
+            return BroadcastReturn("CanUseUI", player, json);
+        }
+
+        public void OnDestroyUIHook(BasePlayer player, string elem)
+        {
+            Broadcast("OnDestroyUI", player, elem);
+        }
+
         public object CanAdminTCHook(BuildingPrivlidge bp, BasePlayer player)
         {
             if (bp == null) return null;

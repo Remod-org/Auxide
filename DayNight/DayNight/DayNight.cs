@@ -54,6 +54,7 @@ public class DayNight : RustScript
     public override void Initialize()
     {
         LoadConfig();
+        limitTimer = new System.Timers.Timer();
     }
 
     //public void LoadLang()

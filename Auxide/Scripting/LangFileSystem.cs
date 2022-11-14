@@ -13,7 +13,7 @@ namespace Auxide.Scripting
         /// Gets the directory that this system works in
         /// </summary>
         public string Directory { get; private set; }
-        public string defaultLanguage = "en";
+        public static string defaultLanguage = "en";
         private Dictionary<string, string> phrases = new Dictionary<string, string>();
 
         // All currently loaded langfiles
@@ -32,7 +32,7 @@ namespace Auxide.Scripting
         /// <param name="directory"></param>
         public LangFileSystem(string directory)
         {
-            Directory = directory;
+            this.Directory = directory;
             _langfiles = new Dictionary<string, DynamicConfigFile>();
             KeyValuesConverter converter = new KeyValuesConverter();
             JsonSerializerSettings settings = new JsonSerializerSettings();
@@ -150,7 +150,14 @@ namespace Auxide.Scripting
                 phrases.Add(message.Key, message.Value);
             }
             string fileData = JsonConvert.SerializeObject(msgPayload);
-            File.WriteAllText(Path.Combine(Directory, language, plugin), fileData);
+            string langFile = Path.Combine(Directory, language, plugin);
+
+            if (Auxide.verbose) Utils.DoLog($"Writing language file, {langFile}");
+            if (!System.IO.Directory.Exists(langFile))
+            {
+                System.IO.Directory.CreateDirectory(langFile);
+            }
+            File.WriteAllText(langFile, fileData);
         }
     }
 }

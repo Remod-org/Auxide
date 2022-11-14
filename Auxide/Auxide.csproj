@@ -620,6 +620,7 @@
     <Compile Include="Scripting\LangFileSystem.cs" />
     <Compile Include="Scripting\ScriptInvoker.cs" />
     <Compile Include="ScriptManager.cs" />
+    <Compile Include="CuiHelper.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="VersionNumber.cs" />
   </ItemGroup>

@@ -68,6 +68,24 @@ namespace Auxide
             return m?.DeclaringType?.FullName;
         }
 
+        private static bool GetBoolValue(string value)
+        {
+            if (value == null) return false;
+            value = value.Trim().ToLower();
+            switch (value)
+            {
+                case "on":
+                case "true":
+                case "yes":
+                case "1":
+                case "t":
+                case "y":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         //public static void DatafileToProto<T>(string name, bool deleteAfter = true)
         //{
         //    DataFileSystem dataFileSystem = DataFileSystem;

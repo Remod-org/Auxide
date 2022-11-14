@@ -10,6 +10,8 @@ public class HKits : RustScript
     private static ConfigData configData;
     private static Dictionary<string, Kit> kits = new Dictionary<string, Kit>();
     private bool newsave;
+    private List<ulong> isopen = new List<ulong>();
+    private const string KITGUI = "hkits.gui";
 
     public HKits()
     {
@@ -27,11 +29,22 @@ public class HKits : RustScript
     {
         LoadConfig();
         LoadData();
+
+        foreach (BasePlayer player in BasePlayer.activePlayerList)
+        {
+            CuiHelper.DestroyUi(player, KITGUI);
+            if (isopen.Contains(player.userID)) isopen.Remove(player.userID);
+        }
     }
 
     public override void Dispose()
     {
         SaveData();
+        foreach (BasePlayer player in BasePlayer.activePlayerList)
+        {
+            CuiHelper.DestroyUi(player, KITGUI);
+            if (isopen.Contains(player.userID)) isopen.Remove(player.userID);
+        }
         base.Dispose();
     }
 
@@ -72,6 +85,11 @@ public class HKits : RustScript
     {
         lang.RegisterMessages(new Dictionary<string, string>
         {
+            ["kits"] = "Kits:\n",
+            ["kitgui"] = "Available Kits",
+            ["kithelp"] = "Type /kit list to list kits, /kit NAME to select a kit, or /kits to bring up gui.",
+            ["created"] = "Kit %1 has been created from your inventory.",
+            ["issued"] = "Kit %1 has been issued to you.",
             ["notauthorized"] = "You don't have permission to use this command."
         }, Name);
     }
@@ -105,14 +123,35 @@ public class HKits : RustScript
     {
         if (player == null) return;
 
-        Utils.DoLog($"Args length is {args.Length}");
         switch (command)
         {
+            case "kits":
+                KitGUI(player);
+                break;
             case "kit":
                 if (args.Length == 2)
                 {
+                    if (args[1] == "close")
+                    {
+                        CuiHelper.DestroyUi(player, KITGUI);
+                        IsOpen(player.userID, false);
+                        return;
+                    }
+                    if (args[1] == "list")
+                    {
+                        string message = Lang("kits");
+                        foreach (string kit in kits.Keys)
+                        {
+                            message += $"{kit}\n";
+                        }
+                        Message(player, message);
+                        return;
+                    }
+
                     if (kits.ContainsKey(args[1]))
                     {
+                        CuiHelper.DestroyUi(player, KITGUI);
+                        IsOpen(player.userID, false);
                         Kit kit = kits[args[1]];
                         foreach (KitItem item in kit.items.Where(x => x.location == ItemLocation.wear))
                         {
@@ -129,16 +168,9 @@ public class HKits : RustScript
                             Item newitem = ItemManager.CreateByItemID(item.itemid, item.count, item.skinid);
                             newitem.MoveToContainer(player.inventory.containerMain, -1, true, false);
                         }
+                        return;
                     }
-                }
-                else if (args.Length == 2 && args[1] == "list")
-                {
-                    string message = Lang("kits") + "\n";
-                    foreach (string kit in kits.Keys)
-                    {
-                        message += $"{kit}\n";
-                    }
-                    Message(player, message);
+                    Message(player, "kithelp");
                 }
                 else if (args.Length == 3 && args[1] == "create" && player.IsAdmin)
                 {
@@ -234,6 +266,68 @@ public class HKits : RustScript
         DateTime date = dateTime.ToUniversalTime();
         long ticks = date.Ticks - new DateTime(1970, 1, 1, 0, 0, 0, 0).Ticks;
         return ticks / TimeSpan.TicksPerSecond;
+    }
+
+    private void IsOpen(ulong uid, bool set = false)
+    {
+        if (set)
+        {
+            Utils.DoLog($"Setting isopen for {uid}");
+            if (!isopen.Contains(uid)) isopen.Add(uid);
+            return;
+        }
+        Utils.DoLog($"Clearing isopen for {uid}");
+        isopen.Remove(uid);
+    }
+
+    private float[] GetButtonPosition(int rowNumber, int columnNumber)
+    {
+        float offsetX = 0.05f + (0.096f * columnNumber);
+        float offsetY = (0.80f - (rowNumber * 0.064f));
+
+        return new float[] { offsetX, offsetY, offsetX + 0.196f, offsetY + 0.03f };
+    }
+
+    private float[] GetButtonPositionP(int rowNumber, int columnNumber)
+    {
+        float offsetX = 0.05f + (0.126f * columnNumber);
+        float offsetY = (0.87f - (rowNumber * 0.064f));
+
+        return new float[] { offsetX, offsetY, offsetX + 0.226f, offsetY + 0.03f };
+    }
+
+    private void KitGUI(BasePlayer player)
+    {
+        if (player == null) return;
+        IsOpen(player.userID, true);
+        CuiHelper.DestroyUi(player, KITGUI);
+
+        string description = Lang("kitgui");
+        CuiElementContainer container = UI.Container(KITGUI, UI.Color("242424", 1f), "0.1 0.1", "0.9 0.9", true, "Overlay");
+        UI.Label(ref container, KITGUI, UI.Color("#ffffff", 1f), description, 18, "0.23 0.92", "0.7 1");
+        UI.Button(ref container, KITGUI, UI.Color("#d85540", 1f), Lang("close"), 12, "0.92 0.93", "0.985 0.98", "kit close");
+
+        int col = 0;
+        int row = 0;
+
+        foreach (KeyValuePair<string, Kit> kit in kits)
+        {
+            if (row > 10)
+            {
+                row = 0;
+                col++; col++;
+            }
+            float[] posb = GetButtonPositionP(row, col);
+
+            UI.Button(ref container, KITGUI, UI.Color("#424242", 1f), kit.Value.name, 12, $"{posb[0]} {posb[1]}", $"{posb[0] + ((posb[2] - posb[0]) / 2)} {posb[3]}", $"kit {kit.Value.name}");
+            col++;
+            posb = GetButtonPositionP(row, col);
+            UI.Label(ref container, KITGUI, UI.Color("#424242", 1f), kit.Value.description, 12, $"{posb[0]} {posb[1]}", $"{posb[0] + ((posb[2] - posb[0]) / 2)} {posb[3]}");
+            col--;
+            row++;
+        }
+
+        CuiHelper.AddUi(player, container);
     }
 
     //private BasePlayer FindPlayerByID(ulong userid)

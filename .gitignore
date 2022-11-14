@@ -4,3 +4,4 @@ ThisUsesCostura.txt
 bin
 obj
 packages
+/Auxide/Lang.cs

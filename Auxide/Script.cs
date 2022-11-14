@@ -50,6 +50,7 @@ namespace Auxide
             Assembly = null;
 
             Manager.ScriptUnloaded(this);
+            Debug.LogWarning($"Script {Assembly.Location} unloaded...");
         }
 
         internal void Update(string path = null)

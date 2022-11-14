@@ -11,7 +11,7 @@ namespace Auxide
 
         public readonly static VersionNumber Version;
         public static ScriptManager Scripts { get; internal set; }
-        public static string BinPath { get; internal set; }
+        //public static string BinPath { get; internal set; }
         public static string TopPath { get; internal set; }
         public static string ScriptPath { get; internal set; }
         public static string ConfigPath { get; internal set; }
@@ -50,7 +50,7 @@ namespace Auxide
 
                 UnityEngine.Debug.LogWarning(full ? $"[Auxide ({now})] Operating in full mode with plugins..." : $"[Auxide ({now})] Operating in minimal mode with no plugins...");
                 TopPath = Path.Combine(AppContext.BaseDirectory, "auxide");
-                BinPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Bin");
+                //BinPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Bin");
                 ScriptPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Scripts");
                 ConfigPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Config");
                 DataPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Data");
@@ -59,7 +59,7 @@ namespace Auxide
 
                 if (verbose)
                 {
-                    UnityEngine.Debug.LogWarning($"[Auxide ({now})] BinPath: {BinPath}");
+                    //UnityEngine.Debug.LogWarning($"[Auxide ({now})] BinPath: {BinPath}");
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] ScriptPath: {ScriptPath}");
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] ConfigPath: {ConfigPath}");
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] DataPath: {DataPath}");
@@ -67,10 +67,10 @@ namespace Auxide
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] LogPath: {LogPath}");
                 }
 
-                if (!Directory.Exists(BinPath))
-                {
-                    Directory.CreateDirectory(BinPath);
-                }
+                //if (!Directory.Exists(BinPath))
+                //{
+                //    Directory.CreateDirectory(BinPath);
+                //}
                 if (!Directory.Exists(ScriptPath))
                 {
                     Directory.CreateDirectory(ScriptPath);
