@@ -99,6 +99,8 @@ The configuration is re-read on server save in case you want to make adjustments
 
 We have included some mostly working plugins in the source code as examples for improvement, etc.
 
+As of 15 November 2022, permissions are working.  This is currently managed via the new plugin, PermMgr.dll.
+
 #### Hooks in Full Mode
 
 ```cs
@@ -158,7 +160,6 @@ The following were borrowed from Oxide, and I believe their licensing allows thi
 
 - Fix plugin updating, which in one case can crash the server.  The other case is a failure to detect the included plugin class when loading a new version.
 - Language files and translation
-- Add permissions for plugin access
 - Revisit cs file compilation
 - Fix hideGiveNotices
 - I am sure there are issues I have missed.
