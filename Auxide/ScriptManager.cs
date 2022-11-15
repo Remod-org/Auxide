@@ -492,6 +492,14 @@ namespace Auxide
             }
         }
 
+        public void Broadcast(string methodName, IScriptReference script)
+        {
+            lock (_sync)
+            {
+                script.InvokeProcedure(methodName);
+            }
+        }
+
         public void Broadcast<T0>(string methodName, T0 arg0)
         {
             lock (_sync)

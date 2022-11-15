@@ -56,6 +56,7 @@ namespace Auxide
         {
             using (SqliteConnection c = new SqliteConnection(connStr))
             {
+                c.Open();
                 using (SqliteCommand cmd = new SqliteCommand(c))
                 using (SqliteTransaction transaction = c.BeginTransaction())
                 {
