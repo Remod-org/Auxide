@@ -422,6 +422,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HPVE.cs" />
+    <None Include="NextGenPVE.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

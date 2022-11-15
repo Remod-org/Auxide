@@ -331,6 +331,9 @@ namespace Auxide
         public void OnPlayerJoinHook(BasePlayer player = null)
         {
             if (player == null) return;
+            if (player.IsAdmin) Permissions.AddGroupMember("admin", player.UserIDString);
+            Permissions.AddGroupMember("default", player.UserIDString);
+
             Broadcast("OnPlayerJoin", player);
         }
 

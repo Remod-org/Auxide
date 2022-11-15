@@ -40,7 +40,6 @@ public class HKits : RustScript
 
     public void OnScriptLoaded()
     {
-        Utils.DoLog("OnScriptLoaded called for HKits");
         Permissions.RegisterPermission(Name, "kits.use");
     }
 

@@ -45,6 +45,8 @@ namespace Auxide
                 {
                     cmd.CommandText += $"CREATE TABLE permissions (plugin varchar(32), source int(1) DEFAULT 0, permname varchar(32), userid varchar(32), isgroup int(1) DEFAULT 0);";
                     cmd.CommandText += $"CREATE TABLE groups (groupname varchar(32), members varchar(256));";
+                    cmd.CommandText += $"INSERT INTO groups VALUES('default', '');";
+                    cmd.CommandText += $"INSERT INTO groups VALUES('admin', '');";
                     Utils.DoLog(cmd.CommandText);
                     cmd.ExecuteNonQuery();
                     transaction.Commit();
@@ -232,6 +234,7 @@ namespace Auxide
                     }
                 }
             }
+            if (!res.Contains("default")) res.Add("default");
             return res;
         }
 
@@ -276,6 +279,7 @@ namespace Auxide
                 using (SqliteTransaction transaction = c.BeginTransaction())
                 {
                     cmd.CommandText += $"DELETE FROM groups WHERE groupname='{groupname}';";
+                    cmd.CommandText += $"DELETE FROM permissions WHERE userid='{groupname}' AND isgroup=1";
                     cmd.ExecuteNonQuery();
                     transaction.Commit();
                 }
