@@ -2,6 +2,7 @@ using Auxide;
 
 public class TestScript : RustScript
 {
+    public bool enable = true;
 	public TestScript()
 	{
         Author = "RFC1920";
@@ -15,6 +16,7 @@ public class TestScript : RustScript
 
     public object CanToggleSwitch(BaseOven oven, BasePlayer player)
     {
+        if (!enable) return null;
         if (oven.OwnerID != 0 && player.userID != oven.OwnerID && !Utils.IsFriend(player.userID, oven.OwnerID))
         {
             Utils.DoLog($"{player.userID} BLOCKED FROM toggling oven {oven.ShortPrefabName}");
@@ -26,6 +28,7 @@ public class TestScript : RustScript
 
     public object CanToggleSwitch(ElectricSwitch sw, BasePlayer player)
     {
+        if (!enable) return null;
 		if (sw.OwnerID != 0 && player.userID != sw.OwnerID && !Utils.IsFriend(player.userID, sw.OwnerID))
 		{
             Utils.DoLog($"{player.userID} BLOCKED FROM toggling oven {sw.ShortPrefabName}");
@@ -38,6 +41,7 @@ public class TestScript : RustScript
     // Not yet working :(
     public object CanMount(BaseMountable entity, BasePlayer player)
     {
+        if (!enable) return null;
         if (entity.OwnerID != 0 && player.userID != entity.OwnerID && !Utils.IsFriend(player.userID, entity.OwnerID))
 		{
             Utils.DoLog($"{player.userID} BLOCKED FROM mounting {entity.ShortPrefabName}");
@@ -64,12 +68,14 @@ public class TestScript : RustScript
 
     public object OnTakeDamage(BaseCombatEntity entity, HitInfo hitInfo)
     {
+        if (!enable) return null;
         Utils.DoLog($"OnTakeDamage called for {hitInfo.damageTypes.GetMajorityDamageType()}.");
         return null;
     }
 
     public object OnConsoleCommand(string command, bool isServer)
     {
+        if (!enable) return null;
         Utils.DoLog($"OnConsoleCommand called for '{command}' with isServer={isServer}");
         if (command == "testfail") return false;
         return null;
@@ -79,6 +85,12 @@ public class TestScript : RustScript
     {
         string arginfo = string.Join(",", args);
         Utils.DoLog($"OnChatCommand called for '{command}' with args='{arginfo}'");
+        switch (command)
+        {
+            case "ttoggle":
+                enable = !enable;
+                break;
+        }
     }
 }
 

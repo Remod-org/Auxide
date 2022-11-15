@@ -618,6 +618,7 @@
     <Compile Include="Scripting\InvokeBuilder.cs" />
     <Compile Include="Scripting\InvokeTarget.cs" />
     <Compile Include="Scripting\LangFileSystem.cs" />
+    <Compile Include="Permissions.cs" />
     <Compile Include="Scripting\ScriptInvoker.cs" />
     <Compile Include="ScriptManager.cs" />
     <Compile Include="CuiHelper.cs" />

@@ -9,14 +9,9 @@ namespace Auxide.Hooks.Server
     public class ConsoleHook
     {
         // NOT YET WORKING DO NOT COMPILE
-        public static bool Prefix(ConsoleSystem __instance, ref bool __result, ref ConsoleSystem.Option options, string strCommand, ref object[] args)
+        public static bool Prefix(ref ConsoleSystem.Option options, ref string __result, ref string strCommand, ref object[] args)
         {
-            object res = Auxide.Scripts.OnConsoleCommandHook(strCommand, options.IsServer);
-            if (res is bool)
-            {
-                __result = false;
-                return false;
-            }
+            __result = (string)Auxide.Scripts.OnConsoleCommandHook(strCommand, args);
             return true;
         }
         //public static bool Prefix(ConsoleSystem __instance, ConsoleSystem.Option options, string strCommand, object[] args)

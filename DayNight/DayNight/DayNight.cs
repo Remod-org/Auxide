@@ -69,7 +69,7 @@ public class DayNight : RustScript
 
         limitTimer = new System.Timers.Timer
         {
-            Interval = configData.frequencyLimitMinutes * 60
+            Interval = configData.frequencyLimitMinutes > 0 ? configData.frequencyLimitMinutes : 5f
         };
         limitTimer.Elapsed += TimerElapsed;
         limitTimer.AutoReset = true;

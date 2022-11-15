@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HLootProtect", "HLootProtec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HKits", "HKits\HKits\HKits.csproj", "{DFF4D31D-D24D-4D0E-9367-B9B68D7B692F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PermMgr", "PermMgr\PermMgr\PermMgr.csproj", "{D01D0749-E676-4417-A3D3-C8AD8AAE31EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{DFF4D31D-D24D-4D0E-9367-B9B68D7B692F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFF4D31D-D24D-4D0E-9367-B9B68D7B692F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFF4D31D-D24D-4D0E-9367-B9B68D7B692F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D01D0749-E676-4417-A3D3-C8AD8AAE31EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D01D0749-E676-4417-A3D3-C8AD8AAE31EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D01D0749-E676-4417-A3D3-C8AD8AAE31EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D01D0749-E676-4417-A3D3-C8AD8AAE31EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

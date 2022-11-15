@@ -23,6 +23,7 @@ public class HKits : RustScript
     public class ConfigData
     {
         public bool debug;
+        public bool usePermissions;
     }
 
     public override void Initialize()
@@ -35,6 +36,11 @@ public class HKits : RustScript
             CuiHelper.DestroyUi(player, KITGUI);
             if (isopen.Contains(player.userID)) isopen.Remove(player.userID);
         }
+    }
+
+    public void OnScriptLoaded()
+    {
+        Permissions.RegisterPermission(Name, "kits.use");
     }
 
     public override void Dispose()
@@ -122,7 +128,11 @@ public class HKits : RustScript
     public void OnChatCommand(BasePlayer player, string command, string[] args = null)
     {
         if (player == null) return;
-
+        if (configData.usePermissions && !Permissions.UserHasPermission("kits.use", player.UserIDString))
+        {
+            Message(player, "notauthorized");
+            return;
+        }
         switch (command)
         {
             case "kits":

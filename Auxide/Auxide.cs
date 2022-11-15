@@ -22,6 +22,7 @@ namespace Auxide
 
         private static string configFile;
         public static AuxideConfig config;
+        public static Permissions permissions;
 
         private static bool initialized;
         public static bool full;
@@ -96,6 +97,7 @@ namespace Auxide
                 //Utils.TruncateLog();
 
                 Scripts = new ScriptManager(ScriptPath);//, ConfigPath, DataPath);
+                permissions = new Permissions();
                 initialized = true;
                 if (verbose) Utils.DoLog(full ? "Initialized full mode with plugins..." : "Initialized minimal mode with no plugins...", false);
             }
