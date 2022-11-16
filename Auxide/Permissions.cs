@@ -56,6 +56,24 @@ namespace Auxide
 
         public static void RegisterPermission(string plugin, string permname)
         {
+            bool exists = false;
+            using (SqliteConnection c = new SqliteConnection(connStr))
+            {
+                c.Open();
+                using (SqliteCommand r = new SqliteCommand($"SELECT * FROM permissions WHERE plugin='{plugin}' AND source=1 AND permname='{permname}' AND isgroup=0", c))
+                {
+                    using (SqliteDataReader rentry = r.ExecuteReader())
+                    {
+                        while (rentry.Read())
+                        {
+                            exists = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (exists) return;
+
             using (SqliteConnection c = new SqliteConnection(connStr))
             {
                 c.Open();
