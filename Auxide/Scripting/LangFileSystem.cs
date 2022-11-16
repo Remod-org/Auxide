@@ -150,10 +150,10 @@ namespace Auxide.Scripting
                 phrases.Add(message.Key, message.Value);
             }
             string fileData = JsonConvert.SerializeObject(msgPayload);
-            string langFile = Path.Combine(Directory, language, plugin);
+            string langFile = Path.Combine(Directory, language, $"{plugin}.json");
 
             if (Auxide.verbose) Utils.DoLog($"Writing language file, {langFile}");
-            if (!System.IO.Directory.Exists(langFile))
+            if (!System.IO.Directory.Exists(Path.Combine(Directory, language)))
             {
                 System.IO.Directory.CreateDirectory(langFile);
             }

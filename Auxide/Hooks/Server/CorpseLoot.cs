@@ -6,6 +6,7 @@ namespace Auxide.Hooks.Server
     [HarmonyPatch(typeof(PlayerCorpse), "OnStartBeingLooted", new Type[] { typeof(BasePlayer) })]
     public class CorpseLoot
     {
+        // NOT YET WORKING 15-Nov-2022
         public static bool Prefix(PlayerCorpse __instance, ref bool __result, ref BasePlayer baseEntity)
         {
             if (Auxide.full)
@@ -32,7 +33,7 @@ namespace Auxide.Hooks.Server
             BasePlayer owner = BasePlayer.FindByID(__instance.OwnerID);
             if (Auxide.verbose) Utils.DoLog($"{baseEntity?.displayName} trying to loot corpse of {owner?.displayName}");
             //if (player.userID != __instance.OwnerID && __instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectLoot)
-            if (__instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectLoot)
+            if (__instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectCorpse)
             {
                 if (!(baseEntity.IsAdmin && Auxide.config.Options.minimal.allowAdminPVP))
                 {

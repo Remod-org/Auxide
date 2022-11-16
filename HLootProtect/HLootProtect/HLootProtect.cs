@@ -186,7 +186,6 @@ public class HLootProtect : RustScript
             SaveData();
         }
 
-        Utils.DoLog($"Args length is {args.Length}");
         switch (command)
         {
             case "share":

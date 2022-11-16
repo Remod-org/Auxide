@@ -6,7 +6,7 @@ namespace Auxide.Hooks.Server
     [HarmonyPatch(typeof(BasePlayer), "CanBeLooted", new Type[] { typeof(BasePlayer) })]
     public class BasePlayerLoot
     {
-        // Need to test
+        // NOT YET WORKING 15-Nov-2022
         public static bool Prefix(StorageContainer __instance, ref bool __result, ref BasePlayer player)
         {
             if (Auxide.full)
@@ -23,12 +23,16 @@ namespace Auxide.Hooks.Server
             }
 
             if (!Auxide.config.Options.minimal.protectSleeper) return true;
-            if (__instance.OwnerID == player.userID) return true;
+            if (__instance.OwnerID == player.userID)
+            {
+                __result = true;
+                return true;
+            }
 
             bool isFriend = Utils.IsFriend(player.userID, __instance.OwnerID);
             BasePlayer owner = BasePlayer.FindByID(__instance.OwnerID);
             if (Auxide.verbose) Utils.DoLog($"{player?.displayName} trying to loot {owner?.displayName}");
-            if (__instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectLoot)
+            if (__instance.OwnerID != 0 && !isFriend && Auxide.config.Options.minimal.protectSleeper)
             {
                 if (player.IsAdmin && Auxide.config.Options.minimal.allowAdminPVP)
                 {
