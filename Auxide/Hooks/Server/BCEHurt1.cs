@@ -120,7 +120,7 @@ namespace Auxide.Hooks.Server
                     if (!Auxide.config.Options.minimal.allowPVP && attacker.userID > 76560000000000000L)
                     {
                         Utils.DoLog($"Blocking PVP damage by {attacker?.displayName}{weapon} to '{attacked?.displayName}'");
-                        te?.Kill();
+                        if (te is TimedExplosive) te?.Kill();
                         info.damageTypes.ScaleAll(0);
                     }
                 }
@@ -128,7 +128,7 @@ namespace Auxide.Hooks.Server
                 {
                     // Attacker is not a player
                     Utils.DoLog($"Blocking PVP damage by {info?.Initiator?.GetType()}{weapon} to '{attacked?.displayName}'");
-                    te?.Kill();
+                    if (te is TimedExplosive) te?.Kill();
                     info.damageTypes.ScaleAll(0);
                 }
             }
@@ -145,7 +145,6 @@ namespace Auxide.Hooks.Server
                 {
                     Utils.DoLog($"Blocking PVP damage by {attacker?.displayName}{weapon} to '{entity?.ShortPrefabName}' owned by {owner?.displayName}");
                     if (te is TimedExplosive) te?.Kill();
-
                     info.damageTypes.ScaleAll(0);
                 }
             }
