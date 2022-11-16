@@ -9,7 +9,6 @@ namespace Auxide.Hooks.Server
     [HarmonyPatch(typeof(BaseCombatEntity), "Hurt", typeof(HitInfo))]
     public class BCEHurt1
     {
-        // NOT WORKING 11-03-2022
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {
             if (!Auxide.full) return instr;
@@ -49,6 +48,7 @@ namespace Auxide.Hooks.Server
             return codes.AsEnumerable();
         }
 
+        // WORKING 15-Nov-2022 except for BaseMelee
         public static void Prefix(BaseCombatEntity __instance, ref HitInfo info)
         {
             if (Auxide.full) return;
@@ -144,7 +144,8 @@ namespace Auxide.Hooks.Server
                 if (!Auxide.config.Options.minimal.allowPVP && attacker.userID > 76560000000000000L)
                 {
                     Utils.DoLog($"Blocking PVP damage by {attacker?.displayName}{weapon} to '{entity?.ShortPrefabName}' owned by {owner?.displayName}");
-                    te?.Kill();
+                    if (te is TimedExplosive) te?.Kill();
+
                     info.damageTypes.ScaleAll(0);
                 }
             }
@@ -161,7 +162,7 @@ namespace Auxide.Hooks.Server
                 if (!Auxide.config.Options.minimal.allowPVP && attacker.userID > 76560000000000000L)
                 {
                     Utils.DoLog($"Blocking PVP damage from {info?.Initiator?.ShortPrefabName} owned by {attackr?.displayName}{weapon} to '{entity?.ShortPrefabName}'");// owned by {owner?.displayName}");
-                    te?.Kill();
+                    if (te is TimedExplosive) te?.Kill();
                     info.damageTypes.ScaleAll(0);
                 }
             }
