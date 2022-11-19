@@ -5,8 +5,8 @@ using System.Reflection.Emit;
 
 namespace Auxide.Hooks.Server
 {
-    [HarmonyPatch(typeof(ConsoleSystem), "Run", new[] { typeof(ConsoleSystem.Option), typeof(string), typeof(object[]) })]
-    public class ConsoleHook
+    [HarmonyPatch(typeof(ConsoleSystem), "Internal", typeof(ConsoleSystem.Arg))]
+    public class OnServerCommand
     {
         // NOT YET WORKING DO NOT COMPILE
         //public static bool Prefix(ref ConsoleSystem.Option options, ref string __result, ref string strCommand, ref object[] args)
@@ -34,9 +34,9 @@ namespace Auxide.Hooks.Server
             int i;
             for (i = 0; i < codes.Count; i++)
             {
-                if (codes[i].opcode == OpCodes.Ldloc_2 && codes[i - 1].opcode == OpCodes.Stsfld && codes[i - 2].opcode == OpCodes.Ldstr)
+                if (codes[i].opcode == OpCodes.Callvirt && codes[i -1].opcode == OpCodes.Ldarg_0)
                 {
-                    startIndex = i - 2;
+                    startIndex = i - 1;
                     codes[startIndex].labels.Add(newLabel);
                     break;
                 }
@@ -49,7 +49,7 @@ namespace Auxide.Hooks.Server
                 {
                     new CodeInstruction(OpCodes.Newobj, constr),
                     new CodeInstruction(OpCodes.Ldarg_0),
-                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ScriptManager), "OnConsoleCommandHook")),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ScriptManager), "OnServerCommandHook")),
                     //new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(ScriptManager), "OnConsoleCommandHook")),
                     new CodeInstruction(OpCodes.Stloc_S, 5),
                     new CodeInstruction(OpCodes.Ldloc_S, 5),

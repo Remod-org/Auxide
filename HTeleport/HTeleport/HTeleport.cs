@@ -1,5 +1,4 @@
 ﻿using Auxide;
-using Network;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,7 +12,17 @@ public class HTeleport : RustScript
     public HTeleport()
     {
         Author = "RFC1920";
-        Version = new VersionNumber(1, 0, 2);
+        Version = new VersionNumber(1, 0, 3);
+    }
+
+    public string Lang(string input, params object[] args)
+    {
+        return string.Format(lang.Get(input), args);
+    }
+
+    public void Message(BasePlayer player, string input, params object[] args)
+    {
+        Utils.SendReply(player, string.Format(lang.Get(input), args));
     }
 
     public class HomeData
@@ -36,6 +45,25 @@ public class HTeleport : RustScript
         [JsonProperty("t")]
         public int Timestamp { get; set; }
     }
+
+    public override void LoadDefaultMessages()
+    {
+        lang.RegisterMessages(new Dictionary<string, string>
+        {
+            ["town"] = "Town",
+            ["outpost"] = "Outpost",
+            ["bandit"] = "Bandit Town",
+            ["servertp"] = "Teleporting to $1 in %2 seconds",
+            ["hometp"] = $"Teleporting to home %1 in %2 seconds",
+            ["townset"] = "Town set!",
+            ["addedhome"] = $"Added home %1",
+            ["homeexists"] = $"Home %1 already exists!",
+            ["removedhome"] = $"Removed home %1",
+            ["nosuchhome"] = $"No such home %1",
+            ["notauthorized"] = "You don't have permission to use this command."
+        }, Name);
+    }
+
     public class ConfigData
     {
         public bool debug;
@@ -119,7 +147,7 @@ public class HTeleport : RustScript
                 {
                     if (args.Length < 2 &&configData.server.Locations["town"] != default && configData.server.Locations["town"] != null)
                     {
-                        Utils.SendReply(player, $"Teleporting to town in {configData.countdownSeconds} seconds");
+                        Message(player, "servertp", Lang("town"), configData.countdownSeconds);
 
                         AddTimer(player, configData.server.Locations["town"]);
                         return;
@@ -129,7 +157,7 @@ public class HTeleport : RustScript
                     {
                         configData.server.Locations["town"] = player.transform.position;
                         SaveConfig(configData);
-                        Utils.SendReply(player, "Town set!");
+                        Message(player, "townset");
                         return;
                     }
                 }
@@ -140,7 +168,7 @@ public class HTeleport : RustScript
                     {
                         if (configData.debug) Utils.DoLog($"Player {player.displayName} selected outpost");
 
-                        Utils.SendReply(player, $"Teleporting to outpost in {configData.countdownSeconds} seconds");
+                        Message(player, "servertp", Lang("outpost"), configData.countdownSeconds);
 
                         AddTimer(player, configData.server.Locations["outpost"]);
                     }
@@ -152,7 +180,7 @@ public class HTeleport : RustScript
                     {
                         if (configData.debug) Utils.DoLog($"Player {player.displayName} selected bandit");
 
-                        Utils.SendReply(player, $"Teleporting to bandit town in {configData.countdownSeconds} seconds");
+                        Message(player, "servertp", Lang("bandit"), configData.countdownSeconds);
 
                         AddTimer(player, configData.server.Locations["bandit"]);
                     }
@@ -165,10 +193,10 @@ public class HTeleport : RustScript
                     {
                         playerHomes[player.userID].Locations.Add(args[1].ToString(), player.transform.position);
                         SaveData();
-                        Utils.SendReply(player, $"Added home {args[1]}");
+                        Message(player, "addedhome", args[1]);
                         return;
                     }
-                    Utils.SendReply(player, $"Home {args[1]} already exists!");
+                    Message(player, "homeexists", args[1]);
                 }
                 break;
             case "removehome":
@@ -179,7 +207,7 @@ public class HTeleport : RustScript
                     {
                         playerHomes[player.userID].Locations.Remove(args[1]);
                         SaveData();
-                        Utils.SendReply(player, $"Removed home {args[1]}");
+                        Message(player, "removedhome", args[1]);
                     }
                 }
                 break;
@@ -188,12 +216,12 @@ public class HTeleport : RustScript
                     playerHomes[player.userID].Locations.TryGetValue(args[1].ToString(), out Vector3 location);
                     if (location != default && location != null)
                     {
-                        Utils.SendReply(player, $"Teleporting to home {args[1]} in {configData.countdownSeconds} seconds");
+                        Message(player, "hometp", args[1], configData.countdownSeconds);
 
                         AddTimer(player, location);
                         return;
                     }
-                    Utils.SendReply(player, $"No such home {args[1]}");
+                    Message(player, "nosuchhome", args[1]);
                 }
                 break;
         }
@@ -243,7 +271,7 @@ public class HTeleport : RustScript
         player.SendNetworkUpdateImmediate(false);
         Utils.DoLog("Done!");
         // Kicked here with either one of these...
-        //if (player.net?.connection != null) player.ClientRPCPlayer(null, player, "StartLoading");
+        if (player.net?.connection != null) player.ClientRPCPlayer(null, player, "StartLoading");
         //player.EndSleeping();
     }
 

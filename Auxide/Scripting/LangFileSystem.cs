@@ -32,7 +32,7 @@ namespace Auxide.Scripting
         /// <param name="directory"></param>
         public LangFileSystem(string directory)
         {
-            this.Directory = directory;
+            Directory = directory;
             _langfiles = new Dictionary<string, DynamicConfigFile>();
             KeyValuesConverter converter = new KeyValuesConverter();
             JsonSerializerSettings settings = new JsonSerializerSettings();
@@ -48,7 +48,7 @@ namespace Auxide.Scripting
                 return langfile;
             }
 
-            langfile = new DynamicConfigFile(Path.Combine(Directory, $"{name}.{language}.json"));
+            langfile = new DynamicConfigFile(Path.Combine(Directory, language, $"{name}.json"));
             _langfiles.Add($"{name}.{language}", langfile);
             return langfile;
         }
@@ -72,7 +72,7 @@ namespace Auxide.Scripting
         public DynamicConfigFile GetLangfile(string name, string language = null)
         {
             if (language == null) language = defaultLanguage;
-            DynamicConfigFile langfile = GetFile($"{name}.{language}");
+            DynamicConfigFile langfile = GetFile($"{language}/{name}.json");
 
             // Does it exist?
             if (langfile.Exists())
@@ -149,13 +149,13 @@ namespace Auxide.Scripting
                 msgPayload.Add(msg);
                 phrases.Add(message.Key, message.Value);
             }
-            string fileData = JsonConvert.SerializeObject(msgPayload);
+            string fileData = JsonConvert.SerializeObject(msgPayload, Formatting.Indented);
             string langFile = Path.Combine(Directory, language, $"{plugin}.json");
 
             if (Auxide.verbose) Utils.DoLog($"Writing language file, {langFile}");
             if (!System.IO.Directory.Exists(Path.Combine(Directory, language)))
             {
-                System.IO.Directory.CreateDirectory(langFile);
+                System.IO.Directory.CreateDirectory(Path.Combine(Directory, language));
             }
             File.WriteAllText(langFile, fileData);
         }

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Facepunch.Extend;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace Auxide
 {
@@ -53,17 +54,10 @@ namespace Auxide
             _scripts = Auxide.Scripts._scripts;
         }
 
-        public ScriptManager(string sourcePath)//, string configPath, string dataPath)
+        public ScriptManager(string sourcePath)
         {
-            //if (!Auxide.config.Options.cSharpScripts)
-            //{
-            //    ScriptFilter = "*" + DLLExtension;
-            //}
-
             _sync = new object();
             _sourcePath = sourcePath ?? throw new ArgumentNullException(nameof(sourcePath));
-            //_configPath = configPath ?? throw new ArgumentNullException(nameof(configPath));
-            //_dataPath   = dataPath   ?? throw new ArgumentNullException(nameof(dataPath));
             _scripts = new Dictionary<string, Script>(StringComparer.OrdinalIgnoreCase);
             _pendingRefresh = new HashSet<RefreshItem>();
             _timeSinceChange = Stopwatch.StartNew();
@@ -85,6 +79,11 @@ namespace Auxide
                 Refresh(args.FullPath);
                 Refresh(args.OldFullPath);
             };
+        }
+
+        public object GetAll()
+        {
+            return _scripts.Values;
         }
 
         public void Dispose()
@@ -184,10 +183,11 @@ namespace Auxide
         internal void ScriptLoaded(IScriptReference script)
         {
             OnScriptLoaded?.Invoke(script);
-            Broadcast("OnScriptLoaded", script);
-            Broadcast("LoadData", script);
-            Broadcast("LoadConfig", script);
-            Broadcast("LoadDefaultMessages", script);
+            Narrowcast("OnScriptLoaded", script);
+            Narrowcast("LoadData", script);
+            Narrowcast("LoadConfig", script);
+            Narrowcast("LoadDefaultMessages", script);
+            Broadcast("OnPluginLoaded", script);
         }
 
         internal void ScriptUnloading(IScriptReference script)
@@ -344,13 +344,39 @@ namespace Auxide
             Broadcast("OnPlayerLeave", player);
         }
 
-        public object OnConsoleCommandHook(string command, bool isServer = false)
+        public object OnConsoleCommandHook(ConsoleSystem.Arg arg)
         {
             if (Auxide.full)
             {
-                return BroadcastReturn("OnConsoleCommand", command, isServer);
+                Utils.DoLog("OnConsoleCommandHook was called");
+                return BroadcastReturn("OnConsoleCommand", arg);
             }
             //OnChatCommandHook(null, command);
+            return null;
+        }
+
+        public object OnServerCommandHook(ConsoleSystem.Arg arg)
+        {
+            if (Auxide.full)
+            {
+                Utils.DoLog("OnServerCommandHook was called");
+                if (arg == null || arg.Connection != null && arg.Player() == null)
+                {
+                    return true;
+                }
+                if (arg.cmd.FullName == "chat.say" || arg.cmd.FullName == "chat.teamsay" || arg.cmd.FullName == "chat.localsay")
+                {
+                    return null;
+                }
+                string[] args = arg.FullString.SplitQuotesStrings(2147483647);
+                object obj = BroadcastReturn("OnServerCommand", arg);
+                object obj1 = BroadcastReturn("OnServerCommand", arg.cmd.FullName, args);
+                if ((obj == null ? obj1 == null : obj == null))
+                {
+                    return null;
+                }
+                return true;
+            }
             return null;
         }
 
@@ -549,6 +575,26 @@ namespace Auxide
             }
         }
 
+        // Single-script call with no return, perhaps to be renamed as Target
+        public void Narrowcast(string methodName, IScriptReference script)
+        {
+            //lock (_sync)
+            //{
+                script.InvokeProcedure(methodName);
+            //}
+        }
+
+        // Single-script call with return
+        public object NarrowcastReturn(string methodName, IScriptReference script)
+        {
+            //lock (_sync)
+            //{
+            object rtrn = script.InvokeFunction<object>(methodName);
+            //}
+
+            return rtrn;
+        }
+
         public void Broadcast(string methodName)
         {
             lock (_sync)
@@ -557,14 +603,6 @@ namespace Auxide
                 {
                     script.InvokeProcedure(methodName);
                 }
-            }
-        }
-
-        public void Broadcast(string methodName, IScriptReference script)
-        {
-            lock (_sync)
-            {
-                script.InvokeProcedure(methodName);
             }
         }
 

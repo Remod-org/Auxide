@@ -583,7 +583,8 @@
     <Compile Include="Hooks\Server\CanMount1.cs" />
     <Compile Include="Hooks\Server\CanPickup.cs" />
     <Compile Include="Hooks\Server\ChatHook.cs" />
-    <None Include="Hooks\Server\ConsoleHook.cs" />
+    <Compile Include="Hooks\Server\OnServerCommand.cs" />
+    <Compile Include="Hooks\Server\ConsoleHook.cs" />
     <Compile Include="Hooks\Server\ElecSwitchSV.cs" />
     <None Include="FodyWeavers.xsd">
       <SubType>Designer</SubType>

@@ -8,7 +8,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Timers;
-using UnityEngine.Android;
 using Auxide;
 
 public class NextGenPVE : RustScript
@@ -30,8 +29,6 @@ public class NextGenPVE : RustScript
 
     private readonly string BannerColor = "Grey";
     private string TextColor = "Red";
-
-    private readonly RustScript ZoneManager, Humanoids, HumanNPC, Friends, Clans, RustIO, GUIAnnouncements;
 
     private static NextGenPVE Instance;
     private readonly string logfilename = "log";
@@ -99,7 +96,7 @@ public class NextGenPVE : RustScript
         LoadConfigVariables();
         LoadData();
 
-        if (configData.Options.useSchedule) RunSchedule(true);
+        //if (configData.Options.useSchedule) RunSchedule(true);
     }
 
     private void OnUserConnected(BasePlayer player) => OnUserDisconnected(player);
@@ -314,7 +311,7 @@ public class NextGenPVE : RustScript
             CuiHelper.DestroyUi(player, NGPVECUSTOMSELECT);
         }
 
-        scheduleTimer?.Destroy();
+        //scheduleTimer?.Destroy();
         sqlConnection.Close();
     }
 
@@ -479,11 +476,7 @@ public class NextGenPVE : RustScript
         }
         catch { }
 
-        if (IsHumanoid(target) || IsHumanNPC(target) || target.IsNpc)
-        {
-            if (!configData.Options.AutoTurretTargetsNPCs) return false;
-        }
-        else if (!configData.Options.AutoTurretTargetsPlayers)
+        if (!configData.Options.AutoTurretTargetsPlayers)
         {
             return false;
         }
@@ -505,11 +498,7 @@ public class NextGenPVE : RustScript
         }
         catch { }
 
-        if (IsHumanoid(target) || IsHumanNPC(target) || target.IsNpc)
-        {
-            if (!configData.Options.AutoTurretTargetsNPCs) return false;
-        }
-        else if (!configData.Options.AutoTurretTargetsPlayers)
+        if (!configData.Options.AutoTurretTargetsPlayers)
         {
             return false;
         }
@@ -540,11 +529,7 @@ public class NextGenPVE : RustScript
         }
         catch { }
 
-        if (IsHumanoid(target) || IsHumanNPC(target) || target.IsNpc)
-        {
-            if (!configData.Options.AutoTurretTargetsNPCs) return false;
-        }
-        else if (!configData.Options.AutoTurretTargetsPlayers)
+        if (!configData.Options.AutoTurretTargetsPlayers)
         {
             return false;
         }
@@ -566,11 +551,7 @@ public class NextGenPVE : RustScript
         }
         catch { }
 
-        if (IsHumanoid(target) || IsHumanNPC(target) || target.IsNpc)
-        {
-            if (!configData.Options.NPCAutoTurretTargetsNPCs) return false;
-        }
-        else if (!configData.Options.NPCAutoTurretTargetsPlayers)
+        if (!configData.Options.NPCAutoTurretTargetsPlayers)
         {
             return false;
         }
@@ -779,7 +760,7 @@ public class NextGenPVE : RustScript
         {
             BasePlayer hibp = hitinfo.Initiator as BasePlayer;
             if (configData.Options.debug) Utils.DoLog("Checking for god perms");
-            if (hibp != null && permission.UserHasPermission(hibp.UserIDString, permNextGenPVEGod))
+            if (hibp != null && Permissions.UserHasPermission(hibp.UserIDString, permNextGenPVEGod))
             {
                 Utils.DoLog("Admin almighty!");
                 return null;
@@ -796,7 +777,7 @@ public class NextGenPVE : RustScript
                         DoLog("AllowSuicide TRUE");
                         canhurt = true;
                     }
-                    else if (IsFriend(sid, tid) && configData.Options.AllowFriendlyFire)
+                    else if (Utils.IsFriend(sid, tid) && configData.Options.AllowFriendlyFire)
                     {
                         DoLog("AllowFriendlyFire TRUE");
                         canhurt = true;
@@ -866,18 +847,6 @@ public class NextGenPVE : RustScript
         bool isBuilding = false;
         //bool isHeli = false;
 
-        // Special case since Humanoids/HumanNPC contains a BasePlayer object
-        if (stype == "BasePlayer")
-        {
-            if (Humanoids && IsHumanoid(source)) stype = "Humanoid";
-            if (HumanNPC && IsHumanNPC(source)) stype = "HumanNPC";
-        }
-        if (ttype == "BasePlayer")
-        {
-            if (Humanoids && IsHumanoid(target)) ttype = "Humanoid";
-            if (HumanNPC && IsHumanNPC(target)) ttype = "HumanNPC";
-        }
-
         // Special cases for building damage requiring owner or auth access
         if (stype == "BasePlayer" && (ttype == "BuildingBlock" || ttype == "Door" || ttype == "wall.window"))
         {
@@ -933,39 +902,17 @@ public class NextGenPVE : RustScript
         {
             isBuilding = true;
             hasBP = false;
-            foreach (PatrolHelicopterAI.targetinfo x in (source as BaseHelicopter)?.myAI._targetList.ToArray())
-            {
-                BasePlayer y = x.ent as BasePlayer;
-                if (y == null) continue;
-                DoLog($"Heli targeting player {y.displayName}.  Checking building permission for {target.ShortPrefabName}");
-                if (PlayerOwnsItem(y, target))
-                {
-                    DoLog("Yes they own that building!");
-                    hasBP = true;
-                }
-            }
-        }
-
-        //if (stype == "BaseHelicopter") isHeli = true;
-
-        if (ZoneManager && configData.Options.useZoneManager)
-        {
-            string[] sourcezone = GetEntityZones(source);
-            string[] targetzone = GetEntityZones(target);
-
-            //DoLog($"Found {sourcezone.Length} source zone(s) and {targetzone.Length} target zone(s).");
-            if (sourcezone.Length > 0 && targetzone.Length > 0)
-            {
-                foreach (string z in sourcezone)
-                {
-                    if (targetzone.Contains(z))
-                    {
-                        zone = z;
-                        DoLog($"Found zone {zone}", 1);
-                        break;
-                    }
-                }
-            }
+            //foreach (PatrolHelicopterAI.targetinfo x in (source as BaseHelicopter)?.myAI._targetList.ToArray())
+            //{
+            //    BasePlayer y = x.ent as BasePlayer;
+            //    if (y == null) continue;
+            //    DoLog($"Heli targeting player {y.displayName}.  Checking building permission for {target.ShortPrefabName}");
+            //    if (PlayerOwnsItem(y, target))
+            //    {
+            //        DoLog("Yes they own that building!");
+            //        hasBP = true;
+            //    }
+            //}
         }
 
         bool foundmatch = false;
@@ -1177,21 +1124,7 @@ public class NextGenPVE : RustScript
         {
             if (configData.Options.useMessageBroadcast)
             {
-                Message(player.BasePlayer, key, ruleset);
-            }
-            if (GUIAnnouncements && configData.Options.useGUIAnnouncements)
-            {
-                string ann = Lang(key, null, ruleset);
-                switch (key)
-                {
-                    case "pveenabled":
-                        TextColor = "Green";
-                        break;
-                    default:
-                        TextColor = "Red";
-                        break;
-                }
-                GUIAnnouncements?.Call("CreateAnnouncement", ann, BannerColor, TextColor, player);
+                Message(player, key, ruleset);
             }
         }
     }
@@ -1249,6 +1182,7 @@ public class NextGenPVE : RustScript
 
     private void RunSchedule(bool refresh = false)
     {
+        return;
         Dictionary<string, bool> enables = new Dictionary<string, bool>();
         TimeSpan ts = new TimeSpan();
         bool invert = false;
@@ -1435,7 +1369,7 @@ public class NextGenPVE : RustScript
             }
         }
 
-        scheduleTimer = timer.Once(configData.Options.useRealTime ? 30f : 5f, () => RunSchedule(refresh));
+        //scheduleTimer = timer.Once(configData.Options.useRealTime ? 30f : 5f, () => RunSchedule(refresh));
     }
 
     public string EditScheduleHM(string rs, string newval, string tomod)
@@ -2740,7 +2674,7 @@ public class NextGenPVE : RustScript
     #region config
     private void LoadConfigVariables()
     {
-        configData = Config.ReadObject<ConfigData>();
+        configData = config.ReadObject<ConfigData>();
 
         if (configData.Version < new VersionNumber(1, 1, 1))
         {
@@ -2935,7 +2869,6 @@ public class NextGenPVE : RustScript
         {
             Options = new Options()
             {
-                useZoneManager = false,
                 protectedDays = 0f,
                 useSchedule = false,
                 useGUIAnnouncements = false,
@@ -2968,9 +2901,9 @@ public class NextGenPVE : RustScript
         SaveConfig(config);
     }
 
-    private void SaveConfig(ConfigData config)
+    private void SaveConfig(ConfigData configData)
     {
-        Config.WriteObject(config, true);
+        config.WriteObject(configData, true);
     }
 
     private class ConfigData
@@ -2982,7 +2915,6 @@ public class NextGenPVE : RustScript
     public class Options
     {
         public bool debug;
-        public bool useZoneManager;
         public float protectedDays;
         public bool purgeEnabled;
         public string purgeStart;
@@ -3093,8 +3025,7 @@ public class NextGenPVE : RustScript
         UI.Label(ref container, NGPVERULELIST, UI.Color("#ffffff", 1f), Lang("rulesets"), 14, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}");
         row++;
 
-        string rssql = "";
-        if (ZoneManager is null) rssql = " WHERE name='default'";
+        string rssql = " WHERE name='default'";
         using (SqliteConnection c = new SqliteConnection(connStr))
         {
             c.Open();
@@ -3124,12 +3055,10 @@ public class NextGenPVE : RustScript
 
         pb = GetButtonPositionP(row, col);
         UI.Button(ref container, NGPVERULELIST, UI.Color("#55d840", 1f), Lang("add"), 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}", $"pverule editruleset add");
-        if (ZoneManager is null)
-        {
-            row++;
-            pb = GetButtonPositionP(row, col);
-            UI.Label(ref container, NGPVERULELIST, UI.Color("#ffffff", 1f), Lang("zonemanagerreq"), 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) + .1)} {pb[3]}");
-        }
+
+        row++;
+        pb = GetButtonPositionP(row, col);
+        UI.Label(ref container, NGPVERULELIST, UI.Color("#ffffff", 1f), Lang("zonemanagerreq"), 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) + .1)} {pb[3]}");
 
         row = 0; col = 6;
         pb = GetButtonPositionP(row, col);
@@ -3333,7 +3262,6 @@ public class NextGenPVE : RustScript
         bool damage = false;
         string schedule = null;
         string zone = null;
-        string zName = null;
         bool invert = false;
 
         using (SqliteConnection c = new SqliteConnection(connStr))
@@ -3352,7 +3280,6 @@ public class NextGenPVE : RustScript
                         object inv = rsread.GetValue(5);
                         if (inv is DBNull) inv = 0;
                         invert = Convert.ToBoolean(inv);
-                        zName = (string)ZoneManager?.Call("GetZoneName", zone);
                         try
                         {
                             schedule = rsread.GetString(3) ?? "0";
@@ -3623,14 +3550,6 @@ public class NextGenPVE : RustScript
         if (rulesetname == "default")
         {
             UI.Label(ref container, NGPVEEDITRULESET, UI.Color("#d85540", 1f), Lang("default"), 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}");
-        }
-        else if (zone == "lookup")
-        {
-            UI.Button(ref container, NGPVEEDITRULESET, UI.Color("#55d840", 1f), Lang("lookup"), 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}", $"pverule editruleset {rulesetname} zone");
-        }
-        else if (zone != null)
-        {
-            UI.Button(ref container, NGPVEEDITRULESET, UI.Color("#d85540", 1f), zName + "(" + zone + ")", 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}", $"pverule editruleset {rulesetname} zone");
         }
         else
         {
@@ -4322,67 +4241,6 @@ public class NextGenPVE : RustScript
                 UI.Label(ref container, NGPVEVALUEEDIT, UI.Color("#535353", 1f), rulesetname, 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}");
                 UI.Input(ref container, NGPVEVALUEEDIT, UI.Color("#ffffff", 1f), " ", 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}", $"pverule editruleset {rulesetname} name ");
                 break;
-            case "zone":
-                string[] zoneIDs = (string[])ZoneManager?.Call("GetZoneIDs");
-                if (zone == "lookup")
-                {
-                    UI.Label(ref container, NGPVEVALUEEDIT, UI.Color("#222222", 1f), Lang("none"), 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}");
-                }
-                else if (zone == null && rulesetname != "default")
-                {
-                    UI.Button(ref container, NGPVEVALUEEDIT, UI.Color("#55d840", 1f), Lang("none"), 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}", $"pverule editruleset {rulesetname} zone delete");
-                }
-                else
-                {
-                    UI.Button(ref container, NGPVEVALUEEDIT, UI.Color("#222222", 1f), Lang("none"), 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}", $"pverule editruleset {rulesetname} zone delete");
-                }
-
-                row++;
-                pb = GetButtonPositionZ(row, col);
-                if (zone == "lookup")
-                {
-                    UI.Label(ref container, NGPVEVALUEEDIT, UI.Color("#222222", 1f), Lang("default"), 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}");
-                }
-                else if (zone == "default")
-                {
-                    UI.Button(ref container, NGPVEVALUEEDIT, UI.Color("#55d840", 1f), Lang("default"), 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}", $"pverule editruleset {rulesetname} zone default");
-                }
-                else
-                {
-                    UI.Button(ref container, NGPVEVALUEEDIT, UI.Color("#222222", 1f), Lang("default"), 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}", $"pverule editruleset {rulesetname} zone default");
-                }
-
-                row++;
-                foreach (string zoneID in zoneIDs)
-                {
-                    if (row > 10)
-                    {
-                        row = 0;
-                        col++;
-                    }
-                    string zName = (string)ZoneManager?.Call("GetZoneName", zoneID);
-                    string zColor = "#222222";
-                    bool labelonly = false;
-                    if (zoneID == zone) zColor = "#55d840";
-                    if (zone == "lookup" && ngpvezonemaps.ContainsKey(rulesetname))
-                    {
-                        if (ngpvezonemaps[rulesetname].map.Contains(zoneID)) zColor = "#55d840";
-                        labelonly = true;
-                    }
-                    if (zoneID == zone) zColor = "#55d840";
-
-                    pb = GetButtonPositionZ(row, col);
-                    if (labelonly)
-                    {
-                        UI.Label(ref container, NGPVEVALUEEDIT, UI.Color(zColor, 1f), zName + "(" + zoneID + ")", 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}");
-                    }
-                    else
-                    {
-                        UI.Button(ref container, NGPVEVALUEEDIT, UI.Color(zColor, 1f), zName + "(" + zoneID + ")", 12, $"{pb[0]} {pb[1]}", $"{pb[0] + ((pb[2] - pb[0]) / 2)} {pb[3]}", $"pverule editruleset {rulesetname} zone {zoneID}");
-                    }
-                    row++;
-                }
-                break;
             default:
                 CuiHelper.DestroyUi(player, NGPVEVALUEEDIT);
                 break;
@@ -4624,22 +4482,6 @@ public class NextGenPVE : RustScript
     #endregion
 
     #region Specialized_checks
-    private string[] GetEntityZones(BaseEntity entity)
-    {
-        if (ZoneManager && configData.Options.useZoneManager)
-        {
-            if (entity is BasePlayer)
-            {
-                return (string[])ZoneManager?.Call("GetPlayerZoneIDs", new object[] { entity as BasePlayer });
-            }
-            else if (entity.IsValid())
-            {
-                return (string[])ZoneManager?.Call("GetEntityZoneIDs", new object[] { entity });
-            }
-        }
-        return null;
-    }
-
     private bool IsMLRS(HitInfo hitinfo)
     {
         try
@@ -4651,36 +4493,6 @@ public class NextGenPVE : RustScript
         }
         catch
         {
-        }
-        return false;
-    }
-
-    private bool IsHumanNPC(BaseEntity player)
-    {
-        if (HumanNPC is null)
-        {
-            try
-            {
-                return (bool)HumanNPC?.Call("IsHumanNPC", player as BasePlayer);
-            }
-            catch
-            {
-                // HumanNPC version does not have the above call.
-                return false;
-            }
-        }
-        else
-        {
-            BasePlayer pl = player as BasePlayer;
-            return pl.userID < 76560000000000000L && pl.userID > 0L && !pl.IsDestroyed;
-        }
-    }
-
-    private bool IsHumanoid(BaseEntity player)
-    {
-        if (Humanoids)
-        {
-            return (bool)Humanoids?.Call("IsHumanoid", player as BasePlayer);
         }
         return false;
     }
@@ -4750,7 +4562,7 @@ public class NextGenPVE : RustScript
                     DoLog($"Player has privilege on BuildingBlock", 2);
                     return true;
                 }
-                else if (IsFriend(auth, privilege.OwnerID))
+                else if (Utils.IsFriend(auth, privilege.OwnerID))
                 {
                     DoLog($"Player is friends with owner of BuildingBlock", 2);
                     return true;
@@ -4830,7 +4642,7 @@ public class NextGenPVE : RustScript
                         DoLog($"Player has privilege on BuildingBlock", 2);
                         return true;
                     }
-                    else if (IsFriend(auth, entity.OwnerID))
+                    else if (Utils.IsFriend(auth, entity.OwnerID))
                     {
                         DoLog($"Player is friends with owner of BuildingBlock", 2);
                         return true;
@@ -4853,7 +4665,7 @@ public class NextGenPVE : RustScript
                         DoLog($"Player has privilege on {entity.ShortPrefabName}", 2);
                         hasbp = true;
                     }
-                    else if (IsFriend(auth, entity.OwnerID))
+                    else if (Utils.IsFriend(auth, entity.OwnerID))
                     {
                         DoLog($"Player is friends with owner of {entity.ShortPrefabName}", 2);
                         hasbp = true;
@@ -4865,7 +4677,7 @@ public class NextGenPVE : RustScript
                 }
             }
 
-            if (IsFriend(player.userID, entity.OwnerID) && hasbp)
+            if (Utils.IsFriend(player.userID, entity.OwnerID) && hasbp)
             {
                 DoLog($"Player is friends with owner of entity", 2);
                 return true;
@@ -4875,7 +4687,7 @@ public class NextGenPVE : RustScript
                 DoLog($"Player owns item", 2);
                 return true;
             }
-            else if (IsFriend(player.userID, entity.OwnerID) && !hasbp)
+            else if (Utils.IsFriend(player.userID, entity.OwnerID) && !hasbp)
             {
                 DoLog($"Player is friends with owner of entity but is blocked by building privilege", 2);
             }
@@ -4923,44 +4735,6 @@ public class NextGenPVE : RustScript
             default:
                 return false;
         }
-    }
-
-    private bool IsFriend(ulong playerid, ulong ownerid)
-    {
-        if (!configData.Options.HonorRelationships) return false;
-        if (configData.Options.useFriends && Friends != null)
-        {
-            object fr = Friends?.CallHook("AreFriends", playerid, ownerid);
-            if (fr != null && (bool)fr)
-            {
-                DoLog($"Friends plugin reports that {playerid} and {ownerid} are friends.");
-                return true;
-            }
-        }
-        if (configData.Options.useClans && Clans != null)
-        {
-            string playerclan = (string)Clans?.CallHook("GetClanOf", playerid);
-            string ownerclan = (string)Clans?.CallHook("GetClanOf", ownerid);
-            if (playerclan != null && ownerclan != null && playerclan == ownerclan)
-            {
-                DoLog($"Clans plugin reports that {playerid} and {ownerid} are clanmates.");
-                return true;
-            }
-        }
-        if (configData.Options.useTeams)
-        {
-            BasePlayer player = BasePlayer.FindByID(playerid);
-            if (player != null && player.currentTeam != 0)
-            {
-                RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindTeam(player.currentTeam);
-                if (playerTeam?.members.Contains(ownerid) == true)
-                {
-                    DoLog($"Rust teams reports that {playerid} and {ownerid} are on the same team.");
-                    return true;
-                }
-            }
-        }
-        return false;
     }
     #endregion
 

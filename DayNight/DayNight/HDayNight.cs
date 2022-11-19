@@ -1,12 +1,12 @@
 ﻿using Auxide;
 
-public class DayNight : RustScript
+public class HDayNight : RustScript
 {
     private static ConfigData configData;
     private bool limitCleared = true;
     public System.Timers.Timer limitTimer;
 
-    public DayNight()
+    public HDayNight()
     {
         Author = "RFC1920";
         Version = new VersionNumber(1, 0, 1);

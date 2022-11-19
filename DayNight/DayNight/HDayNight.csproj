@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{14D523C1-D24F-4D50-BBDA-9FD42E848997}</ProjectGuid>
+    <ProjectGuid>{B51611AA-3F41-4F25-8B27-2D074AF3B2D8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HPVE</RootNamespace>
-    <AssemblyName>HPVE</AssemblyName>
+    <RootNamespace>DayNight</RootNamespace>
+    <AssemblyName>DayNight</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -421,8 +421,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HPVE.cs" />
-    <Compile Include="NextGenPVE.cs" />
+    <Compile Include="HDayNight.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

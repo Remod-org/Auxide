@@ -28,9 +28,6 @@ public class HKits : RustScript
 
     public override void Initialize()
     {
-        LoadConfig();
-        LoadData();
-
         foreach (BasePlayer player in BasePlayer.activePlayerList)
         {
             CuiHelper.DestroyUi(player, KITGUI);
@@ -41,6 +38,8 @@ public class HKits : RustScript
     public void OnScriptLoaded()
     {
         Permissions.RegisterPermission(Name, "kits.use");
+        LoadConfig();
+        LoadData();
     }
 
     public override void Dispose()
@@ -125,6 +124,14 @@ public class HKits : RustScript
         newsave = true;
     }
 
+    public object OnConsoleCommand(ConsoleSystem.Arg arg)
+    {
+        string pname = arg.GetString(0);
+        BasePlayer player = BasePlayer.Find(pname);
+        OnChatCommand(player, arg.cmd.ToString(), arg.Args);
+        return null;
+    }
+
     public void OnChatCommand(BasePlayer player, string command, string[] args = null)
     {
         if (player == null) return;
@@ -133,6 +140,8 @@ public class HKits : RustScript
             Message(player, "notauthorized");
             return;
         }
+        string showArgs = string.Join(",", args);
+        Utils.DoLog($"{command}: {showArgs}");
         switch (command)
         {
             case "kits":
@@ -329,7 +338,7 @@ public class HKits : RustScript
             }
             float[] posb = GetButtonPositionP(row, col);
 
-            UI.Button(ref container, KITGUI, UI.Color("#424242", 1f), kit.Value.name, 12, $"{posb[0]} {posb[1]}", $"{posb[0] + ((posb[2] - posb[0]) / 2)} {posb[3]}", $"kit {kit.Value.name}");
+            UI.Button(ref container, KITGUI, UI.Color("#424242", 1f), kit.Value.name, 12, $"{posb[0]} {posb[1]}", $"{posb[0] + ((posb[2] - posb[0]) / 2)} {posb[3]}", $"/kit {kit.Value.name}");
             col++;
             posb = GetButtonPositionP(row, col);
             UI.Label(ref container, KITGUI, UI.Color("#424242", 1f), kit.Value.description, 12, $"{posb[0]} {posb[1]}", $"{posb[0] + ((posb[2] - posb[0]) / 2)} {posb[3]}");

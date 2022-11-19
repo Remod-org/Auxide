@@ -39,6 +39,8 @@ namespace Auxide
 
             try
             {
+                Debug.LogWarning($"Script {Instance?.GetType().FullName} unloaded...");
+                Utils.DoLog($"Script {Instance?.GetType().FullName} unloaded...");
                 Instance?.Dispose();
             }
             catch (Exception e)
@@ -50,7 +52,6 @@ namespace Auxide
             Assembly = null;
 
             Manager.ScriptUnloaded(this);
-            //Debug.LogWarning($"Script {Assembly.Location} unloaded...");
         }
 
         internal void Update(string path = null)
@@ -159,7 +160,7 @@ namespace Auxide
 
         private void Initialize(string path, string code, Assembly assembly)
         {
-            Dispose();
+            //Dispose(); HUH?
             Utils.DoLog($"Initializing assembly");
 
             Type type = assembly.GetType(Name);
@@ -208,7 +209,7 @@ namespace Auxide
             ConfigPath = System.IO.Path.Combine(Auxide.ConfigPath, $"{BaseName}.json");
             DataPath = System.IO.Path.Combine(Auxide.DataPath, BaseName);
             // Yes, this will need to be extended...
-            LangPath = System.IO.Path.Combine(Auxide.LangPath, "en");//, $"{BaseName}.json");
+            LangPath = System.IO.Path.Combine(Auxide.LangPath);//, $"{BaseName}.json");
 
             scriptInstance.config = new DynamicConfigFile(ConfigPath);
             scriptInstance.data = new DataFileSystem(DataPath);

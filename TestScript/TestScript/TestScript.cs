@@ -81,6 +81,15 @@ public class TestScript : RustScript
         return null;
     }
 
+    public object OnConsoleCommand(ConsoleSystem.Arg arg)
+    {
+        string pname = arg.GetString(0);
+        BasePlayer player = BasePlayer.Find(pname);
+        string arginfo = string.Join(",", arg);
+        Utils.DoLog($"OnConsoleCommand called by '{player.displayName}' for '{arg.cmd} with args='{arginfo}'");
+        return null;
+    }
+
     public void OnChatCommand(BasePlayer player, string command, string[] args = null)
     {
         string arginfo = string.Join(",", args);

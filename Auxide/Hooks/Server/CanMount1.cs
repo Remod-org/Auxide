@@ -39,7 +39,8 @@ namespace Auxide.Hooks.Server
                     new CodeInstruction(OpCodes.Newobj, constr),
                     new CodeInstruction(OpCodes.Ldarg_0),
                     new CodeInstruction(OpCodes.Ldarg_1),
-                    new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(ScriptManager), "CanMountHook")),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ScriptManager), "CanMountHook")),
+                    //new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(ScriptManager), "CanMountHook")),
                     new CodeInstruction(OpCodes.Ldnull),
                     new CodeInstruction(OpCodes.Beq_S, newLabel),
                     new CodeInstruction(OpCodes.Ret)
