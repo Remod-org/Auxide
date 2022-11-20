@@ -393,7 +393,10 @@ namespace Auxide
                 List<string> memberList = members.Split(',').ToList();
                 if (memberList.Contains(usergroup)) return;
 
-                memberList.Add(usergroup);
+                string userIdString = GetUserIDString(usergroup);
+                if (userIdString == null) userIdString = usergroup;
+
+                memberList.Add(userIdString);
                 members = string.Join(",", memberList.ToArray());
             }
             using (SqliteConnection c = new SqliteConnection(connStr))
