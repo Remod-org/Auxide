@@ -98,6 +98,7 @@ namespace Auxide
 
         private static void _GrantPermission(string permname, string usergroup, int isgroup)
         {
+            if (UserHasPermission(permname, usergroup)) return;
             string plugin = null;
             using (SqliteConnection c = new SqliteConnection(connStr))
             {
