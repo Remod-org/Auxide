@@ -213,7 +213,7 @@ namespace Auxide
                                 s.Open();
                                 using (SqliteCommand subcmd = new SqliteCommand($"SELECT plugin FROM permissions WHERE permname='{permname}' AND (userid='{group}' AND isgroup=1)", c))
                                 {
-                                    using (SqliteDataReader subrdr = cmd.ExecuteReader())
+                                    using (SqliteDataReader subrdr = subcmd.ExecuteReader())
                                     {
                                         while (subrdr.Read())
                                         {
