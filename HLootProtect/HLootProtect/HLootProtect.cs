@@ -189,7 +189,7 @@ public class HLootProtect : RustScript
         switch (command)
         {
             case "share":
-                if (args.Length == 1)
+                if (args.Length == 0)
                 {
                     if (Physics.Raycast(player.eyes.HeadRay(), out RaycastHit hit, 2.2f))
                     {
@@ -205,9 +205,9 @@ public class HLootProtect : RustScript
                         }
                     }
                 }
-                else if (args.Length == 2)
+                else if (args.Length == 1)
                 {
-                    if (args[1] == "?")
+                    if (args[0] == "?")
                     {
                         if (Physics.Raycast(player.eyes.HeadRay(), out RaycastHit hit, 2.2f))
                         {
@@ -248,7 +248,7 @@ public class HLootProtect : RustScript
                             }
                         }
                     }
-                    else if (args[1] == "friends")
+                    else if (args[0] == "friends")
                     {
                         if (!configData.HonorRelationships) return;
                         if (Physics.Raycast(player.eyes.HeadRay(), out RaycastHit hit, 2.2f))
@@ -267,7 +267,7 @@ public class HLootProtect : RustScript
                     }
                     else
                     {
-                        BasePlayer sharewith = FindPlayerByName(args[1]);
+                        BasePlayer sharewith = FindPlayerByName(args[0]);
                         if (Physics.Raycast(player.eyes.HeadRay(), out RaycastHit hit, 2.2f))
                         {
                             BaseEntity ent = hit.GetEntity();
@@ -293,7 +293,7 @@ public class HLootProtect : RustScript
                 }
                 break;
             case "unshare":
-                if (args.Length == 1)
+                if (args.Length == 0)
                 {
                     if (Physics.Raycast(player.eyes.HeadRay(), out RaycastHit hit, 2.2f))
                     {
@@ -322,7 +322,6 @@ public class HLootProtect : RustScript
                     }
                 }
                 break;
-
         }
     }
 

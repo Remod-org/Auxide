@@ -1,4 +1,5 @@
 using Auxide;
+using Harmony;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -124,14 +125,6 @@ public class HKits : RustScript
         newsave = true;
     }
 
-    public object OnConsoleCommand(ConsoleSystem.Arg arg)
-    {
-        string pname = arg.GetString(0);
-        BasePlayer player = BasePlayer.Find(pname);
-        OnChatCommand(player, arg.cmd.ToString(), arg.Args);
-        return null;
-    }
-
     public void OnChatCommand(BasePlayer player, string command, string[] args = null)
     {
         if (player == null) return;
@@ -140,6 +133,7 @@ public class HKits : RustScript
             Message(player, "notauthorized");
             return;
         }
+
         string showArgs = string.Join(",", args);
         Utils.DoLog($"{command}: {showArgs}");
         switch (command)
@@ -148,15 +142,15 @@ public class HKits : RustScript
                 KitGUI(player);
                 break;
             case "kit":
-                if (args.Length == 2)
+                if (args.Length == 1)
                 {
-                    if (args[1] == "close")
+                    if (args[0] == "close")
                     {
                         CuiHelper.DestroyUi(player, KITGUI);
                         IsOpen(player.userID, false);
                         return;
                     }
-                    if (args[1] == "list")
+                    if (args[0] == "list")
                     {
                         string message = Lang("kits");
                         foreach (string kit in kits.Keys)
@@ -167,11 +161,11 @@ public class HKits : RustScript
                         return;
                     }
 
-                    if (kits.ContainsKey(args[1]))
+                    if (kits.ContainsKey(args[0]))
                     {
                         CuiHelper.DestroyUi(player, KITGUI);
                         IsOpen(player.userID, false);
-                        Kit kit = kits[args[1]];
+                        Kit kit = kits[args[0]];
                         foreach (KitItem item in kit.items.Where(x => x.location == ItemLocation.wear))
                         {
                             Item newitem = ItemManager.CreateByItemID(item.itemid, item.count, item.skinid);
@@ -191,12 +185,12 @@ public class HKits : RustScript
                     }
                     Message(player, "kithelp");
                 }
-                else if (args.Length == 3 && args[1] == "create" && player.IsAdmin)
+                else if (args.Length == 2 && args[0] == "create" && player.IsAdmin)
                 {
                     Kit newkit = new Kit()
                     {
-                        name = args[2],
-                        description = args[2],
+                        name = args[1],
+                        description = args[1],
                         items = new List<KitItem>()
                     };
 
@@ -233,7 +227,7 @@ public class HKits : RustScript
                             name = item.info.displayName.english
                         });
                     }
-                    kits.Add(args[2], newkit);
+                    kits.Add(args[1], newkit);
                     SaveData();
                 }
                 break;
@@ -338,7 +332,7 @@ public class HKits : RustScript
             }
             float[] posb = GetButtonPositionP(row, col);
 
-            UI.Button(ref container, KITGUI, UI.Color("#424242", 1f), kit.Value.name, 12, $"{posb[0]} {posb[1]}", $"{posb[0] + ((posb[2] - posb[0]) / 2)} {posb[3]}", $"/kit {kit.Value.name}");
+            UI.Button(ref container, KITGUI, UI.Color("#424242", 1f), kit.Value.name, 12, $"{posb[0]} {posb[1]}", $"{posb[0] + ((posb[2] - posb[0]) / 2)} {posb[3]}", $"kit {kit.Value.name}");
             col++;
             posb = GetButtonPositionP(row, col);
             UI.Label(ref container, KITGUI, UI.Color("#424242", 1f), kit.Value.description, 12, $"{posb[0]} {posb[1]}", $"{posb[0] + ((posb[2] - posb[0]) / 2)} {posb[3]}");

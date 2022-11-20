@@ -39,13 +39,13 @@ namespace Auxide
 
             try
             {
-                Debug.LogWarning($"Script {Instance?.GetType().FullName} unloaded...");
-                Utils.DoLog($"Script {Instance?.GetType().FullName} unloaded...");
+                Debug.LogWarning($"Script {Instance?.GetType().Name} unloaded...");
+                Utils.DoLog($"Script {Instance?.GetType().Name} unloaded...");
                 Instance?.Dispose();
             }
             catch (Exception e)
             {
-                Debug.LogError($"{Instance?.GetType().FullName}::Dispose threw: {e}");
+                Debug.LogError($"{Instance?.GetType().Name}::Dispose threw: {e}");
             }
 
             Instance = null;
@@ -87,7 +87,7 @@ namespace Auxide
             {
                 Utils.DoLog($"Trying to load dll from {path}");
                 Assembly assembly = Assembly.LoadFile(path);
-                Utils.DoLog($"Loaded assembly!");
+                Utils.DoLog($"Loaded assembly: {assembly.GetType()}!");
 
                 Initialize(path, code, assembly);
                 initialized = true;
@@ -160,14 +160,14 @@ namespace Auxide
 
         private void Initialize(string path, string code, Assembly assembly)
         {
-            //Dispose(); HUH?
+            Dispose(); // Hrm...
             Utils.DoLog($"Initializing assembly");
 
             Type type = assembly.GetType(Name);
 
             if (type == null)
             {
-                Utils.DoLog($"Unable to find class '{Name}' in the compiled script.  Found: {type}");
+                Utils.DoLog($"Unable to find class '{Name}' in the compiled script.");
                 throw new ScriptLoadException(Name, $"Unable to find class '{Name}' in the compiled script.");
             }
 
@@ -209,7 +209,8 @@ namespace Auxide
             ConfigPath = System.IO.Path.Combine(Auxide.ConfigPath, $"{BaseName}.json");
             DataPath = System.IO.Path.Combine(Auxide.DataPath, BaseName);
             // Yes, this will need to be extended...
-            LangPath = System.IO.Path.Combine(Auxide.LangPath);//, $"{BaseName}.json");
+            //LangPath = System.IO.Path.Combine(Auxide.LangPath);//, $"{BaseName}.json");
+            LangPath = Auxide.LangPath;//, $"{BaseName}.json");
 
             scriptInstance.config = new DynamicConfigFile(ConfigPath);
             scriptInstance.data = new DataFileSystem(DataPath);

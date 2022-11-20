@@ -3,16 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using Auxide.Scripting;
 using Facepunch.Extend;
 
 // TODO: Add SQLite and MySQL database support
 
-public class Economics : RustScript
+public class HEconomics : RustScript
 {
     #region Configuration
     private Configuration configData;
-    private readonly ScriptManager sm;
+    private ScriptManager sm;
 
     private class Configuration
     {
@@ -21,9 +20,6 @@ public class Economics : RustScript
 
         [JsonProperty("Balance limit for accounts (0 to disable)")]
         public int BalanceLimit = 0;
-
-        [JsonProperty("Maximum balance for accounts (0 to disable)")] // TODO: From version 3.8.6; remove eventually
-        private int BalanceLimitOld { set { BalanceLimit = value; } }
 
         [JsonProperty("Negative balance limit for accounts (0 to disable)")]
         public int NegativeBalanceLimit = 0;
@@ -47,6 +43,7 @@ public class Economics : RustScript
 
         public Dictionary<string, object> ToDictionary() => JsonConvert.DeserializeObject<Dictionary<string, object>>(ToJson());
     }
+
     public string Lang(string input, params object[] args)
     {
         return string.Format(lang.Get(input), args);
@@ -57,23 +54,16 @@ public class Economics : RustScript
         Utils.SendReply(player, string.Format(lang.Get(input), args));
     }
 
-
     public void LoadDefaultConfig() => configData = new Configuration();
 
     public void LoadConfig()
     {
         try
         {
-            configData = configData.ReadObject<Configuration>();
+            configData = config.ReadObject<Configuration>();
             if (config == null)
             {
                 throw new JsonException();
-            }
-
-            if (!configData.ToDictionary().Keys.SequenceEqual(configData.ToDictionary(x => x.Key, x => x.Value).Keys))
-            {
-                Utils.DoLog("Configuration appears to be outdated; updating and saving");
-                SaveConfig();
             }
         }
         catch
@@ -86,13 +76,11 @@ public class Economics : RustScript
     public void SaveConfig()
     {
         Utils.DoLog($"Configuration changes saved to {Name}.json");
-        configData.WriteObject(configData, true);
+        config.WriteObject(configData, true);
     }
-
     #endregion Configuration
 
     #region Stored Data
-
     //private DynamicConfigFile data;
     private StoredData storedData;
     private bool changed;
@@ -114,11 +102,9 @@ public class Economics : RustScript
     private void OnServerSave() => SaveData();
 
     private void Unload() => SaveData();
-
     #endregion Stored Data
 
     #region Localization
-
     public override void LoadDefaultMessages()
     {
         lang.RegisterMessages(new Dictionary<string, string>
@@ -163,11 +149,9 @@ public class Economics : RustScript
             ["ZeroAmount"] = "Amount cannot be zero"
         }, Name);
     }
-
     #endregion Localization
 
     #region Initialization
-
     private const string permissionBalance = "economics.balance";
     private const string permissionDeposit = "economics.deposit";
     private const string permissionDepositAll = "economics.depositall";
@@ -179,16 +163,9 @@ public class Economics : RustScript
     private const string permissionWithdrawAll = "economics.withdrawall";
     private const string permissionWipe = "economics.wipe";
 
-    private void Init()
+    public override void Initialize()
     {
-        // Register universal chat/console commands
-        AddLocalizedCommand(nameof(CommandBalance));
-        AddLocalizedCommand(nameof(CommandDeposit));
-        AddLocalizedCommand(nameof(CommandSetBalance));
-        AddLocalizedCommand(nameof(CommandTransfer));
-        AddLocalizedCommand(nameof(CommandWithdraw));
-        AddLocalizedCommand(nameof(CommandWipe));
-
+        //sm = new ScriptManager();
         // Register permissions for commands
         Permissions.RegisterPermission(Name, permissionBalance);
         Permissions.RegisterPermission(Name, permissionDeposit);
@@ -201,6 +178,7 @@ public class Economics : RustScript
         Permissions.RegisterPermission(Name, permissionWithdrawAll);
         Permissions.RegisterPermission(Name, permissionWipe);
 
+        LoadConfig();
         // Load existing data and migrate old data format
         //data = Interface.Oxide.DataFileSystem.GetFile(Name);
         try
@@ -258,6 +236,31 @@ public class Economics : RustScript
         }
     }
 
+    public void OnChatCommand(BasePlayer player, string command, string[] args = null)
+    {
+        switch (command)
+        {
+            case "balance":
+                CommandBalance(player, command, args);
+                break;
+            case "deposit":
+                CommandDeposit(player, command, args);
+                break;
+            case "setbalance":
+                CommandSetBalance(player, command, args);
+                break;
+            case "transfer":
+                CommandTransfer(player, command, args);
+                break;
+            case "withdraw":
+                CommandWithdraw(player, command, args);
+                break;
+            case "wipe":
+                CommandWipe(player, command, args);
+                break;
+        }
+    }
+
     private void OnNewSave()
     {
         if (configData.WipeOnNewSave)
@@ -267,11 +270,9 @@ public class Economics : RustScript
             sm.Broadcast("OnEconomicsDataWiped");
         }
     }
-
     #endregion Initialization
 
     #region API Methods
-
     private double Balance(string playerId)
     {
         if (string.IsNullOrEmpty(playerId))
@@ -406,51 +407,47 @@ public class Economics : RustScript
     }
 
     private bool Withdraw(ulong playerId, double amount) => Withdraw(playerId.ToString(), amount);
-
     #endregion API Methods
 
     #region Commands
-
     #region Balance Command
-
-    private void CommandBalance(IPlayer player, string command, string[] args)
+    private void CommandBalance(BasePlayer player, string command, string[] args)
     {
         if (args != null && args.Length > 0)
         {
-            if (!player.HasPermission(permissionBalance))
+            //if (!player.HasPermission(permissionBalance))
+            if (!Permissions.UserHasPermission(permissionBalance, player.UserIDString))
             {
                 Message(player, "NotAllowed", command);
                 return;
             }
 
-            IPlayer target = FindPlayer(args[0], player);
+            BasePlayer target = FindPlayer(args[0], player);
             if (target == null)
             {
                 Message(player, "UsageBalance", command);
                 return;
             }
 
-            Message(player, "PlayerBalance", target.Name, Balance(target.Id));
+            Message(player, "PlayerBalance", target.displayName, Balance(target.userID));
             return;
         }
 
-        if (player.IsServer)
+        if (player.IsAdmin)
         {
             Message(player, "UsageBalanceOthers", command);
         }
         else
         {
-            Message(player, "YourBalance", Balance(player.Id));
+            Message(player, "YourBalance", Balance(player.userID));
         }
     }
-
     #endregion Balance Command
 
     #region Deposit Command
-
-    private void CommandDeposit(IPlayer player, string command, string[] args)
+    private void CommandDeposit(BasePlayer player, string command, string[] args)
     {
-        if (!player.HasPermission(permissionDeposit))
+        if (!Permissions.UserHasPermission(permissionDeposit, player.UserIDString))
         {
             Message(player, "NotAllowed", command);
             return;
@@ -472,7 +469,7 @@ public class Economics : RustScript
 
         if (args[0] == "*")
         {
-            if (!player.HasPermission(permissionDepositAll))
+            if (!Permissions.UserHasPermission(permissionDepositAll, player.UserIDString))
             {
                 Message(player, "NotAllowed", command);
                 return;
@@ -490,30 +487,28 @@ public class Economics : RustScript
         }
         else
         {
-            IPlayer target = FindPlayer(args[0], player);
+            BasePlayer target = FindPlayer(args[0], player);
             if (target == null)
             {
                 return;
             }
 
-            if (Deposit(target.Id, amount))
+            if (Deposit(target.userID, amount))
             {
-                Message(player, "PlayerBalance", target.Name, Balance(target.Id));
+                Message(player, "PlayerBalance", target.displayName, Balance(target.userID));
             }
             else
             {
-                Message(player, "TransactionFailed", target.Name);
+                Message(player, "TransactionFailed", target.displayName);
             }
         }
     }
-
     #endregion Deposit Command
 
     #region Set Balance Command
-
-    private void CommandSetBalance(IPlayer player, string command, string[] args)
+    private void CommandSetBalance(BasePlayer player, string command, string[] args)
     {
-        if (!player.HasPermission(permissionSetBalance))
+        if (!Permissions.UserHasPermission(permissionSetBalance, player.UserIDString))
         {
             Message(player, "NotAllowed", command);
             return;
@@ -536,7 +531,7 @@ public class Economics : RustScript
 
         if (args[0] == "*")
         {
-            if (!player.HasPermission(permissionSetBalanceAll))
+            if (!Permissions.UserHasPermission(permissionSetBalanceAll, player.UserIDString))
             {
                 Message(player, "NotAllowed", command);
                 return;
@@ -554,30 +549,28 @@ public class Economics : RustScript
         }
         else
         {
-            IPlayer target = FindPlayer(args[0], player);
+            BasePlayer target = FindPlayer(args[0], player);
             if (target == null)
             {
                 return;
             }
 
-            if (SetBalance(target.Id, amount))
+            if (SetBalance(target.userID, amount))
             {
-                Message(player, "PlayerBalance", target.Name, Balance(target.Id));
+                Message(player, "PlayerBalance", target.displayName, Balance(target.userID));
             }
             else
             {
-                Message(player, "TransactionFailed", target.Name);
+                Message(player, "TransactionFailed", target.displayName);
             }
         }
     }
-
     #endregion Set Balance Command
 
     #region Transfer Command
-
-    private void CommandTransfer(IPlayer player, string command, string[] args)
+    private void CommandTransfer(BasePlayer player, string command, string[] args)
     {
-        if (!player.HasPermission(permissionTransfer))
+        if (!Permissions.UserHasPermission(permissionTransfer, player.UserIDString))
         {
             Message(player, "NotAllowed", command);
             return;
@@ -600,13 +593,13 @@ public class Economics : RustScript
 
         if (args[0] == "*")
         {
-            if (!player.HasPermission(permissionTransferAll))
+            if (!Permissions.UserHasPermission(permissionTransferAll, player.UserIDString))
             {
                 Message(player, "NotAllowed", command);
                 return;
             }
 
-            if (!Withdraw(player.Id, amount))
+            if (!Withdraw(player.userID, amount))
             {
                 Message(player, "YouLackMoney");
                 return;
@@ -621,7 +614,7 @@ public class Economics : RustScript
                 {
                     if (target.IsConnected)
                     {
-                        Message(target, "ReceivedFrom", splitAmount, player.Name);
+                        Message(target, "ReceivedFrom", splitAmount, player.displayName);
                     }
                 }
             }
@@ -641,7 +634,7 @@ public class Economics : RustScript
                 return;
             }
 
-            if (!Withdraw(player.Id, amount))
+            if (!Withdraw(player.userID, amount))
             {
                 Message(player, "YouLackMoney");
                 return;
@@ -650,7 +643,7 @@ public class Economics : RustScript
             if (Deposit(target.UserIDString, amount))
             {
                 Message(player, "TransferredTo", amount, target.displayName);
-                Message(target, "ReceivedFrom", amount, player.Name);
+                Message(target, "ReceivedFrom", amount, player.displayName);
             }
             else
             {
@@ -658,14 +651,12 @@ public class Economics : RustScript
             }
         }
     }
-
     #endregion Transfer Command
 
     #region Withdraw Command
-
-    private void CommandWithdraw(IPlayer player, string command, string[] args)
+    private void CommandWithdraw(BasePlayer player, string command, string[] args)
     {
-        if (!player.HasPermission(permissionWithdraw))
+        if (!Permissions.UserHasPermission(permissionWithdraw, player.UserIDString))
         {
             Message(player, "NotAllowed", command);
             return;
@@ -688,7 +679,7 @@ public class Economics : RustScript
 
         if (args[0] == "*")
         {
-            if (!player.HasPermission(permissionWithdrawAll))
+            if (!Permissions.UserHasPermission(permissionWithdrawAll, player.UserIDString))
             {
                 Message(player, "NotAllowed", command);
                 return;
@@ -706,30 +697,28 @@ public class Economics : RustScript
         }
         else
         {
-            IPlayer target = FindPlayer(args[0], player);
+            BasePlayer target = FindPlayer(args[0], player);
             if (target == null)
             {
                 return;
             }
 
-            if (Withdraw(target.Id, amount))
+            if (Withdraw(target.userID, amount))
             {
-                Message(player, "PlayerBalance", target.Name, Balance(target.Id));
+                Message(player, "PlayerBalance", target.displayName, Balance(target.userID));
             }
             else
             {
-                Message(player, "YouLackMoney", target.Name);
+                Message(player, "YouLackMoney", target.displayName);
             }
         }
     }
-
     #endregion Withdraw Command
 
     #region Wipe Command
-
-    private void CommandWipe(IPlayer player, string command, string[] args)
+    private void CommandWipe(BasePlayer player, string command, string[] args)
     {
-        if (!player.HasPermission(permissionWipe))
+        if (!Permissions.UserHasPermission(permissionWipe, player.UserIDString))
         {
             Message(player, "NotAllowed", command);
             return;
@@ -742,13 +731,10 @@ public class Economics : RustScript
         Message(player, "DataWiped");
         sm.Broadcast("OnEconomicsDataWiped", player);
     }
-
     #endregion Wipe Command
-
     #endregion Commands
 
     #region Helpers
-
     private BasePlayer FindPlayer(string playerNameOrId, BasePlayer player)
     {
         BasePlayer[] foundPlayers = BasePlayer.allPlayerList.ToArray();// (playerNameOrId).ToArray();
@@ -768,30 +754,28 @@ public class Economics : RustScript
         return target;
     }
 
-    private void AddLocalizedCommand(string command)
-    {
-        foreach (string language in lang.GetLanguages(this))
-        {
-            Dictionary<string, string> messages = lang.GetMessages(language, this);
-            foreach (KeyValuePair<string, string> message in messages)
-            {
-                if (message.Key.Equals(command))
-                {
-                    if (!string.IsNullOrEmpty(message.Value))
-                    {
-                        AddCovalenceCommand(message.Value, command);
-                    }
-                }
-            }
-        }
-    }
-
+    //private void AddLocalizedCommand(string command)
+    //{
+    //    foreach (string language in lang.GetLanguages(this))
+    //    {
+    //        Dictionary<string, string> messages = lang.GetMessages(language, this);
+    //        foreach (KeyValuePair<string, string> message in messages)
+    //        {
+    //            if (message.Key.Equals(command))
+    //            {
+    //                if (!string.IsNullOrEmpty(message.Value))
+    //                {
+    //                    AddCovalenceCommand(message.Value, command);
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
     #endregion Helpers
 }
 
 #region Extension Methods
-
-namespace Oxide.Plugins.EconomicsExtensionMethods
+namespace Auxide.HEconomicsExtensionMethods
 {
     public static class ExtensionMethods
     {
@@ -812,5 +796,4 @@ namespace Oxide.Plugins.EconomicsExtensionMethods
         }
     }
 }
-
 #endregion Extension Methods

@@ -77,14 +77,11 @@ namespace Auxide
             using (SqliteConnection c = new SqliteConnection(connStr))
             {
                 c.Open();
-                using (SqliteCommand cmd = new SqliteCommand(c))
-                using (SqliteTransaction transaction = c.BeginTransaction())
+                string query = $"INSERT INTO permissions VALUES('{plugin}', 1, '{permname}', '', 0);";
+                if (verbose) Utils.DoLog(query);
+                using (SqliteCommand cmd = new SqliteCommand(query, c))
                 {
-                    string query = $"INSERT INTO permissions VALUES('{plugin}', 1, '{permname}', '', 0);";
-                    if (verbose) Utils.DoLog(query);
-                    cmd.CommandText += query;
                     cmd.ExecuteNonQuery();
-                    transaction.Commit();
                 }
             }
         }
@@ -121,14 +118,11 @@ namespace Auxide
                 using (SqliteConnection c = new SqliteConnection(connStr))
                 {
                     c.Open();
-                    using (SqliteCommand cmd = new SqliteCommand(c))
-                    using (SqliteTransaction transaction = c.BeginTransaction())
+                    string query = $"INSERT INTO permissions VALUES('{plugin}', 0, '{permname}', '{usergroup}', {isgroup});";
+                    if (verbose) Utils.DoLog(query);
+                    using (SqliteCommand cmd = new SqliteCommand(query, c))
                     {
-                        string query = $"INSERT INTO permissions VALUES('{plugin}', 0, '{permname}', '{usergroup}', {isgroup});";
-                        if (verbose) Utils.DoLog(query);
-                        cmd.CommandText += query;
                         cmd.ExecuteNonQuery();
-                        transaction.Commit();
                     }
                 }
             }
@@ -275,15 +269,11 @@ namespace Auxide
             using (SqliteConnection c = new SqliteConnection(connStr))
             {
                 c.Open();
-                using (SqliteCommand cmd = new SqliteCommand(c))
-                using (SqliteTransaction transaction = c.BeginTransaction())
+                string query = $"INSERT INTO groups VALUES('{groupname}', '');";
+                if (verbose) Utils.DoLog(query);
+                using (SqliteCommand cmd = new SqliteCommand(query, c))
                 {
-                    string query = $"INSERT INTO groups VALUES('{groupname}', '');";
-                    if (verbose) Utils.DoLog(query);
-                    if (verbose) Utils.DoLog(query);
-                    cmd.CommandText += query;
                     cmd.ExecuteNonQuery();
-                    transaction.Commit();
                 }
             }
             //Scripts.OnGroupCreatedHook(groupname, groupname, 0);

@@ -145,7 +145,7 @@ public class HTeleport : RustScript
         {
             case "town":
                 {
-                    if (args.Length < 2 &&configData.server.Locations["town"] != default && configData.server.Locations["town"] != null)
+                    if (args.Length == 0 &&configData.server.Locations["town"] != default && configData.server.Locations["town"] != null)
                     {
                         Message(player, "servertp", Lang("town"), configData.countdownSeconds);
 
@@ -153,7 +153,7 @@ public class HTeleport : RustScript
                         return;
                     }
 
-                    if (args[1] == "set" && player.IsAdmin)
+                    if (args[0] == "set" && player.IsAdmin)
                     {
                         configData.server.Locations["town"] = player.transform.position;
                         SaveConfig(configData);
@@ -164,7 +164,7 @@ public class HTeleport : RustScript
                 break;
             case "outpost":
                 {
-                    if (configData.server.Locations["outpost"] != default && configData.server.Locations["outpost"] != null)
+                    if (args.Length == 0 && configData.server.Locations["outpost"] != default && configData.server.Locations["outpost"] != null)
                     {
                         if (configData.debug) Utils.DoLog($"Player {player.displayName} selected outpost");
 
@@ -176,7 +176,7 @@ public class HTeleport : RustScript
                 break;
             case "bandit":
                 {
-                    if (configData.server.Locations["bandit"] != default && configData.server.Locations["bandit"] != null)
+                    if (args.Length == 0 && configData.server.Locations["bandit"] != default && configData.server.Locations["bandit"] != null)
                     {
                         if (configData.debug) Utils.DoLog($"Player {player.displayName} selected bandit");
 
@@ -188,40 +188,41 @@ public class HTeleport : RustScript
                 break;
             case "sethome":
                 {
-                    playerHomes[player.userID].Locations.TryGetValue(args[1].ToString(), out Vector3 location);
+                    playerHomes[player.userID].Locations.TryGetValue(args[0].ToString(), out Vector3 location);
                     if (location == default)
                     {
-                        playerHomes[player.userID].Locations.Add(args[1].ToString(), player.transform.position);
+                        playerHomes[player.userID].Locations.Add(args[0].ToString(), player.transform.position);
                         SaveData();
-                        Message(player, "addedhome", args[1]);
+                        Message(player, "addedhome", args[0]);
                         return;
                     }
-                    Message(player, "homeexists", args[1]);
+                    Message(player, "homeexists", args[0]);
                 }
                 break;
+            case "remhome":
             case "removehome":
                 {
 
-                    playerHomes[player.userID].Locations.TryGetValue(args[1].ToString(), out Vector3 location);
+                    playerHomes[player.userID].Locations.TryGetValue(args[0].ToString(), out Vector3 location);
                     if (location != default)
                     {
-                        playerHomes[player.userID].Locations.Remove(args[1]);
+                        playerHomes[player.userID].Locations.Remove(args[0]);
                         SaveData();
-                        Message(player, "removedhome", args[1]);
+                        Message(player, "removedhome", args[0]);
                     }
                 }
                 break;
             case "home":
                 {
-                    playerHomes[player.userID].Locations.TryGetValue(args[1].ToString(), out Vector3 location);
+                    playerHomes[player.userID].Locations.TryGetValue(args[0].ToString(), out Vector3 location);
                     if (location != default && location != null)
                     {
-                        Message(player, "hometp", args[1], configData.countdownSeconds);
+                        Message(player, "hometp", args[0], configData.countdownSeconds);
 
                         AddTimer(player, location);
                         return;
                     }
-                    Message(player, "nosuchhome", args[1]);
+                    Message(player, "nosuchhome", args[0]);
                 }
                 break;
         }

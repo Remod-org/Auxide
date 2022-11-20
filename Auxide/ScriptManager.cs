@@ -344,12 +344,13 @@ namespace Auxide
             Broadcast("OnPlayerLeave", player);
         }
 
-        public object OnConsoleCommandHook(ConsoleSystem.Arg arg)
+        //public object OnConsoleCommandHook(ConsoleSystem.Arg arg)
+        public object OnConsoleCommandHook(string command, object[] args)
         {
             if (Auxide.full)
             {
-                Utils.DoLog("OnConsoleCommandHook was called");
-                return BroadcastReturn("OnConsoleCommand", arg);
+                Utils.DoLog($"OnConsoleCommandHook was called for command {command}");
+                return BroadcastReturn("OnConsoleCommand", command, args);
             }
             //OnChatCommandHook(null, command);
             return null;
@@ -382,11 +383,15 @@ namespace Auxide
 
         internal void OnChatCommandHook(BasePlayer player, string chat, object[] args = null)
         {
-            //Match m = Regex.Match(chat, @"^/a\.", RegexOptions.IgnoreCase);
-            //Match m2 = Regex.Match(chat, @"^/auxide\.", RegexOptions.IgnoreCase);
-            string[] hookArgs = chat.Split(' ');
-            string command = hookArgs[0].Replace("/", "");
-            if (player.IsAdmin)// && (m.Success || m2.Success))
+            string[] hookArgs = chat.Split(' '); // Extract command and args
+            string command = hookArgs[0].Replace("/", ""); // Cleanup command
+            hookArgs = hookArgs.ToList().Skip(1).ToArray(); // Remove command portion from args
+            if (Auxide.verbose)
+            {
+                Utils.DoLog($"OnChatCommandHook called for {player.displayName}, command '{command}', args '{string.Join(",", hookArgs)}'");
+            }
+
+            if (player.IsAdmin)
             {
                 switch (command)
                 {
@@ -409,12 +414,12 @@ namespace Auxide
                     case "a.unload":
                     case "auxide.unload":
                         {
-                            if (hookArgs.Length == 2)
+                            if (hookArgs.Length == 1)
                             {
-                                if (_scripts.TryGetValue(hookArgs[1], out Script script))
+                                if (_scripts.TryGetValue(hookArgs[0], out Script script))
                                 {
                                     script.Dispose();
-                                    _scripts.Remove(hookArgs[1]);
+                                    _scripts.Remove(hookArgs[0]);
                                 }
                             }
                         }
@@ -422,9 +427,9 @@ namespace Auxide
                     case "a.reload":
                     case "auxide.reload":
                         {
-                            if (hookArgs.Length == 2)
+                            if (hookArgs.Length == 1)
                             {
-                                string scriptName = hookArgs[1].Replace(".dll", "");
+                                string scriptName = hookArgs[0].Replace(".dll", "");
                                 if (_scripts.TryGetValue(scriptName, out Script script))
                                 {
                                     script.Dispose();
@@ -440,9 +445,9 @@ namespace Auxide
                     case "a.load":
                     case "auxide.load":
                         {
-                            if (hookArgs.Length == 2)
+                            if (hookArgs.Length == 1)
                             {
-                                string scriptName = hookArgs[1].Replace(".dll", "");
+                                string scriptName = hookArgs[0].Replace(".dll", "");
                                 if (!_scripts.TryGetValue(scriptName, out _))
                                 {
                                     Script newScript = new Script(this, Path.Combine(Auxide.ScriptPath, $"{scriptName}.dll"));
@@ -487,45 +492,45 @@ namespace Auxide
                         break;
                     case "addgroup":
                     case "groupadd":
-                        if (hookArgs.Length == 2)
+                        if (hookArgs.Length == 1)
                         {
-                            Permissions.AddGroup(hookArgs[1]);
+                            Permissions.AddGroup(hookArgs[0]);
                         }
                         break;
                     case "remgroup":
                     case "removegroup":
-                        if (hookArgs.Length == 2)
+                        if (hookArgs.Length == 1)
                         {
-                            Permissions.RemoveGroup(hookArgs[1]);
+                            Permissions.RemoveGroup(hookArgs[0]);
                         }
                         break;
                     case "addtogroup":
-                        if (hookArgs.Length == 3)
+                        if (hookArgs.Length == 2)
                         {
-                            Permissions.AddGroupMember(hookArgs[1], hookArgs[2]);
+                            Permissions.AddGroupMember(hookArgs[0], hookArgs[1]);
                         }
                         break;
                     case "removefromgroup":
                     case "remfromgroup":
-                        if (hookArgs.Length == 3)
+                        if (hookArgs.Length == 2)
                         {
-                            Permissions.RemoveGroupMember(hookArgs[1], hookArgs[2]);
+                            Permissions.RemoveGroupMember(hookArgs[0], hookArgs[1]);
                         }
                         break;
                     case "addperm":
                     case "grantperm":
                     case "grant":
-                        if (hookArgs.Length == 3)
+                        if (hookArgs.Length == 2)
                         {
-                            Permissions.GrantPermission(hookArgs[2], hookArgs[1]);
+                            Permissions.GrantPermission(hookArgs[1], hookArgs[0]);
                         }
                         break;
                     case "remperm":
                     case "removeperm":
                     case "revoke":
-                        if (hookArgs.Length == 3)
+                        if (hookArgs.Length == 2)
                         {
-                            Permissions.RevokePermission(hookArgs[2], hookArgs[1]);
+                            Permissions.RevokePermission(hookArgs[1], hookArgs[0]);
                         }
                         break;
                 }

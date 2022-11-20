@@ -103,11 +103,11 @@ public class HDayNight : RustScript
                 break;
             case "timeset":
             case "settime":
-                if (args.Length > 1)
+                if (args.Length == 1)
                 {
                     if (limitCleared || player.IsAdmin)
                     {
-                        TOD_Sky.Instance.Cycle.Hour = float.Parse(args[1]);
+                        TOD_Sky.Instance.Cycle.Hour = float.Parse(args[0]);
                         StartTimer();
                     }
                 }

@@ -68,14 +68,6 @@ public class HStacks : RustScript
         public Dictionary<string, int> itemlist = new Dictionary<string, int>();
     }
 
-    public object OnConsoleCommand(ConsoleSystem.Arg arg)
-    {
-        string pname = arg.GetString(0);
-        BasePlayer player = BasePlayer.Find(pname);
-        OnChatCommand(player, arg.cmd.ToString(), arg.Args);
-        return null;
-    }
-
     public void OnChatCommand(BasePlayer player, string command, string[] args = null)
     {
         if (player == null) return;
@@ -100,8 +92,8 @@ public class HStacks : RustScript
         string itemName;
         int stack;
 
-        //string debug = string.Join(",", args); DoLog($"{debug}");
-        if (args.Length == 1)
+        string debug = string.Join(",", args); DoLog($"{debug}");
+        if (args.Length == 0)
         {
             // Command alone, no args: get current stack size for held item
             DoLog("0: No item name set.  Looking for held entity");
@@ -120,13 +112,13 @@ public class HStacks : RustScript
                 Message(player, "invalid");
             }
         }
-        else if (args.Length == 2)
+        else if (args.Length == 1)
         {
             DoLog("1: No item name set.  Looking for held entity.");
-            int.TryParse(args[1], out stack);
+            int.TryParse(args[0], out stack);
             if (stack > 0)
             {
-                DoLog($"Will set stack size to {stack}");
+                DoLog($"Will set stack size to {stack} for held item.");
                 itemName = GetHeldItem(player);
                 if (name2cat.ContainsKey(itemName))
                 {
@@ -143,18 +135,7 @@ public class HStacks : RustScript
             else
             {
                 DoLog("Item name set on command line: Get the current stack size for the named item.");
-                itemName = args[0];
-                if (itemName.Length < 5)
-                {
-                    itemName += ".item";
-                }
-                else
-                {
-                    if (itemName.Substring(itemName.Length - 5) != ".item")
-                    {
-                        itemName += ".item";
-                    }
-                }
+                itemName = args[0].Replace(".item", "") + ".item";
 
                 if (name2cat.ContainsKey(itemName))
                 {
@@ -169,15 +150,15 @@ public class HStacks : RustScript
                 }
             }
         }
-        else if (args.Length == 3)
+        else if (args.Length == 2)
         {
-            if (args[1] == "search")
+            if (args[0] == "search")
             {
                 string res = "";
                 int i = 0;
                 foreach (string nm in name2cat.Keys)
                 {
-                    if (nm.IndexOf(args[2], System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    if (nm.IndexOf(args[1], System.StringComparison.OrdinalIgnoreCase) >= 0)
                     {
                         i++;
                         string cat = name2cat[nm];
@@ -188,24 +169,24 @@ public class HStacks : RustScript
                 Message(player, "found", i.ToString(), res);
                 return;
             }
-            DoLog("Item name AND stack size set on command line: Set the stack size for the named item.");
 
-            itemName = args[1];
-            if (itemName.Length < 5)
-            {
-                itemName += ".item";
-            }
-            else
-            {
-                if (itemName.Substring(itemName.Length - 5) != ".item")
-                {
-                    itemName += ".item";
-                }
-            }
+            DoLog("Item name AND stack size set on command line: Set the stack size for the named item.");
+            itemName = args[0].Replace(".item", "") + ".item";
+            //if (itemName.Length < 5)
+            //{
+            //    itemName += ".item";
+            //}
+            //else
+            //{
+            //    if (itemName.Substring(itemName.Length - 5) != ".item")
+            //    {
+            //        itemName += ".item";
+            //    }
+            //}
 
             if (name2cat.ContainsKey(itemName))
             {
-                int.TryParse(args[2], out stack);
+                int.TryParse(args[1], out stack);
                 DoLog($"Will set stack size to {stack}");
                 if (stack > 0)
                 {
@@ -220,37 +201,37 @@ public class HStacks : RustScript
     {
         string debug = string.Join(",", args); DoLog($"{debug}");
 
-        if (args.Length == 1)
+        if (args.Length == 0)
         {
             string cats = "\t" + string.Join("\n\t", cat2items.Keys.ToList()) + "\n";
             Message(iplayer, "helptext2", cats);
         }
-        else if (args.Length == 2)
+        else if (args.Length == 1)
         {
             string items = null;
-            if (!cat2items.ContainsKey(args[1]))
+            if (!cat2items.ContainsKey(args[0]))
             {
-                Message(iplayer, "invalidc", args[1]);
+                Message(iplayer, "invalidc", args[0]);
                 return;
             }
-            foreach (KeyValuePair<string, int> item in cat2items[args[1]])
+            foreach (KeyValuePair<string, int> item in cat2items[args[0]])
             {
                 items += $"\t{item.Key}: {item.Value}\n";
             }
-            Message(iplayer, "itemlist", args[1], items);
+            Message(iplayer, "itemlist", args[0], items);
         }
         else if (args.Length == 2)
         {
-            if (!cat2items.ContainsKey(args[1])) return;
-            foreach (KeyValuePair<string, int> item in cat2items[args[1]])
+            if (!cat2items.ContainsKey(args[0])) return;
+            foreach (KeyValuePair<string, int> item in cat2items[args[0]])
             {
-                int.TryParse(args[2], out int stack);
+                int.TryParse(args[1], out int stack);
                 if (stack > 0)
                 {
                     UpdateItem(item.Key, stack);
                 }
             }
-            Message(iplayer, "catstack", args[1], args[2]);
+            Message(iplayer, "catstack", args[0], args[1]);
         }
     }
 
@@ -286,7 +267,7 @@ public class HStacks : RustScript
             string nm = id.name;
             string cat = id.category.ToString().ToLower();
 
-            Utils.DoLog($"{item.Key} ({nm}): category {cat}, stack size {stack.ToString()}");
+            Utils.DoLog($"{item.Key} ({nm}): category {cat}, stack size {stack}");
 
             if (!cat2items.ContainsKey(cat))
             {
