@@ -54,6 +54,26 @@ namespace Auxide
             }
         }
 
+        private static string GetUserIDString(string usernameorid)
+        {
+            BasePlayer player = BasePlayer.Find(usernameorid);
+            if (player != null)
+            {
+                return player.UserIDString;
+            }
+            return null;
+        }
+
+        private static string GetDisplayName(string usernameorid)
+        {
+            BasePlayer player = BasePlayer.Find(usernameorid);
+            if (player != null)
+            {
+                return player.displayName;
+            }
+            return null;
+        }
+
         public static void RegisterPermission(string plugin, string permname)
         {
             bool exists = false;
@@ -116,10 +136,13 @@ namespace Auxide
             }
             if (plugin != null)
             {
+                string userIdString = GetUserIDString(usergroup);
+                if (userIdString == null) userIdString = usergroup;
+
                 using (SqliteConnection c = new SqliteConnection(connStr))
                 {
                     c.Open();
-                    string query = $"INSERT INTO permissions VALUES('{plugin}', 0, '{permname}', '{usergroup}', {isgroup});";
+                    string query = $"INSERT INTO permissions VALUES('{plugin}', 0, '{permname}', '{userIdString}', {isgroup});";
                     if (verbose) Utils.DoLog(query);
                     using (SqliteCommand cmd = new SqliteCommand(query, c))
                     {
@@ -128,6 +151,7 @@ namespace Auxide
                 }
             }
         }
+
         public static void RevokePermission(string permname, string usergroup)
         {
             if (BasePlayer.Find(usergroup) != null)
@@ -294,6 +318,51 @@ namespace Auxide
                     transaction.Commit();
                 }
             }
+        }
+
+        public static Dictionary<string, bool> GetGroupMembers(string groupname)
+        {
+            // string will be the user or group name.  bool will be true for groups, false for players.
+            Dictionary<string, bool> members = new Dictionary<string, bool>();
+            List<string> groups = new List<string>();
+
+            string dbmembers = null;
+
+            using (SqliteConnection c = new SqliteConnection(connStr))
+            {
+                c.Open();
+                using (SqliteCommand cmd = new SqliteCommand($"SELECT groupname, members FROM groups", c))
+                {
+                    using (SqliteDataReader rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            string currentGroup = rdr.GetString(0);
+                            groups.Add(currentGroup);
+                            if (currentGroup == groupname)
+                            {
+                                dbmembers = rdr.GetString(1);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(dbmembers))
+            {
+                List<string> memberList = dbmembers.Split(',').ToList();
+                foreach(string member in memberList)
+                {
+                    if (groups.Contains(member))
+                    {
+                        members.Add(member, true);
+                        continue;
+                    }
+                    string playerDisplayName = GetDisplayName(member);
+                    members.Add(playerDisplayName, false);
+                }
+            }
+            return members;
         }
 
         public static void AddGroupMember(string groupname, string usergroup)

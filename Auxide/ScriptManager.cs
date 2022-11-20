@@ -481,14 +481,28 @@ namespace Auxide
                             player.ChatMessage(mess);
                         }
                         break;
-                    case "listgroups":
-                        List<string> groups = Permissions.GetGroups();
-                        string message = "Groups:\n";
-                        foreach (string group in groups)
+                    case "listgroupmembers":
+                    case "listmembers":
                         {
-                            message += $"\t{group}\n";
+                            Dictionary<string, bool> members = Permissions.GetGroupMembers(hookArgs[0]);
+                            string message = $"Group members for {hookArgs[0]}:";
+                            foreach (var member in members)
+                            {
+                                string isgroup = member.Value ? " (group)" : "";
+                                message += $"\t{member.Key}{isgroup}\n";
+                            }
                         }
-                        player.ChatMessage(message);
+                        break;
+                    case "listgroups":
+                        {
+                            List<string> groups = Permissions.GetGroups();
+                            string message = "Groups:\n";
+                            foreach (string group in groups)
+                            {
+                                message += $"\t{group}\n";
+                            }
+                            player.ChatMessage(message);
+                        }
                         break;
                     case "addgroup":
                     case "groupadd":
