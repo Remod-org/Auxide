@@ -20,22 +20,22 @@ No feedback is currently given in response to these commands.
 - `/remperm USERGROUP PERMISSION` -- Alias for the above.
 - `/removeperm USERGROUP PERMISSION` -- Alias for the above.
 
-- `listgroups` -- List groups.  Default groups are admin and default.  A player with admin rights will be added to the admin group on connect, and all players will be added to the default group.
+- `/listgroups` -- List groups.  Default groups are admin and default.  A player with admin rights will be added to the admin group on connect, and all players will be added to the default group.
 
-- `listgroupmembers GROUPNAME` -- List members of group called GROUPNAME.  If a member is a group, " (group)" will be added.
-- `listmembers GROUPNAME` -- Alias for the above.
+- `/listgroupmembers GROUPNAME` -- List members of group called GROUPNAME.  If a member is a group, " (group)" will be added.
+- `/listmembers GROUPNAME` -- Alias for the above.
 
-- `addgroup GROUPNAME` -- Adds a new group called GROUPNAME.
-- `groupadd GROUPNAME` -- Alias for the above.
+- `/addgroup GROUPNAME` -- Adds a new group called GROUPNAME.
+- `/groupadd GROUPNAME` -- Alias for the above.
 
-- `remgroup GROUPNAME` -- Removes the group named GROUPNAME
+- `/remgroup GROUPNAME` -- Removes the group named GROUPNAME
 
-- `removegroup GROUPNAME` -- Alias for the above.
+- `/removegroup GROUPNAME` -- Alias for the above.
 
-- `addtogroup GROUPNAME USERGROUP` -- Adds the named user or group to the group called GROUPNAME
+- `/addtogroup GROUPNAME USERGROUP` -- Adds the named user or group to the group called GROUPNAME
 
-- `remfromgroup GROUPNAME USERGROUP` -- Removes the named user or group from the group called GROUPNAME
-- `removefromgroup GROUPNAME USERGROUP` -- Alias for the above.
+- `/remfromgroup GROUPNAME USERGROUP` -- Removes the named user or group from the group called GROUPNAME
+- `/removefromgroup GROUPNAME USERGROUP` -- Alias for the above.
 
 ### Example 1
 
