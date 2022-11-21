@@ -99,67 +99,83 @@ The configuration is re-read on server save in case you want to make adjustments
 
 We have included some mostly working plugins in the source code as examples for improvement, etc.
 
-As of 15 November 2022, permissions are working.  This is currently managed via the new plugin, PermMgr.dll.
+As of 15 November 2022, permissions are working.  See the file Permissions.md for more information.
 
 #### Hooks in Full Mode
 
+Below, the term Narrowcast essentially means target, as in not sent to all scripts, just one.
+
 ```cs
+void Narrowcast("OnScriptLoaded", RustScript);
+
+void Narrowcast("LoadData", RustScript);
+
+void Narrowcast("LoadConfig", RustScript);
+
+void Narrowcast("LoadDefaultMessages", RustScript);
+
+void Broadcast("OnPluginLoaded", RustScript);
+
 void Broadcast("OnServerInitialized");
 
 void Broadcast("OnServerShutdown");
 
 void Broadcast("OnServerSave");
 
-void Broadcast("OnGroupCreated", group, title, rank);
+void Broadcast("OnNewSave");
 
-void Broadcast("OnUserGroupAdded", id, name);
+object BroadcastReturn("CanUseUI", BasePlayer, string);
 
-object BroadcastReturn("CanAdminTC", bp, player);
+void Broadcast("OnDestroyUI", BasePlayer, string);
 
-object BroadcastReturn("CanToggleSwitch", oven, player);
+object BroadcastReturn("CanAdminTC", BuildingPrivlidge, BasePlayer);
 
-object BroadcastReturn("CanToggleSwitch", sw, player);
+object BroadcastReturn("CanToggleSwitch", oven, BasePlayer);
 
-void Broadcast("OnToggleSwitch", oven, player);
+object BroadcastReturn("CanToggleSwitch", sw, BasePlayer);
 
-void Broadcast("OnToggleSwitch", sw, player);
+void Broadcast("OnToggleSwitch", oven, BasePlayer);
 
-object BroadcastReturn("CanMount", entity, player);
+void Broadcast("OnToggleSwitch", sw, BasePlayer);
 
-void Broadcast("OnMounted", entity, player);
+object BroadcastReturn("CanMount", BaseMountable, BasePlayer);
 
-object BroadcastReturn("CanLoot", entity, player, panelName);
+void Broadcast("OnMounted", BaseMountable, BasePlayer);
 
-void Broadcast("OnLooted", entity, player);
+object BroadcastReturn("CanLoot", BaseEntity, BasePlayer, string);
 
-object BroadcastReturn("CanPickup", entity, player);
+void Broadcast("OnLooted", BaseEntity, BasePlayer);
 
-object BroadcastReturn("CanPickup", entity, player);
+object BroadcastReturn("CanPickup", BaseEntity, BasePlayer);
 
-object BroadcastReturn("CanPickup", entity, player);
+object BroadcastReturn("CanPickup", ContainerIOEntity, BasePlayer);
 
-object BroadcastReturn("OnTakeDamage", target, info);
+object BroadcastReturn("CanPickup", StorageContainer, BasePlayer);
 
-void Broadcast("OnPlayerJoin", player);
+object BroadcastReturn("OnTakeDamage", BaseCombatEntity, HitInfo);
 
-void Broadcast("OnPlayerLeave", player);
+void Broadcast("OnPlayerJoin", BasePlayer);
 
-void Broadcast("OnChatCommand", player, chat, args);
+void Broadcast("OnPlayerLeave", BasePlayer);
 
-object BroadcastReturn("OnConsoleCommand", command, isServer);
+void Broadcast("OnChatCommand", BasePlayer, string, object[]);
 ```
 
 ### Available Utilities and Classes for Plugins
 
 The following were borrowed from Oxide, and I believe their licensing allows this:
-- DynamicConfigFile
-- DataFileSystem
-- CuiHelper
+- DynamicConfigFile (as config)
+- DataFileSystem (as data)
+- CuiHelper (Auxide.CuiHelper)
+  - Currently unusable due to non-working console commands (Displays correctly but cannot close, etc.).
+  - k1lly0u's (?) UI class is included as Auxide.UI.
+
+- LangFileSystem (as lang)
+  - See plugin examples for helper functions Lang() and Message()
 
 ### TODO
 
 - Fix plugin updating, which in one case can crash the server.  The other case is a failure to detect the included plugin class when loading a new version.
-- Language files and translation
 - Revisit cs file compilation
 - Fix hideGiveNotices
 - I am sure there are issues I have missed.
