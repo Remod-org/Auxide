@@ -8,9 +8,7 @@ Permissions includes plugin permissions as well as group management.  Groups may
 
 By default, we create the groups default and admin.  Anyone with admin rights on the server will be added to the admin group.  ALL players are added to the default group.
 
-Work is in progress to ensure uniqueness of the stored info, i.e. use of user id / steam id instead of name in the actual database.
-
-No feedback is currently given in response to these commands.  Look for expansion to include listing group members, etc.
+No feedback is currently given in response to these commands.
 
 ## Commands
 
@@ -23,6 +21,9 @@ No feedback is currently given in response to these commands.  Look for expansio
 - `/removeperm USERGROUP PERMISSION` -- Alias for the above.
 
 - `listgroups` -- List groups.  Default groups are admin and default.  A player with admin rights will be added to the admin group on connect, and all players will be added to the default group.
+
+- `listgroupmembers GROUPNAME` -- List members of group called GROUPNAME.  If a member is a group, " (group)" will be added.
+- `listmembers GROUPNAME` -- Alias for the above.
 
 - `addgroup GROUPNAME` -- Adds a new group called GROUPNAME.
 - `groupadd GROUPNAME` -- Alias for the above.
