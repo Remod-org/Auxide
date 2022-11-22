@@ -43,7 +43,7 @@ public class HDayNight : RustScript
         {
             debug = false,
             adminOnly = true,
-            dayTime = "6",
+            dayTime = "7",
             nightTime = "19",
             frequencyLimitMinutes = 5
         };

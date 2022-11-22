@@ -14,6 +14,16 @@ public class TestScript : RustScript
         Utils.DoLog("Let's test some hooks!");
 	}
 
+    public string Lang(string input, params object[] args)
+    {
+        return string.Format(lang.Get(input), args);
+    }
+
+    public void Message(BasePlayer player, string input, params object[] args)
+    {
+        Utils.SendReply(player, string.Format(lang.Get(input), args));
+    }
+
     public object CanToggleSwitch(BaseOven oven, BasePlayer player)
     {
         if (!enable) return null;
@@ -38,7 +48,7 @@ public class TestScript : RustScript
 		return null;
     }
 
-    // Not yet working :(
+    // Not yet working - called but cannot cancel/block?
     public object CanMount(BaseMountable entity, BasePlayer player)
     {
         if (!enable) return null;
@@ -51,18 +61,42 @@ public class TestScript : RustScript
 		return null;
     }
 
+    public void OnMounted(BaseMountable entity, BasePlayer player)
+    {
+        if (!enable) return;
+        if (entity == null) return;
+        if (player == null) return;
+        Utils.DoLog($"{player.userID} mounted {entity.ShortPrefabName}");
+    }
+
+    public object CanLoot(StorageContainer container, BasePlayer player, string panelName)
+    {
+        if (!enable) return null;
+        if (player == null || container == null) return null;
+        BaseEntity ent = container?.GetComponentInParent<BaseEntity>();
+        if (ent == null) return null;
+
+        Utils.DoLog($"{player.userID} looting {ent.ShortPrefabName}");
+        return null;
+    }
+
     public void OnLooted(BaseEntity entity, BasePlayer player)
     {
-        Utils.DoLog($"{player.userID} looting {entity.ShortPrefabName}");
+        if (!enable) return;
+        if (entity == null) return;
+        if (player == null) return;
+        Utils.DoLog($"{player.userID} looted {entity.ShortPrefabName}");
     }
 
     public void OnPlayerJoin(BasePlayer player)
     {
+        if (!enable) return;
         Utils.DoLog($"{player.userID} connected.");
     }
 
     public void OnPlayerLeave(BasePlayer player)
     {
+        if (!enable) return;
         Utils.DoLog($"{player.userID} disconnected.");
     }
 
@@ -83,6 +117,7 @@ public class TestScript : RustScript
 
     public ItemContainer.CanAcceptResult? CanAcceptItem(ItemContainer container, Item item, int targetPos)
     {
+        if (!enable) return null;
         BaseEntity ent = container?.entityOwner;
         Utils.DoLog($"CanAcceptItem called for '{ent?.ShortPrefabName}', item '{item?.info.displayName.english}', AND targetPos='{targetPos}'");
         return null;
@@ -90,6 +125,7 @@ public class TestScript : RustScript
 
     public object OnConsoleCommand(ConsoleSystem.Arg arg)
     {
+        if (!enable) return null;
         string pname = arg.GetString(0);
         BasePlayer player = BasePlayer.Find(pname);
         string arginfo = string.Join(",", arg);
@@ -99,12 +135,14 @@ public class TestScript : RustScript
 
     public void OnChatCommand(BasePlayer player, string command, string[] args = null)
     {
+        if (!enable) return;
         string arginfo = string.Join(",", args);
         Utils.DoLog($"OnChatCommand called for '{command}' with args='{arginfo}'");
         switch (command)
         {
             case "ttoggle":
                 enable = !enable;
+                Message(player, enable ? "TestScript enabled" : "TestScript disabled");
                 break;
         }
     }

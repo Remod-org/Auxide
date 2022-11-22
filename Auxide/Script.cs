@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Auxide.Exceptions;
@@ -86,7 +87,8 @@ namespace Auxide
             try
             {
                 Utils.DoLog($"Trying to load dll from {path}");
-                Assembly assembly = Assembly.LoadFile(path);
+                //Assembly assembly = Assembly.LoadFile(path);
+                Assembly assembly = Assembly.Load(File.ReadAllBytes(path));
                 Utils.DoLog($"Loaded assembly: {assembly.GetType()}!");
 
                 Initialize(path, code, assembly);

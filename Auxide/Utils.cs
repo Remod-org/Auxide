@@ -53,6 +53,7 @@ namespace Auxide
             string caller = logCaller ? GetCaller() : "Auxide";
             string now = DateTime.Now.ToShortTimeString();
 
+            //using (FileStream fs = new FileStream(LogFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
             using (FileStream fs = new FileStream(LogFile, FileMode.Append, FileAccess.Write))
             {
                 using (StreamWriter sw = new StreamWriter(fs))

@@ -600,7 +600,7 @@
     <Compile Include="Hooks\Server\ResOnAttacked.cs" />
     <Compile Include="Hooks\Server\CorpseLoot.cs" />
     <Compile Include="Hooks\Server\BasePlayerLoot.cs" />
-    <Compile Include="Hooks\Server\CanAccept.cs" />
+    <None Include="Hooks\Server\CanAccept.cs" />
     <Compile Include="Hooks\Server\SCLoot.cs" />
     <Compile Include="Hooks\Server\ServerUpdateHook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
