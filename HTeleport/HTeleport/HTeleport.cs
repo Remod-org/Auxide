@@ -8,11 +8,12 @@ public class HTeleport : RustScript
     private static ConfigData configData;
     private static Dictionary<ulong, TpTimer> playerTP = new Dictionary<ulong, TpTimer>();
     private static Dictionary<ulong, HomeData> playerHomes = new Dictionary<ulong, HomeData>();
+    private bool newsave;
 
     public HTeleport()
     {
         Author = "RFC1920";
-        Version = new VersionNumber(1, 0, 3);
+        Version = new VersionNumber(1, 0, 4);
     }
 
     public string Lang(string input, params object[] args)
@@ -45,6 +46,10 @@ public class HTeleport : RustScript
         [JsonProperty("t")]
         public int Timestamp { get; set; }
     }
+    public void OnNewSave()
+    {
+        newsave = true;
+    }
 
     public override void LoadDefaultMessages()
     {
@@ -53,13 +58,13 @@ public class HTeleport : RustScript
             ["town"] = "Town",
             ["outpost"] = "Outpost",
             ["bandit"] = "Bandit Town",
-            ["servertp"] = "Teleporting to $1 in %2 seconds",
-            ["hometp"] = $"Teleporting to home %1 in %2 seconds",
+            ["servertp"] = "Teleporting to {0} in {1} seconds",
+            ["hometp"] = "Teleporting to home {0} in {1} seconds",
             ["townset"] = "Town set!",
-            ["addedhome"] = $"Added home %1",
-            ["homeexists"] = $"Home %1 already exists!",
-            ["removedhome"] = $"Removed home %1",
-            ["nosuchhome"] = $"No such home %1",
+            ["addedhome"] = "Added home {0}",
+            ["homeexists"] = "Home {0} already exists!",
+            ["removedhome"] = "Removed home {0}",
+            ["nosuchhome"] = "No such home {0}",
             ["notauthorized"] = "You don't have permission to use this command."
         }, Name);
     }
@@ -81,6 +86,11 @@ public class HTeleport : RustScript
         if (config.Exists())
         {
             configData = config.ReadObject<ConfigData>();
+            if (newsave)
+            {
+                configData.server.Locations["town"] = default;
+                SaveConfig(configData);
+            }
             return;
         }
         LoadDefaultConfig();

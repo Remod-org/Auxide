@@ -42,6 +42,8 @@ public class HEconomics : RustScript
         public string ToJson() => JsonConvert.SerializeObject(this);
 
         public Dictionary<string, object> ToDictionary() => JsonConvert.DeserializeObject<Dictionary<string, object>>(ToJson());
+
+        public bool debug;
     }
 
     public string Lang(string input, params object[] args)
@@ -68,14 +70,14 @@ public class HEconomics : RustScript
         }
         catch
         {
-            Utils.DoLog($"Configuration file {Name}.json is invalid; using defaults");
+            if (configData.debug) Utils.DoLog($"Configuration file {Name}.json is invalid; using defaults");
             LoadDefaultConfig();
         }
     }
 
     public void SaveConfig()
     {
-        Utils.DoLog($"Configuration changes saved to {Name}.json");
+        if (configData.debug) Utils.DoLog($"Configuration changes saved to {Name}.json");
         config.WriteObject(configData, true);
     }
     #endregion Configuration
@@ -94,7 +96,7 @@ public class HEconomics : RustScript
     {
         if (changed)
         {
-            Utils.DoLog("Saving balances for players...");
+            if (configData.debug) Utils.DoLog("Saving balances for players...");
             data.WriteObject(Name, storedData);
         }
     }
@@ -277,7 +279,7 @@ public class HEconomics : RustScript
     {
         if (string.IsNullOrEmpty(playerId))
         {
-            Utils.DoLog("Balance method called without a valid player ID");
+            if (configData.debug) Utils.DoLog("Balance method called without a valid player ID");
             return 0.0;
         }
 
@@ -291,7 +293,7 @@ public class HEconomics : RustScript
     {
         if (string.IsNullOrEmpty(playerId))
         {
-            Utils.DoLog("Deposit method called without a valid player ID");
+            if (configData.debug) Utils.DoLog("Deposit method called without a valid player ID");
             return false;
         }
 
@@ -316,7 +318,7 @@ public class HEconomics : RustScript
     {
         if (string.IsNullOrEmpty(playerId))
         {
-            Utils.DoLog("SetBalance method called without a valid player ID");
+            if (configData.debug) Utils.DoLog("SetBalance method called without a valid player ID");
             return false;
         }
 
@@ -355,7 +357,7 @@ public class HEconomics : RustScript
     {
         if (string.IsNullOrEmpty(playerId))
         {
-            Utils.DoLog("Transfer method called without a valid player ID");
+            if (configData.debug) Utils.DoLog("Transfer method called without a valid player ID");
             return false;
         }
 
@@ -383,7 +385,7 @@ public class HEconomics : RustScript
     {
         if (string.IsNullOrEmpty(playerId))
         {
-            Utils.DoLog("Withdraw method called without a valid player ID");
+            if (configData.debug) Utils.DoLog("Withdraw method called without a valid player ID");
             return false;
         }
 

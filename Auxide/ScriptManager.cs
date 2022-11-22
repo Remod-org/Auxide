@@ -15,8 +15,8 @@ namespace Auxide
         private const string ScriptExtension = ".dll";
         //private const string DLLExtension = ".dll";
         private string ScriptFilter = "*" + ScriptExtension;
-        private const double UpdateFrequency = 1.0 / 1; // per sec
-        private const double ChangeCooldown = 1; // seconds
+        private const double UpdateFrequency = 2;// / 1; // per sec
+        private const double ChangeCooldown = 2; // seconds
         private static readonly char[] NameTrimChars = { '_' };
 
         private readonly object _sync;
@@ -289,6 +289,13 @@ namespace Auxide
             if (entity == null) return;
             if (player == null) return;
             Broadcast("OnMounted", entity, player);
+        }
+
+        public object CanAcceptItemHook(ItemContainer container, Item item, int targetPos)
+        {
+            if (container == null) return null;
+            if (item == null) return null;
+            return BroadcastReturn("CanAcceptItem", container, item, targetPos);
         }
 
         public object CanLootHook(BaseEntity entity = null, BasePlayer player = null, string panelName = null)

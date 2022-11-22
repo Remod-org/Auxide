@@ -81,6 +81,13 @@ public class TestScript : RustScript
         return null;
     }
 
+    public ItemContainer.CanAcceptResult? CanAcceptItem(ItemContainer container, Item item, int targetPos)
+    {
+        BaseEntity ent = container?.entityOwner;
+        Utils.DoLog($"CanAcceptItem called for '{ent?.ShortPrefabName}', item '{item?.info.displayName.english}', AND targetPos='{targetPos}'");
+        return null;
+    }
+
     public object OnConsoleCommand(ConsoleSystem.Arg arg)
     {
         string pname = arg.GetString(0);

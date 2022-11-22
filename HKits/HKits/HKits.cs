@@ -1,5 +1,4 @@
 using Auxide;
-using Harmony;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -18,7 +17,7 @@ public class HKits : RustScript
     {
         Author = "RFC1920";
         Description = "Basic user kits for Auxide";
-        Version = new VersionNumber(1, 0, 1);
+        Version = new VersionNumber(1, 0, 2);
     }
 
     public class ConfigData
@@ -94,8 +93,8 @@ public class HKits : RustScript
             ["kits"] = "Kits:\n",
             ["kitgui"] = "Available Kits",
             ["kithelp"] = "Type /kit list to list kits, /kit NAME to select a kit, or /kits to bring up gui.",
-            ["created"] = "Kit %1 has been created from your inventory.",
-            ["issued"] = "Kit %1 has been issued to you.",
+            ["created"] = "Kit {0} has been created from your inventory.",
+            ["issued"] = "Kit {0} has been issued to you.",
             ["notauthorized"] = "You don't have permission to use this command."
         }, Name);
     }
@@ -135,7 +134,7 @@ public class HKits : RustScript
         }
 
         string showArgs = string.Join(",", args);
-        Utils.DoLog($"{command}: {showArgs}");
+        if (configData.debug) Utils.DoLog($"{command}: {showArgs}");
         switch (command)
         {
             case "kits":
@@ -229,6 +228,7 @@ public class HKits : RustScript
                     }
                     kits.Add(args[1], newkit);
                     SaveData();
+                    Message(player, "created");
                 }
                 break;
         }
@@ -285,11 +285,11 @@ public class HKits : RustScript
     {
         if (set)
         {
-            Utils.DoLog($"Setting isopen for {uid}");
+            if (configData.debug) Utils.DoLog($"Setting isopen for {uid}");
             if (!isopen.Contains(uid)) isopen.Add(uid);
             return;
         }
-        Utils.DoLog($"Clearing isopen for {uid}");
+        if (configData.debug) Utils.DoLog($"Clearing isopen for {uid}");
         isopen.Remove(uid);
     }
 

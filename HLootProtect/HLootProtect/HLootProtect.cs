@@ -152,12 +152,22 @@ public class HLootProtect : RustScript
         newsave = true;
     }
 
+    public object CanMount(BaseMountable entity, BasePlayer player)
+    {
+        if (player == null || entity == null) return null;
+        if (configData.debug) Utils.DoLog($"Player {player.displayName} trying to mount {entity.ShortPrefabName}");
+        if (CanAccess(entity.ShortPrefabName, player.userID, entity.OwnerID)) return null;
+        if (CheckShare(entity, player.userID)) return null;
+
+        return null;
+    }
+
     public object CanLoot(StorageContainer container, BasePlayer player, string panelName)
     {
         if (player == null || container == null) return null;
         BaseEntity ent = container?.GetComponentInParent<BaseEntity>();
         if (ent == null) return null;
-        Utils.DoLog($"Player {player.displayName} looting StorageContainer {ent.ShortPrefabName}");
+        if (configData.debug) Utils.DoLog($"Player {player.displayName} looting StorageContainer {ent.ShortPrefabName}");
         if (CheckCupboardAccess(ent, player)) return null;
         if (CanAccess(ent.ShortPrefabName, player.userID, ent.OwnerID)) return null;
         if (CheckShare(ent, player.userID)) return null;
@@ -168,7 +178,7 @@ public class HLootProtect : RustScript
     public object CanLoot(PlayerCorpse corpse, BasePlayer player, string panelName)
     {
         if (player == null || corpse == null) return null;
-        Utils.DoLog($"Player {player.displayName}:{player.UserIDString} looting corpse {corpse.name}:{corpse.playerSteamID}");
+        if (configData.debug) Utils.DoLog($"Player {player.displayName}:{player.UserIDString} looting corpse {corpse.name}:{corpse.playerSteamID}");
         if (CanAccess(corpse.ShortPrefabName, player.userID, corpse.playerSteamID)) return null;
 
         return true;
@@ -181,7 +191,7 @@ public class HLootProtect : RustScript
         //string debug = string.Join(",", args); Utils.DoLog($"{command} {debug}");
         if (!sharing.ContainsKey(player.userID))
         {
-            Utils.DoLog($"Creating new sharing data for {player.displayName}");
+            if (configData.debug) Utils.DoLog($"Creating new sharing data for {player.displayName}");
             sharing.Add(player.userID, new List<Share>());
             SaveData();
         }
@@ -310,7 +320,7 @@ public class HLootProtect : RustScript
                                 }
                                 else
                                 {
-                                    Utils.DoLog($"Removing {ent.net.ID} from sharing list...");
+                                   if (configData.debug)  Utils.DoLog($"Removing {ent.net.ID} from sharing list...");
                                 }
                             }
                             sharing[player.userID] = repl;
@@ -375,7 +385,7 @@ public class HLootProtect : RustScript
         BuildingPrivlidge tc = entity.GetBuildingPrivilege();
         if (tc == null)
         {
-            Utils.DoLog($"CheckCupboardAccess:     Unable to find building privilege in range of {entity.ShortPrefabName}.");
+            if (configData.debug) Utils.DoLog($"CheckCupboardAccess:     Unable to find building privilege in range of {entity.ShortPrefabName}.");
             return false; // NO TC to check...
         }
 
@@ -384,12 +394,12 @@ public class HLootProtect : RustScript
             float distance = (float)Math.Round(Vector3.Distance(tc.transform.position, entity.transform.position), 2);
             if (p.userid == player.userID)
             {
-                Utils.DoLog($"CheckCupboardAccess:     Found authorized cupboard {distance}m from {entity.ShortPrefabName}!");
+                if (configData.debug) Utils.DoLog($"CheckCupboardAccess:     Found authorized cupboard {distance}m from {entity.ShortPrefabName}!");
                 return true;
             }
         }
 
-        Utils.DoLog($"CheckCupboardAccess:     Unable to find authorized cupboard for {entity.ShortPrefabName}.");
+        if (configData.debug) Utils.DoLog($"CheckCupboardAccess:     Unable to find authorized cupboard for {entity.ShortPrefabName}.");
         return false;
     }
 
@@ -397,17 +407,17 @@ public class HLootProtect : RustScript
     {
         if (sharing.ContainsKey(target.OwnerID))
         {
-            Utils.DoLog($"Found entry for {target.OwnerID}");
+            if (configData.debug) Utils.DoLog($"Found entry for {target.OwnerID}");
             foreach (Share x in sharing[target.OwnerID])
             {
                 if (x.netid == target.net.ID && (x.sharewith == userid || x.sharewith == 0))
                 {
-                    Utils.DoLog($"Found netid {target.net.ID} shared to {userid} or all.");
+                    if (configData.debug) Utils.DoLog($"Found netid {target.net.ID} shared to {userid} or all.");
                     return true;
                 }
                 if (Utils.IsFriend(target.OwnerID, userid))
                 {
-                    Utils.DoLog($"{userid} is friend of {target.OwnerID}");
+                    if (configData.debug) Utils.DoLog($"{userid} is friend of {target.OwnerID}");
                     return true;
                 }
             }
@@ -430,12 +440,12 @@ public class HLootProtect : RustScript
                 float days = Math.Abs((now - lc) / 86400);
                 if (days > configData.protectedDays)
                 {
-                    Utils.DoLog($"Allowing access to container owned by player offline for {configData.protectedDays} days");
+                    if (configData.debug) Utils.DoLog($"Allowing access to container owned by player offline for {configData.protectedDays} days");
                     return true;
                 }
                 else
                 {
-                    Utils.DoLog($"Owner was last connected {days} days ago and is still protected...");
+                    if (configData.debug) Utils.DoLog($"Owner was last connected {days} days ago and is still protected...");
                     // Move on to the remaining checks...
                 }
             }
@@ -444,21 +454,21 @@ public class HLootProtect : RustScript
         BasePlayer player = BasePlayer.FindByID(source);
         if (player == null) return true;
 
-        Utils.DoLog($"Checking access to {prefab}");
+        if (configData.debug) Utils.DoLog($"Checking access to {prefab}");
         //if (target == 0)
         if (target < 76560000000000000L)
         {
-            Utils.DoLog("Not owned by a real player.  Access allowed.");
+            if (configData.debug) Utils.DoLog("Not owned by a real player.  Access allowed.");
             return true;
         }
         if (source == target)
         {
-            Utils.DoLog("Player-owned.  Access allowed.");
+            if (configData.debug) Utils.DoLog("Player-owned.  Access allowed.");
             return true;
         }
         if (Utils.IsFriend(source, target))
         {
-            Utils.DoLog("Friend-owned.  Access allowed.");
+            if (configData.debug) Utils.DoLog("Friend-owned.  Access allowed.");
             return true;
         }
 
@@ -467,10 +477,10 @@ public class HLootProtect : RustScript
         {
             if (configData.Rules[prefab])
             {
-                Utils.DoLog($"Rule found for type {prefab}.  Access BLOCKED!");
+                if (configData.debug) Utils.DoLog($"Rule found for type {prefab}.  Access BLOCKED!");
                 return false;
             }
-            Utils.DoLog($"Rule found for type {prefab}.  Access allowed.");
+            if (configData.debug) Utils.DoLog($"Rule found for type {prefab}.  Access allowed.");
             return true;
         }
 

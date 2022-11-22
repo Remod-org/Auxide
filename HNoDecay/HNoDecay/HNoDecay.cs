@@ -16,11 +16,14 @@ public class HNoDecay : RustScript
         public bool debug;
         public bool blockBuildingDecay;
         public bool blockDeployableDecay;
+        public bool blockWoodFromTC;
+        public bool blockStoneFromTC;
+        public bool blockFragsFromTC;
+        public bool blockMetalFromTC;
     }
 
     public override void Initialize()
     {
-        Utils.DoLog("HNoDecay loading...");
         LoadConfig();
     }
 
@@ -44,6 +47,28 @@ public class HNoDecay : RustScript
         };
 
         config.WriteObject(configData);
+    }
+
+    private ItemContainer.CanAcceptResult? CanAcceptItem(ItemContainer container, Item item, int targetPos)
+    {
+        BaseEntity cup = container?.entityOwner;
+        if (cup == null) return null;
+        if (!(cup is BuildingPrivlidge)) return null;
+
+        if (!(configData.blockWoodFromTC || configData.blockStoneFromTC || configData.blockFragsFromTC || configData.blockMetalFromTC)) return null;
+
+        string res = item?.info?.shortname;
+        if (
+            (res.Equals("wood") && configData.blockWoodFromTC)
+            || (res.Equals("stones") && configData.blockStoneFromTC)
+            || (res.Equals("metal.fragments") && configData.blockFragsFromTC)
+            || (res.Equals("metal.refined") && configData.blockMetalFromTC))
+        {
+            if (configData.debug) Utils.DoLog($"Player blocked from adding {res} to a cupboard!");
+            return ItemContainer.CanAcceptResult.CannotAcceptRightNow;
+        }
+
+        return null;
     }
 
     public object OnTakeDamage(BaseCombatEntity entity, HitInfo hitInfo)
