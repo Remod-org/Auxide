@@ -4,7 +4,8 @@ Auxide is a Harmony patch dll for Rust which provides a simplified alternative t
 It offers the admin two modes of operation:
 
 - MINIMAL
-  - Provides basic controls for PVE, decay management, and access control.
+  - Provides basic controls for PVE, decay management, and access control via the config file - see below.
+  - No additional plugin files, etc. are required.
 
 - FULL (Work in progress)
   - Provides full plugin support (Auxide plugins only)
