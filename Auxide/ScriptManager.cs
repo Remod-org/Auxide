@@ -393,6 +393,7 @@ namespace Auxide
             string[] hookArgs = chat.Split(' '); // Extract command and args
             string command = hookArgs[0].Replace("/", ""); // Cleanup command
             hookArgs = hookArgs.ToList().Skip(1).ToArray(); // Remove command portion from args
+            bool serverCmd = false;
             if (Auxide.verbose)
             {
                 Utils.DoLog($"OnChatCommandHook called for {player.displayName}, command '{command}', args '{string.Join(",", hookArgs)}'");
@@ -405,6 +406,7 @@ namespace Auxide
                     case "a.version":
                     case "auxide.version":
                         {
+                            serverCmd = true;
                             Assembly assem = Assembly.GetExecutingAssembly();
                             AssemblyName assemName = assem.GetName();
                             Version ver = assemName.Version;
@@ -414,6 +416,7 @@ namespace Auxide
                     case "a.verbose":
                     case "auxide.verbose":
                         {
+                            serverCmd = true;
                             Auxide.verbose = !Auxide.verbose;
                             player.ChatMessage($"Verbose is now {Auxide.verbose}");
                         }
@@ -421,6 +424,7 @@ namespace Auxide
                     case "a.unload":
                     case "auxide.unload":
                         {
+                            serverCmd = true;
                             if (hookArgs.Length == 1)
                             {
                                 if (_scripts.TryGetValue(hookArgs[0], out Script script))
@@ -434,6 +438,7 @@ namespace Auxide
                     case "a.reload":
                     case "auxide.reload":
                         {
+                            serverCmd = true;
                             if (hookArgs.Length == 1)
                             {
                                 string scriptName = hookArgs[0].Replace(".dll", "");
@@ -452,6 +457,7 @@ namespace Auxide
                     case "a.load":
                     case "auxide.load":
                         {
+                            serverCmd = true;
                             if (hookArgs.Length == 1)
                             {
                                 string scriptName = hookArgs[0].Replace(".dll", "");
@@ -467,6 +473,7 @@ namespace Auxide
                     case "a.info":
                     case "auxide.info":
                         {
+                            serverCmd = true;
                             string verbose = Auxide.verbose.ToString();
                             //string useint = Auxide.useInternal.ToString();
                             string runMode = Auxide.full ? "full" : "minimal";
@@ -480,6 +487,7 @@ namespace Auxide
                     case "a.list":
                     case "auxide.list":
                         {
+                            serverCmd = true;
                             string mess = "";
                             foreach (KeyValuePair<string, Script> script in _scripts)
                             {
@@ -491,6 +499,7 @@ namespace Auxide
                     case "listgroupmembers":
                     case "listmembers":
                         {
+                            serverCmd = true;
                             Dictionary<string, bool> members = Permissions.GetGroupMembers(hookArgs[0]);
                             string message = $"Group members for {hookArgs[0]}:";
                             foreach (var member in members)
@@ -498,10 +507,12 @@ namespace Auxide
                                 string isgroup = member.Value ? " (group)" : "";
                                 message += $"\t{member.Key}{isgroup}\n";
                             }
+                            player.ChatMessage(message);
                         }
                         break;
                     case "listgroups":
                         {
+                            serverCmd = true;
                             List<string> groups = Permissions.GetGroups();
                             string message = "Groups:\n";
                             foreach (string group in groups)
@@ -513,6 +524,7 @@ namespace Auxide
                         break;
                     case "addgroup":
                     case "groupadd":
+                        serverCmd = true;
                         if (hookArgs.Length == 1)
                         {
                             Permissions.AddGroup(hookArgs[0]);
@@ -520,12 +532,14 @@ namespace Auxide
                         break;
                     case "remgroup":
                     case "removegroup":
+                        serverCmd = true;
                         if (hookArgs.Length == 1)
                         {
                             Permissions.RemoveGroup(hookArgs[0]);
                         }
                         break;
                     case "addtogroup":
+                        serverCmd = true;
                         if (hookArgs.Length == 2)
                         {
                             Permissions.AddGroupMember(hookArgs[0], hookArgs[1]);
@@ -533,6 +547,7 @@ namespace Auxide
                         break;
                     case "removefromgroup":
                     case "remfromgroup":
+                        serverCmd = true;
                         if (hookArgs.Length == 2)
                         {
                             Permissions.RemoveGroupMember(hookArgs[0], hookArgs[1]);
@@ -541,6 +556,7 @@ namespace Auxide
                     case "addperm":
                     case "grantperm":
                     case "grant":
+                        serverCmd = true;
                         if (hookArgs.Length == 2)
                         {
                             Permissions.GrantPermission(hookArgs[1], hookArgs[0]);
@@ -549,6 +565,7 @@ namespace Auxide
                     case "remperm":
                     case "removeperm":
                     case "revoke":
+                        serverCmd = true;
                         if (hookArgs.Length == 2)
                         {
                             Permissions.RevokePermission(hookArgs[1], hookArgs[0]);
@@ -556,7 +573,7 @@ namespace Auxide
                         break;
                 }
             }
-            if (Auxide.full) Broadcast("OnChatCommand", player, command, hookArgs);
+            if (Auxide.full && !serverCmd) Broadcast("OnChatCommand", player, command, hookArgs);
         }
         #endregion
 

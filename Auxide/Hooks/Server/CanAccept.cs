@@ -6,8 +6,7 @@ namespace Auxide.Hooks.Server
     [HarmonyPatch(typeof(ItemContainer), "CanAcceptItem", new Type[] { typeof(Item), typeof(int) })]
     public class CanAccept
     {
-        //public static bool Postfix(ItemContainer __instance, ref bool __result, ref Item item, ref int targetPos)
-        public static bool Postfix(ref bool __result, ref ItemContainer __instance, ref Item item, ref int targetPos)
+        public static bool Postfix(ItemContainer __instance, ref bool __result, ref Item item, ref int targetPos)
         {
             if (Auxide.full)
             {

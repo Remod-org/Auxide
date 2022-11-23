@@ -2,7 +2,9 @@ using Auxide;
 
 public class TestScript : RustScript
 {
+    private static ConfigData configData;
     public bool enable = true;
+
 	public TestScript()
 	{
         Author = "RFC1920";
@@ -11,6 +13,8 @@ public class TestScript : RustScript
 
     public override void Initialize()
 	{
+        LoadConfig();
+        enable = configData.Enable;
         Utils.DoLog("Let's test some hooks!");
 	}
 
@@ -22,6 +26,35 @@ public class TestScript : RustScript
     public void Message(BasePlayer player, string input, params object[] args)
     {
         Utils.SendReply(player, string.Format(lang.Get(input), args));
+    }
+
+    public class ConfigData
+    {
+        public bool Enable;
+    }
+
+    public void SaveConfig(ConfigData configuration)
+    {
+        config.WriteObject(configuration);
+    }
+
+    public void LoadConfig()
+    {
+        if (config.Exists())
+        {
+            configData = config.ReadObject<ConfigData>();
+            return;
+        }
+        LoadDefaultConfig();
+    }
+
+    public void LoadDefaultConfig()
+    {
+        configData = new ConfigData()
+        {
+            Enable = false
+        };
+        SaveConfig(configData);
     }
 
     public object CanToggleSwitch(BaseOven oven, BasePlayer player)
@@ -142,6 +175,8 @@ public class TestScript : RustScript
         {
             case "ttoggle":
                 enable = !enable;
+                configData.Enable = enable;
+                SaveConfig(configData);
                 Message(player, enable ? "TestScript enabled" : "TestScript disabled");
                 break;
         }

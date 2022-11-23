@@ -94,9 +94,8 @@ namespace Auxide
                 }
 
                 Utils.GetNewLog();
-                //Utils.TruncateLog();
 
-                Scripts = new ScriptManager(ScriptPath);//, ConfigPath, DataPath);
+                Scripts = new ScriptManager(ScriptPath);
                 permissions = new Permissions();
                 initialized = true;
                 if (verbose) Utils.DoLog(full ? "Initialized full mode with plugins..." : "Initialized minimal mode with no plugins...", false);

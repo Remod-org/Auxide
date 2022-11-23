@@ -301,7 +301,7 @@ namespace Auxide
                     cmd.ExecuteNonQuery();
                 }
             }
-            //Scripts.OnGroupCreatedHook(groupname, groupname, 0);
+            Scripts.OnGroupCreatedHook(groupname, groupname, 0);
         }
 
         public static void RemoveGroup(string groupname)

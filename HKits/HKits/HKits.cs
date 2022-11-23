@@ -137,9 +137,9 @@ public class HKits : RustScript
         if (configData.debug) Utils.DoLog($"{command}: {showArgs}");
         switch (command)
         {
-            case "kits":
-                KitGUI(player);
-                break;
+            //case "kits":
+            //    KitGUI(player);
+            //    break;
             case "kit":
                 if (args.Length == 1)
                 {
