@@ -9,6 +9,7 @@ It offers the admin two modes of operation:
 - FULL (Work in progress)
   - Provides full plugin support (Auxide plugins only)
   - Plugins are currently required to be in DLL form, and several examples are provided.
+  - See https://github.com/Remod-org/AuxidePlugins for the core/included plugins.
 
 Additionally, Auxide should work just fine month to month for **vanilla and staging** servers without monthly updates.
 
