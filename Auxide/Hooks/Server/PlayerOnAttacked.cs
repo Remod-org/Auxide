@@ -5,8 +5,8 @@ using Harmony;
 
 namespace Auxide.Hooks.Server
 {
-    [HarmonyPatch(typeof(ResourceEntity), "OnAttacked", typeof(HitInfo))]
-    public class ResOnAttacked
+    [HarmonyPatch(typeof(BasePlayer), "OnAttacked", typeof(HitInfo))]
+    public class PlayerOnAttacked
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {
@@ -17,9 +17,10 @@ namespace Auxide.Hooks.Server
 
             for (int i = 0; i < codes.Count; i++)
             {
-                if (codes[i].opcode == OpCodes.Ldfld && codes[i-1].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldnull)
+                if (codes[i].opcode == OpCodes.Call && codes[i - 1].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Stloc_0)
                 {
                     startIndex = i - 1;
+                    //codes[i].labels.Add(newLabel);
                     codes[startIndex].labels.Add(newLabel);
                     break;
                 }

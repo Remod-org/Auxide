@@ -11,17 +11,20 @@ namespace Auxide.Hooks.Server
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {
-            if (!Auxide.hideGiveNotices) return instr;
+            //if (!Auxide.hideGiveNotices) return instr;
 
             List<CodeInstruction> codes = new List<CodeInstruction>(instr);
 
             Label newLabel = il.DefineLabel();
+            //int startIndex = instr.Count() - 1;
             int startIndex = -1;
 
             int i;
             for (i = 0; i < codes.Count; i++)
             {
                 if (codes[i].opcode == OpCodes.Ldc_I4_5 && codes[i + 1].opcode == OpCodes.Newarr && startIndex == -1)
+                //if (codes[i].opcode == OpCodes.Ldloc_0 && codes[i + 2].opcode == OpCodes.Brfalse_S && startIndex == -1)
+                //if (codes[i].opcode == OpCodes.Ldloc_0 && codes[i + 2].opcode == OpCodes.Brfalse_S && startIndex == -1)
                 {
                     startIndex = i;
                     codes[startIndex].labels.Add(newLabel);
@@ -33,7 +36,7 @@ namespace Auxide.Hooks.Server
             {
                 List<CodeInstruction> instructionsToInsert = new List<CodeInstruction>()
                 {
-                    new CodeInstruction(OpCodes.Nop),
+                    //new CodeInstruction(OpCodes.Nop),
                     new CodeInstruction(OpCodes.Ret)
                 };
                 codes.InsertRange(startIndex, instructionsToInsert);

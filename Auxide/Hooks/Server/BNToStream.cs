@@ -8,14 +8,13 @@ using ProtoBuf;
 
 namespace Auxide.Hooks.Server
 {
-    // New patch method throws error
     [HarmonyPatch(typeof(BaseNetworkable), "ToStream", new Type[] { typeof(Stream), typeof(BaseNetworkable.SaveInfo) })]
     public class BNToStreamPatch
     {
         // This patch disables the TC decay warning (WORKING)
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {
-            if (!Auxide.config.Options.disableTCWarning)
+            if (Auxide.full || !Auxide.config.Options.minimal.disableTCWarning)
             {
                 return instr;
             }

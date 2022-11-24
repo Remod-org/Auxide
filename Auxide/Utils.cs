@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace Auxide
 {
@@ -113,5 +114,32 @@ namespace Auxide
         //        DoLog(string.Concat("Failed to convert datafile to proto storage: ", name, exception));
         //    }
         //}
+    }
+}
+public static class StringExtension
+{
+    public static string Titleize(this string s)
+    {
+        bool IsNewSentence = true;
+        StringBuilder result = new StringBuilder(s.Length);
+        for (int i = 0; i < s.Length; i++)
+        {
+            if (IsNewSentence && char.IsLetter(s[i]))
+            {
+                result.Append(char.ToUpper(s[i]));
+                IsNewSentence = false;
+            }
+            else
+            {
+                result.Append(s[i]);
+            }
+
+            if (s[i] == '!' || s[i] == '?' || s[i] == '.')
+            {
+                IsNewSentence = true;
+            }
+        }
+
+        return result.ToString();
     }
 }

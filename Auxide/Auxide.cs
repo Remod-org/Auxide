@@ -99,6 +99,7 @@ namespace Auxide
                 permissions = new Permissions();
                 initialized = true;
                 if (verbose) Utils.DoLog(full ? "Initialized full mode with plugins..." : "Initialized minimal mode with no plugins...", false);
+                //if (full) Scripts.Broadcast("OnServerInitialized");
             }
             catch (Exception e)
             {

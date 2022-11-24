@@ -597,6 +597,7 @@
     <Compile Include="Hooks\Server\OnServerShutdown.cs" />
     <Compile Include="Hooks\Server\PlayerConnect.cs" />
     <Compile Include="Hooks\Server\PlayerDisconnect.cs" />
+    <Compile Include="Hooks\Server\PlayerOnAttacked.cs" />
     <Compile Include="Hooks\Server\ResOnAttacked.cs" />
     <Compile Include="Hooks\Server\CorpseLoot.cs" />
     <Compile Include="Hooks\Server\BasePlayerLoot.cs" />

@@ -13,7 +13,6 @@ namespace Auxide
             //public bool cSharpScripts;
             //public bool useInternalCompiler;
             //public bool useWestWindCompiler;
-            public bool disableTCWarning;
             public bool hideGiveNotices;
             public AuxideMinimal minimal;
         }
@@ -21,6 +20,7 @@ namespace Auxide
         public class AuxideMinimal
         {
             public bool blockTCMenu { get; set; }
+            public bool disableTCWarning { get; set; }
             public bool allowPVP { get; set; }
             public bool allowAdminPVP { get; set; }
             public bool blockBuildingDecay { get; set; }
@@ -40,10 +40,10 @@ namespace Auxide
                 verbose = false,
                 //cSharpScripts = false,
                 //useInternalCompiler = true,
-                disableTCWarning = false,
                 hideGiveNotices = false,
                 minimal = new AuxideMinimal()
                 {
+                    disableTCWarning = false,
                     blockTCMenu = false,
                     allowPVP = true,
                     allowAdminPVP = true,
