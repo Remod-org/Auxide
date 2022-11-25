@@ -48,7 +48,6 @@ namespace Auxide.Hooks.Server
             return codes.AsEnumerable();
         }
 
-        // WORKING 15-Nov-2022 except for BaseMelee
         public static void Prefix(BaseCombatEntity __instance, ref HitInfo info)
         {
             if (Auxide.full) return;

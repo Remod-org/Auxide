@@ -27,6 +27,8 @@ namespace Auxide
         private readonly Stopwatch _timeSinceChange;
         private readonly Stopwatch _timeSinceUpdate;
 
+        internal bool playerTakingDamage;
+
         /// <summary>
         /// Called after instantiating the script but before Initialize is called. Use this to set up the instance with auto-populated field values.
         /// </summary>
@@ -331,8 +333,34 @@ namespace Auxide
             return BroadcastReturn("CanPickup", entity, player);
         }
 
+        //public object OnTakeDamageHook(BasePlayer player = null, HitInfo info = null)
+        //{
+        //    playerTakingDamage = true;
+        //    try
+        //    {
+        //        return BroadcastReturn("OnTakeDamage", player, info);
+        //    }
+        //    finally
+        //    {
+        //        playerTakingDamage = false;
+        //    }
+        //}
         public object OnTakeDamageHook(BaseCombatEntity target = null, HitInfo info = null)
         {
+            BasePlayer player = target as BasePlayer;
+            if (player != null && playerTakingDamage) return null;
+            if (player != null)
+            {
+                playerTakingDamage = true;
+                try
+                {
+                    return BroadcastReturn("OnTakeDamage", player, info);
+                }
+                finally
+                {
+                    playerTakingDamage = false;
+                }
+            }
             return BroadcastReturn("OnTakeDamage", target, info);
         }
 
