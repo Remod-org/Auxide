@@ -161,6 +161,15 @@ void Broadcast("OnPlayerJoin", BasePlayer);
 void Broadcast("OnPlayerLeave", BasePlayer);
 
 void Broadcast("OnChatCommand", BasePlayer, string, object[]);
+
+void Broadcast("OnEntityDeath", BaseCombatEntity, HitInfo);
+
+PENDING:
+
+
+object BroadcastReturn("OnPlayerTick", BasePlayer, Playertick, bool);
+
+object BroadcastReturn("OnPlayerInput", BasePlayer, InputState);
 ```
 
 ### Available Utilities and Classes for Plugins
@@ -169,11 +178,25 @@ The following were borrowed from Oxide, and I believe their licensing allows thi
 - DynamicConfigFile (as config)
 - DataFileSystem (as data)
 - CuiHelper (Auxide.CuiHelper)
-  - Currently unusable due to non-working console commands (Displays correctly but cannot close, etc.).
+  - Currently unusable due to non-working console commands (Displays correctly but cannot process input from fields or buttons).
   - k1lly0u's (?) UI class is included as Auxide.UI.
 
 - LangFileSystem (as lang)
   - See plugin examples for helper functions Lang() and Message()
+
+The following were created here:
+- Timer class (as timer)
+- ActionQueue class for NextTick, etc. (work in progress)
+- WebClient (work in progress)
+
+The rest is from Facepunch ModLoader.
+
+### Work in Progress
+
+- Integrate and test action queueing (e.g. NextTick, etc.)
+- Fix/enable new OnPlayerTick and OnPlayerInput
+- Fix issue with Vehicle damage propagation causing NRE
+- General cleanup
 
 ### TODO
 
