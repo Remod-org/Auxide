@@ -12,4 +12,4 @@
 
 6. Install plugins as desired.
 
-7. Things are a bit bumpy as of 12/2022 but feel free to report what you find at github.
+7. Things are a bit bumpy as of 12/2022 but feel free to report what you find at [github](https://github.com/Remod-org/Auxide/issues).
