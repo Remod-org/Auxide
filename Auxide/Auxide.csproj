@@ -588,6 +588,8 @@
     <Compile Include="Exceptions\ScriptLoadException.cs" />
     <Compile Include="Hooks\Server\BaseOvenSV.cs" />
     <Compile Include="Hooks\Server\BCEHurt1.cs" />
+    <Compile Include="SubscriptionClient.cs" />
+    <Compile Include="WebClient.cs" />
     <None Include="app.config" />
     <Compile Include="Hooks\Server\BCEHurt2.cs" />
     <Compile Include="Hooks\Server\BCEDie1.cs" />
@@ -623,7 +625,6 @@
     <Compile Include="Public\IScriptReference.cs" />
     <Compile Include="Public\RustScript.cs" />
     <Compile Include="RefreshItem.cs" />
-    <Compile Include="AuxideWebClient.cs" />
     <Compile Include="Script.cs" />
     <Compile Include="Script.Reference.cs" />
     <Compile Include="Scripting\CompilationResult.cs" />

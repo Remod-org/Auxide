@@ -50,7 +50,7 @@ namespace Auxide
         /// </summary>
         public event Action<IScriptReference> OnScriptUnloaded;
 
-        //private readonly AuxideWebClient Client;
+        private readonly SubscriptionClient Client;
 
         // This was added for the compilers as a test.  Possibly can or should remove.
         public ScriptManager()
@@ -70,31 +70,21 @@ namespace Auxide
 
             //if (Auxide.config.Options.subscription.enabled)
             //{
-            //    Client = new AuxideWebClient("Auxide");
-            //    Dictionary<string, AuxideWebClient.PlRequest> plr = new Dictionary<string, AuxideWebClient.PlRequest>
+            //    Client = new SubscriptionClient();
+            //    foreach (SubscriptionClient.AuxideSubscribedPlugin pluginsub in Client.current.data)
             //    {
+            //        try
             //        {
-            //           "req",
-            //            new AuxideWebClient.PlRequest()
-            //            {
-            //                pluginName = null, // null equates to "get all plugins" for which this account has an active sub
-            //                action = "download",
-            //                username = Auxide.config.Options.subscription.username,
-            //                password = Auxide.config.Options.subscription.password
-            //            }
-            //        }
-            //    };
-            //    Client.GetSubscriptionPlugins(plr);
-            //    if (Client.response.success)
-            //    {
-            //        foreach (KeyValuePair<string, byte[]> data in Client.response.data)
-            //        {
-            //            Script newScript = new Script(this, data.Key)
+            //            Script newScript = new Script(this, pluginsub.name)
             //            {
             //                remote = true
             //            };
-            //            _scripts.Add(data.Key, newScript);
-            //            newScript.Update(data.Value);
+            //            _scripts.Add(pluginsub.name, newScript);
+            //            newScript.Update(pluginsub.data);
+            //        }
+            //        catch (Exception e)
+            //        {
+            //            Utils.DoLog($"Unable to process subscribed plugin: {e}");
             //        }
             //    }
             //}
@@ -420,7 +410,7 @@ namespace Auxide
             return BroadcastReturn("OnTakeDamage", target, info);
         }
 
-        public object OnPlayerReceiveTickHook(BasePlayer player, PlayerTick msg, bool wasPlayerStalled)
+        public object OnPlayerTickHook(BasePlayer player, PlayerTick msg, bool wasPlayerStalled)
         {
             if (player == null) return null;
             if (msg == null) return null;
