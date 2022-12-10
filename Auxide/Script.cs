@@ -13,6 +13,7 @@ namespace Auxide
     {
         public ScriptManager Manager { get; }
         public string Name { get; }
+        public bool remote { get; set; }
         public string Path { get; private set; }
         public string ConfigPath { get; private set; }
         public string DataPath { get; private set; }
@@ -53,6 +54,27 @@ namespace Auxide
             Assembly = null;
 
             Manager.ScriptUnloaded(this);
+        }
+
+        internal void Update(byte[] data = null)
+        {
+            if (data == null) return;
+            string code = "";
+            try
+            {
+                Utils.DoLog($"Trying to load dll from remote data");
+                Assembly assembly = Assembly.Load(data);
+                Utils.DoLog($"Loaded assembly: {assembly.GetType()}!");
+
+                Initialize(null, code, assembly);
+                initialized = true;
+            }
+            catch (Exception e)
+            {
+                initialized = false;
+                Utils.DoLog($"Failed to load dll from remote data: {e}");
+                throw new ScriptLoadException(Name, $"Failed to load dll from remote data", e);
+            }
         }
 
         internal void Update(string path = null)
@@ -179,7 +201,7 @@ namespace Auxide
             {
                 Utils.DoLog($"Attempting to create instance of type {type}");
                 instance = Activator.CreateInstance(type);// as RustScript;
-                Utils.DoLog($"Created instance of type {type}");
+                Utils.DoLog($"Created instance of type {instance.GetType().FullName}");
             }
             catch (Exception e)
             {
@@ -187,12 +209,10 @@ namespace Auxide
                 throw new ScriptLoadException(Name, $"Exception thrown in script '{Name}' constructor.", e);
             }
 
-            RustScript scriptInstance = instance as RustScript;
-            if (scriptInstance == null)
-            //if (!(instance is RustScript scriptInstance))
+            if (!(instance is RustScript scriptInstance))
             {
-                Utils.DoLog($"Script class ({type.FullName}) must derive from RustScript.  Found: {instance.GetType()}");
-                throw new ScriptLoadException(Name, $"Script class ({type.FullName}) must derive from RustScript.  Found: {instance.GetType()}");
+                Utils.DoLog($"Script class ({instance.GetType()}:{instance.GetType().BaseType}) must derive from RustScript.");
+                throw new ScriptLoadException(Name, $"Script class ({type.FullName}) must derive from RustScript.");
             }
 
             scriptInstance.Manager = Manager;
@@ -210,9 +230,7 @@ namespace Auxide
 
             ConfigPath = System.IO.Path.Combine(Auxide.ConfigPath, $"{BaseName}.json");
             DataPath = System.IO.Path.Combine(Auxide.DataPath, BaseName);
-            // Yes, this will need to be extended...
-            //LangPath = System.IO.Path.Combine(Auxide.LangPath);//, $"{BaseName}.json");
-            LangPath = Auxide.LangPath;//, $"{BaseName}.json");
+            LangPath = Auxide.LangPath;
 
             scriptInstance.config = new DynamicConfigFile(ConfigPath);
             scriptInstance.data = new DataFileSystem(DataPath);
@@ -240,10 +258,6 @@ namespace Auxide
 
             Debug.LogWarning($"Script {path} loaded!");
             Manager.ScriptLoaded(this);
-
-            //config.Load();
-            //data.GetFile(Name).Load();
-            //config.Save();
         }
 
         internal void ReportError(string context, Exception e)

@@ -1,5 +1,7 @@
 ﻿using Auxide.Scripting;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -27,6 +29,13 @@ namespace Auxide
         private static bool initialized;
         public static bool full;
         public static bool verbose;
+        private static object nextTickLock;
+
+        private static ActionQueue queue;
+        private static Action<float> onFrame;
+//        private static List<Action> nextTickQueue;
+        private static Queue<Action> lastTickQueue;
+
         public static bool hideGiveNotices { get; internal set; }
         //public static bool useInternal = false;
 
@@ -96,10 +105,10 @@ namespace Auxide
                 Utils.GetNewLog();
 
                 Scripts = new ScriptManager(ScriptPath);
+                queue = new ActionQueue();
                 permissions = new Permissions();
                 initialized = true;
                 if (verbose) Utils.DoLog(full ? "Initialized full mode with plugins..." : "Initialized minimal mode with no plugins...", false);
-                //if (full) Scripts.Broadcast("OnServerInitialized");
             }
             catch (Exception e)
             {
@@ -129,6 +138,77 @@ namespace Auxide
                 string now = DateTime.Now.ToShortTimeString();
                 UnityEngine.Debug.LogWarning($"[Auxide ({now})] Re-read config");
             }
+        }
+
+        public static void NextTick(Action callback)
+        {
+            lock (nextTickLock)
+            {
+                queue.Enqueue(callback);
+                //nextTickQueue.Add(callback);
+            }
+        }
+
+        public static void OnFrame(Action<float> callback)
+        {
+            onFrame += callback;
+        }
+
+        public static void OnFrame(float delta)
+        {
+            queue.Consume();
+            //Queue<Action> actions;
+            //if (nextTickQueue.Count > 0)
+            //if (queue.actions.Count > 0)
+            //{
+            //    lock (nextTickLock)
+            //    {
+            //        actions = queue.actions;// nextTickQueue;
+            //        //nextTickQueue = lastTickQueue;
+            //        queue.actions = lastTickQueue;
+            //        lastTickQueue = actions;
+            //    }
+            //    for (int i = 0; i < actions.Count; i++)
+            //    {
+            //        try
+            //        {
+            //            actions[i]();
+            //        }
+            //        catch (Exception exception)
+            //        {
+            //            Utils.DoLog($"Exception while calling NextTick callback: {exception}");
+            //        }
+            //    }
+            //    actions.Clear();
+            //}
+            ////this.libtimer.Update(delta);
+            //if (initialized)
+            //{
+            //    //ServerConsole serverConsole = ServerConsole;
+            //    //if (serverConsole != null)
+            //    //{
+            //    //    serverConsole.Update();
+            //    //}
+            //    //else
+            //    //{
+            //    //}
+            //    try
+            //    {
+            //        Action<float> action = onFrame;
+            //        if (action != null)
+            //        {
+            //            action(delta);
+            //        }
+            //        else
+            //        {
+            //        }
+            //    }
+            //    catch (Exception exception2)
+            //    {
+            //        Exception exception1 = exception2;
+            //        Utils.DoLog(string.Concat(exception1.GetType().Name, $" while invoke OnFrame in extensions"));
+            //    }
+            //}
         }
 
         public static void Dispose()

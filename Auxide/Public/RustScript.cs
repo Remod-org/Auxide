@@ -1,15 +1,10 @@
 ﻿using System;
+using System.IO;
 using Auxide;
 using Auxide.Scripting;
 
 public abstract class RustScript : IDisposable
 {
-    // Pointer to an external unmanaged resource.
-    //private IntPtr handle;
-    // Other managed resource this class uses.
-    //private readonly Component component = new Component();
-    // Track whether Dispose has been called.
-    //private bool disposed = false;
     internal ScriptManager Manager { get; set; }
     public DynamicConfigFile config { get; set; }
     public DataFileSystem data { get; set; }
@@ -25,10 +20,13 @@ public abstract class RustScript : IDisposable
 
     public VersionNumber Version { get; protected set; }
 
+    public Timer timer;
+
     public RustScript()
     {
         Name = GetType().Name;
-        Title = Name.Substring(0,1).ToUpper() + Name.Substring(1);
+        //Title = Name.Substring(0,1).ToUpper() + Name.Substring(1);
+        Title = Name.Titleize();
         Author = "UNKNOWN";
         Version = new VersionNumber(1, 0, 0);
     }
@@ -48,52 +46,46 @@ public abstract class RustScript : IDisposable
         }
     }
 
-    //public LangFileSystem lang { get; set; }
-
     public virtual void Initialize() { }
     public virtual void LoadDefaultMessages() { }
     public virtual void Dispose() { }
-    //{
-    //    Dispose(disposing: true);
-    //    GC.SuppressFinalize(this);
-    //}
 
-    //protected virtual void Dispose(bool disposing)
-    //{
-    //    // Check to see if Dispose has already been called.
-    //    if (!disposed)
-    //    {
-    //        // If disposing equals true, dispose all managed
-    //        // and unmanaged resources.
-    //        if (disposing)
-    //        {
-    //            // Dispose managed resources.
-    //            component.Dispose();
-    //        }
+    public virtual string Lang(string input, params object[] args)
+    {
+        return string.Format(lang.Get(input), args);
+    }
 
-    //        // Call the appropriate methods to clean up
-    //        // unmanaged resources here.
-    //        // If disposing is false,
-    //        // only the following code is executed.
-    //        CloseHandle(handle);
-    //        handle = IntPtr.Zero;
+    public virtual void Message(BasePlayer player, string input, params object[] args)
+    {
+        Utils.SendReply(player, string.Format(lang.Get(input), args));
+    }
 
-    //        // Note disposing has been done.
-    //        disposed = true;
-    //    }
-    //}
+    protected void LogToFile(string filename, string text, RustScript plugin, bool timeStamp = true)
+    {
+        string str = Path.Combine(Auxide.Auxide.LogPath, plugin.Name);
+        if (!Directory.Exists(str))
+        {
+            Directory.CreateDirectory(str);
+        }
+        string[] lower = new string[] { plugin.Name.ToLower(), "_", filename.ToLower(), null, null };
+        lower[3] = (timeStamp ? string.Format("-{0:yyyy-MM-dd}", DateTime.Now) : "");
+        lower[4] = ".txt";
+        filename = string.Concat(lower);
+        using (StreamWriter streamWriter = new StreamWriter(Path.Combine(str, filename), true))
+        {
+            streamWriter.WriteLine((timeStamp ? string.Format("[{0:yyyy-MM-dd HH:mm:ss}] {1}", DateTime.Now, text) : text));
+        }
+    }
 
-    //[System.Runtime.InteropServices.DllImport("Kernel32")]
-    ////private extern static bool CloseHandle(IntPtr handle);
-    //private static extern bool CloseHandle(IntPtr handle);
+    protected void NextFrame(Action callback)
+    {
+        NextTick(callback);
+    }
 
-    //~RustScript()
-    //{
-    //    // Do not re-create Dispose clean-up code here.
-    //    // Calling Dispose(disposing: false) is optimal in terms of
-    //    // readability and maintainability.
-    //    Dispose(disposing: false);
-    //}
+    protected void NextTick(Action callback)
+    {
+        NextTick(callback);
+    }
 
     protected void Broadcast(string methodName) => Manager?.Broadcast(methodName);
 

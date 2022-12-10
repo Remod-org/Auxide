@@ -70,7 +70,7 @@ namespace Auxide
             return m?.DeclaringType?.FullName;
         }
 
-        private static bool GetBoolValue(string value)
+        public static bool GetBoolValue(string value)
         {
             if (value == null) return false;
             value = value.Trim().ToLower();

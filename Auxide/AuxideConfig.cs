@@ -15,6 +15,14 @@ namespace Auxide
             //public bool useWestWindCompiler;
             public bool hideGiveNotices;
             public AuxideMinimal minimal;
+            public AuxideSubscription subscription;
+        }
+
+        public class AuxideSubscription
+        {
+            public bool enabled;
+            public string username;
+            public string password;
         }
 
         public class AuxideMinimal
@@ -54,7 +62,8 @@ namespace Auxide
                     protectSleeper = false,
                     protectMount = false,
                     allowDamageToNPC = true
-                }
+                },
+                subscription = new AuxideSubscription()
             };
         }
     }

@@ -28,6 +28,7 @@ namespace Auxide
         private readonly Stopwatch _timeSinceUpdate;
 
         internal bool playerTakingDamage;
+        internal bool vehicleTakingDamage;
 
         /// <summary>
         /// Called after instantiating the script but before Initialize is called. Use this to set up the instance with auto-populated field values.
@@ -49,6 +50,8 @@ namespace Auxide
         /// </summary>
         public event Action<IScriptReference> OnScriptUnloaded;
 
+        //private readonly AuxideWebClient Client;
+
         // This was added for the compilers as a test.  Possibly can or should remove.
         public ScriptManager()
         {
@@ -64,6 +67,37 @@ namespace Auxide
             _pendingRefresh = new HashSet<RefreshItem>();
             _timeSinceChange = Stopwatch.StartNew();
             _timeSinceUpdate = Stopwatch.StartNew();
+
+            //if (Auxide.config.Options.subscription.enabled)
+            //{
+            //    Client = new AuxideWebClient("Auxide");
+            //    Dictionary<string, AuxideWebClient.PlRequest> plr = new Dictionary<string, AuxideWebClient.PlRequest>
+            //    {
+            //        {
+            //           "req",
+            //            new AuxideWebClient.PlRequest()
+            //            {
+            //                pluginName = null, // null equates to "get all plugins" for which this account has an active sub
+            //                action = "download",
+            //                username = Auxide.config.Options.subscription.username,
+            //                password = Auxide.config.Options.subscription.password
+            //            }
+            //        }
+            //    };
+            //    Client.GetSubscriptionPlugins(plr);
+            //    if (Client.response.success)
+            //    {
+            //        foreach (KeyValuePair<string, byte[]> data in Client.response.data)
+            //        {
+            //            Script newScript = new Script(this, data.Key)
+            //            {
+            //                remote = true
+            //            };
+            //            _scripts.Add(data.Key, newScript);
+            //            newScript.Update(data.Value);
+            //        }
+            //    }
+            //}
 
             RefreshAll();
 
@@ -204,6 +238,12 @@ namespace Auxide
         }
 
         #region Standard Hooks
+
+        public void OnTickHook()
+        {
+            Broadcast("OnTick");
+        }
+
         public void OnServerInitializedHook()
         {
             Broadcast("OnServerInitialized");
@@ -347,8 +387,12 @@ namespace Auxide
         //}
         public object OnTakeDamageHook(BaseCombatEntity target = null, HitInfo info = null)
         {
+            if (target == null) return null;
+            if (info == null) return null;
             BasePlayer player = target as BasePlayer;
+            BaseVehicleModule vehicleModule = target as BaseVehicleModule;
             if (player != null && playerTakingDamage) return null;
+            if (vehicleModule != null && vehicleTakingDamage) return null;
             if (player != null)
             {
                 playerTakingDamage = true;
@@ -361,7 +405,40 @@ namespace Auxide
                     playerTakingDamage = false;
                 }
             }
+            else if (vehicleModule != null)
+            {
+                vehicleTakingDamage = true;
+                try
+                {
+                    return BroadcastReturn("OnTakeDamage", player, info);
+                }
+                finally
+                {
+                    vehicleTakingDamage= false;
+                }
+            }
             return BroadcastReturn("OnTakeDamage", target, info);
+        }
+
+        public object OnPlayerReceiveTickHook(BasePlayer player, PlayerTick msg, bool wasPlayerStalled)
+        {
+            if (player == null) return null;
+            if (msg == null) return null;
+            return BroadcastReturn("OnPlayerTick", player, msg, wasPlayerStalled);
+        }
+
+        public object OnPlayerInputHook(BasePlayer player, InputState input)
+        {
+            if (player == null) return null;
+            if (input == null) return null;
+            return BroadcastReturn("OnPlayerInput", player, input);
+        }
+
+        public void OnEntityDeathHook(BaseCombatEntity entity, HitInfo info = null)
+        {
+            if (entity == null) return;
+            if (info == null) return;
+            Broadcast("OnEntityDeath", entity, info);
         }
 
         public void OnPlayerJoinHook(BasePlayer player = null)
