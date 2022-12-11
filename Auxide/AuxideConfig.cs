@@ -23,6 +23,7 @@ namespace Auxide
             public bool enabled;
             public string username;
             public string password;
+            public string encrypted;
         }
 
         public class AuxideMinimal
