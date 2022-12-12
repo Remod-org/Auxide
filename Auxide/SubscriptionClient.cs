@@ -38,14 +38,15 @@ namespace Auxide
                     _httpClient = new HttpClient() { BaseAddress = new Uri("https://code.remod.org/") };
                     _username = Auxide.config.Options.subscription.username;
 
-                    if (!string.IsNullOrEmpty(Auxide.config.Options.subscription.password))
-                    {
-                        // This all works as desired...
-                        Auxide.config.Options.subscription.encrypted = EncryptString(Auxide.config.Options.subscription.password);
-                        Auxide.config.Options.subscription.password = "";
-                        Auxide.config.Save();
-                    }
-                    _password = Auxide.config.Options.subscription.encrypted;
+                    //if (!string.IsNullOrEmpty(Auxide.config.Options.subscription.password))
+                    //{
+                    //    // This all works as desired...
+                    //    Auxide.config.Options.subscription.encrypted = EncryptString(Auxide.config.Options.subscription.password);
+                    //    Auxide.config.Options.subscription.password = "";
+                    //    Auxide.config.Save();
+                    //}
+                    //_password = Auxide.config.Options.subscription.encrypted;
+                    _password = Auxide.config.Options.subscription.password;
 
                     AuxideSub();
                 }
@@ -87,38 +88,11 @@ namespace Auxide
             byte[] salt;
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
 
+            //Auxide.config.Options.subscription.salt = Convert.ToBase64String(salt);
+            //Auxide.config.Save();
+
             return salt;
-            //return Encoding.ASCII.GetString(salt);
         }
-
-        //public static bool Authenticate(string username, string passwd)
-        //{
-        //    string crypted = Auxide.config.Options.subscription.password;
-
-        //    if (crypted != "")
-        //    {
-        //        byte[] hashBytes = Convert.FromBase64String(crypted);
-        //        byte[] salt = new byte[16];
-        //        Array.Copy(hashBytes, 0, salt, 0, 16);
-        //        Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(passwd, salt, 10000);
-        //        byte[] hash = pbkdf2.GetBytes(20);
-
-        //        int ok = 1;
-        //        for (int i = 0; i < 20; i++)
-        //        {
-        //            if (hashBytes[i + 16] != hash[i])
-        //            {
-        //                ok = 0;
-        //            }
-        //        }
-        //        if (ok == 1)
-        //        {
-        //            Utils.DoLog($"User {username} successfully authenticated!");
-        //            return true;
-        //        }
-        //    }
-        //    return false;
-        //}
 
         public static string EncryptString(string passwd, byte[] insalt = null)
         {

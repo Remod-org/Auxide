@@ -89,6 +89,8 @@ public abstract class RustScript : IDisposable
 
     protected void Broadcast(string methodName) => Manager?.Broadcast(methodName);
 
+    protected void Narrowcast(string methodName, IScriptReference script) => Manager?.Narrowcast(methodName, script);
+
     protected void Broadcast<T0>(string methodName, T0 arg0) => Manager?.Broadcast(methodName, arg0);
 
     protected void Broadcast<T0, T1>(string methodName, T0 arg0, T1 arg1) => Manager?.Broadcast(methodName, arg0, arg1);
@@ -98,6 +100,8 @@ public abstract class RustScript : IDisposable
     protected void Broadcast<T0, T1, T2, T3>(string methodName, T0 arg0, T1 arg1, T2 arg2, T3 arg3) => Manager?.Broadcast(methodName, arg0, arg1, arg2, arg3);
 
     protected object BroadcastReturn(string methodName) => Manager?.BroadcastReturn(methodName);
+
+    protected object NarrowcastReturn(string methodName, IScriptReference script) => Manager?.NarrowcastReturn(methodName, script);
 
     protected object BroadcastReturn<T0>(string methodName, T0 arg0) => Manager?.BroadcastReturn(methodName, arg0);
 

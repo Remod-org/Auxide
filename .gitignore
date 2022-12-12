@@ -5,3 +5,4 @@ bin
 obj
 packages
 /Auxide/Lang.cs
+/Auxide/Hooks/Server/DroppedItemContainerInventorycs.cs

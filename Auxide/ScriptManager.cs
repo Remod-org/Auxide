@@ -50,7 +50,7 @@ namespace Auxide
         /// </summary>
         public event Action<IScriptReference> OnScriptUnloaded;
 
-        private readonly SubscriptionClient Client;
+        //private readonly SubscriptionClient Client;
 
         // This was added for the compilers as a test.  Possibly can or should remove.
         public ScriptManager()
@@ -379,10 +379,13 @@ namespace Auxide
         {
             if (target == null) return null;
             if (info == null) return null;
+
             BasePlayer player = target as BasePlayer;
+            BaseVehicle vehicle = target as BaseVehicle;
             BaseVehicleModule vehicleModule = target as BaseVehicleModule;
             if (player != null && playerTakingDamage) return null;
             if (vehicleModule != null && vehicleTakingDamage) return null;
+
             if (player != null)
             {
                 playerTakingDamage = true;
@@ -395,16 +398,28 @@ namespace Auxide
                     playerTakingDamage = false;
                 }
             }
+            else if (vehicle != null)
+            {
+                vehicleTakingDamage = true;
+                try
+                {
+                    return BroadcastReturn("OnTakeDamage", vehicle, info);
+                }
+                finally
+                {
+                    vehicleTakingDamage = false;
+                }
+            }
             else if (vehicleModule != null)
             {
                 vehicleTakingDamage = true;
                 try
                 {
-                    return BroadcastReturn("OnTakeDamage", player, info);
+                    return BroadcastReturn("OnTakeDamage", vehicleModule, info);
                 }
                 finally
                 {
-                    vehicleTakingDamage= false;
+                    vehicleTakingDamage = false;
                 }
             }
             return BroadcastReturn("OnTakeDamage", target, info);
