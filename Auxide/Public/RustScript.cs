@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Auxide;
+using System;
 using System.IO;
-using Auxide;
 using Auxide.Scripting;
 
 public abstract class RustScript : IDisposable
@@ -79,12 +79,12 @@ public abstract class RustScript : IDisposable
 
     protected void NextFrame(Action callback)
     {
-        NextTick(callback);
+        Auxide.Auxide.NextTick(callback);
     }
 
     protected void NextTick(Action callback)
     {
-        NextTick(callback);
+        Auxide.Auxide.NextTick(callback);
     }
 
     protected void Broadcast(string methodName) => Manager?.Broadcast(methodName);

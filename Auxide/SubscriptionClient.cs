@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Auxide
 {
@@ -105,6 +107,28 @@ namespace Auxide
             Array.Copy(hash, 0, hashBytes, 16, 20);
 
             return Convert.ToBase64String(hashBytes);
+        }
+
+        public string HashPassword(string password)
+        {
+            // Generate a random salt
+            byte[] salt = new byte[16];
+            new RNGCryptoServiceProvider().GetBytes(salt);
+
+            // Concatenate the password and salt
+            byte[] passwordAndSalt = Encoding.UTF8.GetBytes(password).Concat(salt).ToArray();
+
+            // Create a SHA-256 hash object
+            SHA256 sha256 = SHA256.Create();
+
+            // Compute the hash of the password and salt
+            byte[] passwordHash = sha256.ComputeHash(passwordAndSalt);
+
+            // Convert the hash to a hexadecimal string
+            string passwordHashString = BitConverter.ToString(passwordHash).Replace("-", "");
+
+            // Return the password hash
+            return passwordHashString;
         }
     }
 }

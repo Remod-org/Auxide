@@ -34,7 +34,7 @@ namespace Auxide
         private static ActionQueue queue;
         private static Action<float> onFrame;
 //        private static List<Action> nextTickQueue;
-        private static Queue<Action> lastTickQueue;
+//        private static Queue<Action> lastTickQueue;
 
         public static bool hideGiveNotices { get; internal set; }
         //public static bool useInternal = false;
@@ -50,6 +50,7 @@ namespace Auxide
         {
             if (initialized) return;
 
+            nextTickLock = new object();
             //CosturaUtility.Initialize();
             try
             {
