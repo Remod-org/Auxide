@@ -211,6 +211,16 @@ namespace Auxide
             }
         }
 
+        public static object CallHook(string hook, object obj1, object obj2)
+        {
+            object[] objArray = Utils.ArrayPool.Get(2);
+			objArray[0] = obj1;
+			objArray[1] = obj2;
+			object result = Auxide.Scripts.BroadcastReturn(hook, objArray);
+			Utils.ArrayPool.Free(objArray);
+			return result;
+        }
+
         internal void ScriptLoading(IScriptReference script)
         {
             OnScriptLoading?.Invoke(script);
@@ -235,6 +245,7 @@ namespace Auxide
         {
             OnScriptUnloaded?.Invoke(script);
             Broadcast("OnScriptUnloaded", script);
+            Broadcast("OnPluginUnloaded", script);
         }
 
         #region Standard Hooks

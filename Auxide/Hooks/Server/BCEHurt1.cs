@@ -34,9 +34,11 @@ namespace Auxide.Hooks.Server
                 List<CodeInstruction> instructionsToInsert = new List<CodeInstruction>()
                 {
                     new CodeInstruction(OpCodes.Newobj, constr),
+                    //new CodeInstruction(OpCodes.Ldstr, "OnTakeDamageHook"),
                     new CodeInstruction(OpCodes.Ldarg_0),
                     new CodeInstruction(OpCodes.Ldarg_1),
                     new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(ScriptManager), "OnTakeDamageHook")),
+                    //new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ScriptManager), "CallHook")),
                     new CodeInstruction(OpCodes.Ldnull),
                     new CodeInstruction(OpCodes.Beq_S, newLabel),
                     new CodeInstruction(OpCodes.Ret)

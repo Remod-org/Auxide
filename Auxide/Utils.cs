@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -87,31 +88,105 @@ namespace Auxide
             }
         }
 
-        //public static void DatafileToProto<T>(string name, bool deleteAfter = true)
-        //{
-        //    DataFileSystem dataFileSystem = DataFileSystem;
-        //    if (!dataFileSystem.ExistsDatafile(name))
-        //    {
-        //        return;
-        //    }
-        //    if (ProtoStorage.Exists(new string[] { name }))
-        //    {
-        //        Interface.Oxide.LogWarning("Failed to import JSON file: {0} already exists.", new object[] { name });
-        //        return;
-        //    }
-        //    try
-        //    {
-        //        ProtoStorage.Save<T>(dataFileSystem.ReadObject<T>(name), new string[] { name });
-        //        if (deleteAfter)
-        //        {
-        //            File.Delete(dataFileSystem.GetFile(name).Filename);
-        //        }
-        //    }
-        //    catch (Exception exception1)
-        //    {
-        //        Exception exception = exception1;
-        //        DoLog(string.Concat("Failed to convert datafile to proto storage: ", name, exception));
-        //    }
-        //}
+        public static class ArrayPool
+        {
+            private const int MaxArrayLength = 50;
+            private const int InitialPoolAmount = 64;
+            private const int MaxPoolAmount = 256;
+            private static List<Queue<object[]>> _pooledArrays = new List<Queue<object[]>>();
+
+            static ArrayPool()
+            {
+                for (int i = 0; i < 50; i++)
+                {
+                    _pooledArrays.Add(new Queue<object[]>());
+                    SetupArrays(i + 1);
+                }
+            }
+
+            public static object[] Get(int length)
+            {
+                if (length == 0 || length > 50)
+                {
+                    return new object[length];
+                }
+                Queue<object[]> queue = _pooledArrays[length - 1];
+                Queue<object[]> obj = queue;
+                object[] result;
+                lock (obj)
+                {
+                    if (queue.Count == 0)
+                    {
+                        SetupArrays(length);
+                    }
+                    result = queue.Dequeue();
+                }
+                return result;
+            }
+
+            public static void Free(object[] array)
+            {
+                if (array == null || array.Length == 0 || array.Length > 50)
+                {
+                    return;
+                }
+                for (int i = 0; i < array.Length; i++)
+                {
+                    array[i] = null;
+                }
+                Queue<object[]> queue = _pooledArrays[array.Length - 1];
+                Queue<object[]> obj = queue;
+                lock (obj)
+                {
+                    if (queue.Count > 256)
+                    {
+                        for (int j = 0; j < 64; j++)
+                        {
+                            queue.Dequeue();
+                        }
+                    }
+                    else
+                    {
+                        queue.Enqueue(array);
+                    }
+                }
+            }
+
+            private static void SetupArrays(int length)
+            {
+                Queue<object[]> queue = _pooledArrays[length - 1];
+                for (int i = 0; i < 64; i++)
+                {
+                    queue.Enqueue(new object[length]);
+                }
+            }
+        }
     }
+
+    //public static void DatafileToProto<T>(string name, bool deleteAfter = true)
+    //{
+    //    DataFileSystem dataFileSystem = DataFileSystem;
+    //    if (!dataFileSystem.ExistsDatafile(name))
+    //    {
+    //        return;
+    //    }
+    //    if (ProtoStorage.Exists(new string[] { name }))
+    //    {
+    //        Interface.Oxide.LogWarning("Failed to import JSON file: {0} already exists.", new object[] { name });
+    //        return;
+    //    }
+    //    try
+    //    {
+    //        ProtoStorage.Save<T>(dataFileSystem.ReadObject<T>(name), new string[] { name });
+    //        if (deleteAfter)
+    //        {
+    //            File.Delete(dataFileSystem.GetFile(name).Filename);
+    //        }
+    //    }
+    //    catch (Exception exception1)
+    //    {
+    //        Exception exception = exception1;
+    //        DoLog(string.Concat("Failed to convert datafile to proto storage: ", name, exception));
+    //    }
+    //}
 }
