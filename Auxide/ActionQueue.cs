@@ -26,9 +26,13 @@ namespace Auxide
             return actions.Dequeue();
         }
 
-        public void Consume()
+        public void Consume(float delta = 0)
         {
             // Execute all queued actions in order
+            if (delta > 0)
+            {
+                Timer timer = new Timer(delta, () => Consume(0));
+            }
             while (actions.Count > 0)
             {
                 // Dequeue the next action

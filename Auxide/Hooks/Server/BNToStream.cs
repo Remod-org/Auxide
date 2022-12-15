@@ -9,7 +9,7 @@ using ProtoBuf;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(BaseNetworkable), "ToStream", new Type[] { typeof(Stream), typeof(BaseNetworkable.SaveInfo) })]
-    public class BNToStreamPatch
+    public class BNToStreamPatch1
     {
         // This patch disables the TC decay warning (WORKING)
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
@@ -82,4 +82,45 @@ namespace Auxide.Hooks.Server
             return codes.AsEnumerable();
         }
     }
+
+    [HarmonyPatch(typeof(BaseNetworkable), "ToStream", new Type[] { typeof(Stream), typeof(BaseNetworkable.SaveInfo) })]
+    public class BNToStreamPatch2
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
+        {
+            if (!Auxide.full)
+            {
+                return instr;
+            }
+
+            List<CodeInstruction> codes = new List<CodeInstruction>(instr);
+            int startIndex = -1;
+
+            for (int i = 0; i < codes.Count; i++)
+            {
+                if (codes[i].opcode == OpCodes.Ldfld && codes[i + 1].opcode == OpCodes.Ldarg_1 && codes[i + 2].opcode == OpCodes.Callvirt && startIndex == -1)
+                {
+                    startIndex = i + 3;
+                    break;
+                }
+            }
+
+            if (startIndex > -1)
+            {
+                System.Reflection.ConstructorInfo constr = typeof(ScriptManager).GetConstructors().First();
+                List<CodeInstruction> instructionsToInsert = new List<CodeInstruction>()
+                {
+                    new CodeInstruction(OpCodes.Newobj, constr),
+                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new CodeInstruction(OpCodes.Ldarg_1),
+                    new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(ScriptManager), "OnEntitySavedHook"))
+                };
+
+                codes.InsertRange(startIndex, instructionsToInsert);
+            }
+
+            return codes.AsEnumerable();
+        }
+    }
+
 }

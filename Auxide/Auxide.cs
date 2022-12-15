@@ -146,7 +146,6 @@ namespace Auxide
             lock (nextTickLock)
             {
                 queue.Enqueue(callback);
-                //nextTickQueue.Add(callback);
             }
         }
 
@@ -157,71 +156,12 @@ namespace Auxide
 
         public static void OnFrame(float delta)
         {
-            queue.Consume();
-            //Queue<Action> actions;
-            //if (nextTickQueue.Count > 0)
-            //if (queue.actions.Count > 0)
-            //{
-            //    lock (nextTickLock)
-            //    {
-            //        actions = queue.actions;// nextTickQueue;
-            //        //nextTickQueue = lastTickQueue;
-            //        queue.actions = lastTickQueue;
-            //        lastTickQueue = actions;
-            //    }
-            //    for (int i = 0; i < actions.Count; i++)
-            //    {
-            //        try
-            //        {
-            //            actions[i]();
-            //        }
-            //        catch (Exception exception)
-            //        {
-            //            Utils.DoLog($"Exception while calling NextTick callback: {exception}");
-            //        }
-            //    }
-            //    actions.Clear();
-            //}
-            ////this.libtimer.Update(delta);
-            //if (initialized)
-            //{
-            //    //ServerConsole serverConsole = ServerConsole;
-            //    //if (serverConsole != null)
-            //    //{
-            //    //    serverConsole.Update();
-            //    //}
-            //    //else
-            //    //{
-            //    //}
-            //    try
-            //    {
-            //        Action<float> action = onFrame;
-            //        if (action != null)
-            //        {
-            //            action(delta);
-            //        }
-            //        else
-            //        {
-            //        }
-            //    }
-            //    catch (Exception exception2)
-            //    {
-            //        Exception exception1 = exception2;
-            //        Utils.DoLog(string.Concat(exception1.GetType().Name, $" while invoke OnFrame in extensions"));
-            //    }
-            //}
+            queue.Consume(delta);
         }
 
         public static void Dispose()
         {
             initialized = false;
         }
-        //public static string AssemblyDirectory()
-        //{
-        //    string codeBase = Assembly.GetExecutingAssembly().CodeBase;
-        //    UriBuilder uri = new UriBuilder(codeBase);
-        //    string path = Uri.UnescapeDataString(uri.Path);
-        //    return Path.GetDirectoryName(path);
-        //}
     }
 }

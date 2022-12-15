@@ -589,6 +589,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Hooks\Server\BaseOvenSV.cs" />
     <Compile Include="Hooks\Server\BCEHurt1.cs" />
+    <Compile Include="Hooks\Server\ServerMgrRestartServer.cs" />
     <Compile Include="SubscriptionClient.cs" />
     <Compile Include="WebClient.cs" />
     <None Include="app.config" />

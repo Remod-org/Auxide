@@ -29,6 +29,7 @@ namespace Auxide
 
         internal bool playerTakingDamage;
         internal bool vehicleTakingDamage;
+        internal bool serverInitialized;
 
         /// <summary>
         /// Called after instantiating the script but before Initialize is called. Use this to set up the instance with auto-populated field values.
@@ -201,6 +202,15 @@ namespace Auxide
             }
         }
 
+        public void UnloadAll()
+        {
+            foreach (Script script in _scripts.Values)
+            {
+                OnScriptUnloading?.Invoke(script);
+                script.Dispose();
+            }
+        }
+
         internal void ScriptLoading(IScriptReference script)
         {
             OnScriptLoading?.Invoke(script);
@@ -210,8 +220,8 @@ namespace Auxide
         {
             OnScriptLoaded?.Invoke(script);
             Narrowcast("OnScriptLoaded", script);
-            Narrowcast("LoadData", script);
-            Narrowcast("LoadConfig", script);
+            //Narrowcast("LoadData", script);
+            //Narrowcast("LoadConfig", script);
             Narrowcast("LoadDefaultMessages", script);
             Broadcast("OnPluginLoaded", script);
         }
@@ -236,6 +246,7 @@ namespace Auxide
 
         public void OnServerInitializedHook()
         {
+            serverInitialized = true;
             Broadcast("OnServerInitialized");
         }
 
@@ -391,6 +402,7 @@ namespace Auxide
                 playerTakingDamage = true;
                 try
                 {
+                    if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity.ShortPrefabName} attacking BasePlayer");
                     return BroadcastReturn("OnTakeDamage", player, info);
                 }
                 finally
@@ -403,6 +415,7 @@ namespace Auxide
                 vehicleTakingDamage = true;
                 try
                 {
+                    if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity.ShortPrefabName} attacking BaseVehicle {vehicle?.ShortPrefabName}");
                     return BroadcastReturn("OnTakeDamage", vehicle, info);
                 }
                 finally
@@ -415,6 +428,7 @@ namespace Auxide
                 vehicleTakingDamage = true;
                 try
                 {
+                    if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity.ShortPrefabName} attacking BaseVehicleModule {vehicleModule?.ShortPrefabName}");
                     return BroadcastReturn("OnTakeDamage", vehicleModule, info);
                 }
                 finally
@@ -422,7 +436,15 @@ namespace Auxide
                     vehicleTakingDamage = false;
                 }
             }
+            if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity.ShortPrefabName} attacking {target?.ShortPrefabName}");
             return BroadcastReturn("OnTakeDamage", target, info);
+        }
+
+        public void OnEntitySavedHook(BaseNetworkable entity, BaseNetworkable.SaveInfo saveInfo)
+        {
+            if (entity == null) return;
+            if (!serverInitialized || saveInfo.forConnection == null) return;
+            Broadcast("OnEntitySaved", entity, saveInfo);
         }
 
         public object OnPlayerTickHook(BasePlayer player, PlayerTick msg, bool wasPlayerStalled)
