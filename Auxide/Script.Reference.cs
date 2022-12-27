@@ -199,5 +199,39 @@ namespace Auxide
                 ReportError($"InvokeProcedure('{methodName}', {typeof(T0).FullName}, {typeof(T1).FullName}, {typeof(T2).FullName})", e);
             }
         }
+
+        public T5 InvokeFunction<T0, T1, T2, T3, T4, T5>(string methodName, T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        {
+            if (Instance == null)
+            {
+                throw new ScriptInvocationException($"Script '{Name}' is not initialized.");
+            }
+
+            try
+            {
+                return ScriptInvoker<T0, T1, T2, T3, T4, T5>.Function(Instance, methodName, arg0, arg1, arg2, arg3, arg4);
+            }
+            catch (Exception e)
+            {
+                throw new ScriptInvocationException($"Function '{Name}::{methodName}({typeof(T0).FullName}, {typeof(T1).FullName}, {typeof(T2).FullName}, {typeof(T3).FullName}, {typeof(T4).FullName})' threw an exception.", e);
+            }
+        }
+
+        public void InvokeProcedure<T0, T1, T2, T3, T4, T5>(string methodName, T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+        {
+            if (Instance == null)
+            {
+                throw new ScriptInvocationException($"Script '{Name}' is not initialized.");
+            }
+
+            try
+            {
+                ScriptInvoker<T0, T1, T2, T3, T4, T5>.Procedure(Instance, methodName, arg0, arg1, arg2, arg3, arg4, arg5);
+            }
+            catch (Exception e)
+            {
+                throw new ScriptInvocationException($"Function '{Name}::{methodName}({typeof(T0).FullName}, {typeof(T1).FullName}, {typeof(T2).FullName}, {typeof(T3).FullName}, {typeof(T4).FullName}, {typeof(T5).FullName})' threw an exception.", e);
+            }
+        }
     }
 }

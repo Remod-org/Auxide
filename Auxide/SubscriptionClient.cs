@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Auxide
 {
@@ -33,6 +34,11 @@ namespace Auxide
 
         public SubscriptionClient()
         {
+            Task.Run(CheckSubs);
+        }
+
+        public async Task CheckSubs()
+        {
             if (Auxide.config.Options.subscription.enabled)
             {
                 try
@@ -50,7 +56,7 @@ namespace Auxide
                     //_password = Auxide.config.Options.subscription.encrypted;
                     _password = Auxide.config.Options.subscription.password;
 
-                    AuxideSub();
+                    await AuxideSub();
                 }
                 catch
                 {
@@ -59,7 +65,7 @@ namespace Auxide
             }
         }
 
-        public async void AuxideSub()
+        public async Task AuxideSub()
         {
             AuxidePLRequest request = new AuxidePLRequest()
             {

@@ -118,11 +118,12 @@ namespace Auxide.Hooks.Server
                 List<CodeInstruction> instructionsToInsert = new List<CodeInstruction>()
                 {
                     new CodeInstruction(OpCodes.Newobj, constr),
-                    new CodeInstruction(OpCodes.Ldstr, "OnEntitySavedHook"),
+                    //new CodeInstruction(OpCodes.Ldstr, "OnEntitySaved"),
                     new CodeInstruction(OpCodes.Ldarg_0),
                     new CodeInstruction(OpCodes.Ldarg_2),
-                    new CodeInstruction(OpCodes.Box, typeof(BaseNetworkable.SaveInfo)),
-                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ScriptManager), "CallHook")),
+                    //new CodeInstruction(OpCodes.Box, typeof(BaseNetworkable.SaveInfo)),
+                    //new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ScriptManager), "CallHook")),
+                    new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(ScriptManager), "OnEntitySavedHook")),
                     new CodeInstruction(OpCodes.Pop)
                 };
 

@@ -24,6 +24,7 @@ public abstract class RustScript : IDisposable
 
     public RustScript()
     {
+        timer = new Timer();
         Name = GetType().Name;
         //Title = Name.Substring(0,1).ToUpper() + Name.Substring(1);
         Title = Name.Titleize();
@@ -99,6 +100,8 @@ public abstract class RustScript : IDisposable
 
     protected void Broadcast<T0, T1, T2, T3>(string methodName, T0 arg0, T1 arg1, T2 arg2, T3 arg3) => Manager?.Broadcast(methodName, arg0, arg1, arg2, arg3);
 
+    protected void Broadcast<T0, T1, T2, T3, T4>(string methodName, T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4) => Manager?.Broadcast(methodName, arg0, arg1, arg2, arg3, arg4);
+
     protected object BroadcastReturn(string methodName) => Manager?.BroadcastReturn(methodName);
 
     protected object NarrowcastReturn(string methodName, IScriptReference script) => Manager?.NarrowcastReturn(methodName, script);
@@ -108,4 +111,8 @@ public abstract class RustScript : IDisposable
     protected object BroadcastReturn<T0, T1>(string methodName, T0 arg0, T1 arg1) => Manager?.BroadcastReturn(methodName, arg0, arg1);
 
     protected object BroadcastReturn<T0, T1, T2>(string methodName, T0 arg0, T1 arg1, T2 arg2) => Manager?.BroadcastReturn(methodName, arg0, arg1, arg2);
+
+    protected object BroadcastReturn<T0, T1, T2, T3>(string methodName, T0 arg0, T1 arg1, T2 arg2, T3 arg3) => Manager?.BroadcastReturn(methodName, arg0, arg1, arg2, arg3);
+
+    protected object BroadcastReturn<T0, T1, T2, T3, T4>(string methodName, T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4) => Manager?.BroadcastReturn(methodName, arg0, arg1, arg2, arg3, arg4);
 }

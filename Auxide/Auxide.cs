@@ -141,6 +141,12 @@ namespace Auxide
             }
         }
 
+        public object CallHook(string hookname, params object[] args)
+        {
+            if (!initialized) return null;
+            return Scripts?.CallHook(hookname, args);
+        }
+
         public static void NextTick(Action callback)
         {
             lock (nextTickLock)
@@ -154,7 +160,7 @@ namespace Auxide
             onFrame += callback;
         }
 
-        public static void OnFrame(float delta)
+        public static void OnFrame(float delta = 0)
         {
             queue.Consume(delta);
         }

@@ -1,86 +1,89 @@
 ﻿using System.Reflection;
 using System.Text;
 
-public static class StringExtension
+namespace Auxide
 {
-    public static string Titleize(this string s)
+    public static class StringExtension
     {
-        bool IsNewSentence = true;
-        StringBuilder result = new StringBuilder(s.Length);
-        for (int i = 0; i < s.Length; i++)
+        public static string Titleize(this string s)
         {
-            if (IsNewSentence && char.IsLetter(s[i]))
+            bool IsNewSentence = true;
+            StringBuilder result = new StringBuilder(s.Length);
+            for (int i = 0; i < s.Length; i++)
             {
-                result.Append(char.ToUpper(s[i]));
-                IsNewSentence = false;
-            }
-            else
-            {
-                result.Append(s[i]);
+                if (IsNewSentence && char.IsLetter(s[i]))
+                {
+                    result.Append(char.ToUpper(s[i]));
+                    IsNewSentence = false;
+                }
+                else
+                {
+                    result.Append(s[i]);
+                }
+
+                if (s[i] == '!' || s[i] == '?' || s[i] == '.')
+                {
+                    IsNewSentence = true;
+                }
             }
 
-            if (s[i] == '!' || s[i] == '?' || s[i] == '.')
-            {
-                IsNewSentence = true;
-            }
-        }
-
-        return result.ToString();
-    }
-}
-
-public class DroppedItemContainerExtension : DroppedItemContainer
-{
-    public ItemContainer inventory
-    {
-        get
-        {
-            // Use reflection to get the value of the private inventory field in the base class
-            FieldInfo inventoryFieldInfo = typeof(DroppedItemContainer).GetField("inventory", BindingFlags.NonPublic | BindingFlags.Instance);
-            return (ItemContainer)inventoryFieldInfo.GetValue(this);
-        }
-        set
-        {
-            // Use reflection to set the value of the private inventory field in the base class
-            FieldInfo inventoryFieldInfo = typeof(DroppedItemContainer).GetField("inventory", BindingFlags.NonPublic | BindingFlags.Instance);
-            inventoryFieldInfo.SetValue(this, value);
+            return result.ToString();
         }
     }
-}
 
-public class BaseNetworkableExtension : BaseNetworkable
-{
-    public bool _limitedNetworking
+    public class DroppedItemContainerExtension : DroppedItemContainer
     {
-        get
+        public ItemContainer inventory
         {
-            // Use reflection to get the value of the private inventory field in the base class
-            FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
-            return (BaseNetworkable)limitedNetworkingFieldInfo.GetValue(this);
-        }
-        set
-        {
-            // Use reflection to set the value of the private inventory field in the base class
-            FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
-            limitedNetworkingFieldInfo.SetValue(this, value);
+            get
+            {
+                // Use reflection to get the value of the private inventory field in the base class
+                FieldInfo inventoryFieldInfo = typeof(DroppedItemContainer).GetField("inventory", BindingFlags.NonPublic | BindingFlags.Instance);
+                return (ItemContainer)inventoryFieldInfo.GetValue(this);
+            }
+            set
+            {
+                // Use reflection to set the value of the private inventory field in the base class
+                FieldInfo inventoryFieldInfo = typeof(DroppedItemContainer).GetField("inventory", BindingFlags.NonPublic | BindingFlags.Instance);
+                inventoryFieldInfo.SetValue(this, value);
+            }
         }
     }
-}
-public class StorageContainerExtension : StorageContainer
-{
-    public bool _limitedNetworking
+
+    public class BaseNetworkableExtension : BaseNetworkable
     {
-        get
+        public bool _limitedNetworking
         {
-            // Use reflection to get the value of the private inventory field in the base class
-            FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
-            return (BaseNetworkable)limitedNetworkingFieldInfo.GetValue(this);
+            get
+            {
+                // Use reflection to get the value of the private inventory field in the base class
+                FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
+                return (BaseNetworkable)limitedNetworkingFieldInfo.GetValue(this);
+            }
+            set
+            {
+                // Use reflection to set the value of the private inventory field in the base class
+                FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
+                limitedNetworkingFieldInfo.SetValue(this, value);
+            }
         }
-        set
+    }
+    public class StorageContainerExtension : StorageContainer
+    {
+        public bool _limitedNetworking
         {
-            // Use reflection to set the value of the private inventory field in the base class
-            FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
-            limitedNetworkingFieldInfo.SetValue(this, value);
+            get
+            {
+                // Use reflection to get the value of the private inventory field in the base class
+                FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
+                return (BaseNetworkable)limitedNetworkingFieldInfo.GetValue(this);
+            }
+            set
+            {
+                // Use reflection to set the value of the private inventory field in the base class
+                FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
+                limitedNetworkingFieldInfo.SetValue(this, value);
+            }
         }
     }
 }

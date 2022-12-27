@@ -10,7 +10,8 @@ namespace Auxide.Hooks.Server
         {
             if (Auxide.full)
             {
-                Auxide.Scripts?.OnTickHook();
+                Auxide.OnFrame(1);
+                //Auxide.Scripts?.OnTickHook();
             }
         }
     }

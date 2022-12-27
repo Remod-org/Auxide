@@ -261,4 +261,51 @@ namespace Auxide.Scripting
             return invoker != null ? invoker(arg0, arg1, arg2, arg3) : default;
         }
     }
+
+    internal static class ScriptInvoker<T0, T1, T2, T3, T4, T5>
+    {
+        private static readonly MruDictionary<InvokeTarget, Action<T0, T1, T2, T3, T4, T5>> _procedureCache =
+            new MruDictionary<InvokeTarget, Action<T0, T1, T2, T3, T4, T5>>(50);
+
+        private static readonly MruDictionary<InvokeTarget, Func<T0, T1, T2, T3, T4, T5>> _functionCache =
+            new MruDictionary<InvokeTarget, Func<T0, T1, T2, T3, T4, T5>>(100);
+
+        public static void Procedure(RustScript script, string method, T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+        {
+            if (script == null) throw new ArgumentNullException(nameof(script));
+            if (string.IsNullOrWhiteSpace(method)) throw new ArgumentNullException(nameof(method));
+
+            Action<T0, T1, T2, T3, T4, T5> invoker;
+            lock (_procedureCache)
+            {
+                InvokeTarget target = new InvokeTarget(script, method);
+                if (!_procedureCache.TryGetValue(target, out invoker))
+                {
+                    invoker = InvokeBuilder.GetInvoker<Action<T0, T1, T2, T3, T4, T5>>(script, method);
+                    _procedureCache.Add(target, invoker);
+                }
+            }
+
+            invoker?.Invoke(arg0, arg1, arg2, arg3, arg4, arg5);
+        }
+
+        public static T5 Function(RustScript script, string method, T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        {
+            if (script == null) throw new ArgumentNullException(nameof(script));
+            if (string.IsNullOrWhiteSpace(method)) throw new ArgumentNullException(nameof(method));
+
+            Func<T0, T1, T2, T3, T4, T5> invoker;
+            lock (_functionCache)
+            {
+                InvokeTarget target = new InvokeTarget(script, method);
+                if (!_functionCache.TryGetValue(target, out invoker))
+                {
+                    invoker = InvokeBuilder.GetInvoker<Func<T0, T1, T2, T3, T4, T5>>(script, method);
+                    _functionCache.Add(target, invoker);
+                }
+            }
+
+            return invoker != null ? invoker(arg0, arg1, arg2, arg3, arg4) : default;
+        }
+    }
 }

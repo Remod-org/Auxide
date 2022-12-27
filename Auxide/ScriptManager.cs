@@ -211,15 +211,67 @@ namespace Auxide
             }
         }
 
-        public static object CallHook(string hook, object obj1, object obj2)
+        public object CallHook(string hook, params object[] args)
         {
-            object[] objArray = Utils.ArrayPool.Get(2);
-			objArray[0] = obj1;
-			objArray[1] = obj2;
-			object result = Auxide.Scripts.BroadcastReturn(hook, objArray);
-			Utils.ArrayPool.Free(objArray);
-			return result;
+            //if (Auxide.verbose) Utils.DoLog($"CallHook called for {hook} with {args.Length} args");
+            if (!serverInitialized) return null;
+            object[] objArray = Utils.ArrayPool.Get(args.Length);
+            int i = 0;
+            foreach (var obj in args)
+            {
+                objArray[i] = obj;
+                i++;
+            }
+
+            switch (objArray.Length)
+            {
+                case 4:
+                    {
+                        var res = BroadcastReturn(hook, objArray[0], objArray[1], objArray[2], objArray[3]);
+                        Utils.ArrayPool.Free(objArray);
+                        return res;
+                    }
+                case 3:
+                    {
+                        var res = BroadcastReturn(hook, objArray[0], objArray[1], objArray[2]);
+                        Utils.ArrayPool.Free(objArray);
+                        return res;
+                    }
+                case 2:
+                    {
+                        var res = BroadcastReturn(hook, objArray[0], objArray[1]);
+                        Utils.ArrayPool.Free(objArray);
+                        return res;
+                    }
+                case 1:
+                    {
+                        var res = BroadcastReturn(hook, objArray[0]);
+                        Utils.ArrayPool.Free(objArray);
+                        return res;
+                    }
+                case 0:
+                default:
+                    {
+                        var res = BroadcastReturn(hook);
+                        Utils.ArrayPool.Free(objArray);
+                        return res;
+                    }
+            }
         }
+
+        //public static object CallHook(string hook, object obj1, object obj2)
+        //{
+        //    if (Auxide.verbose) Utils.DoLog($"CallHook called for {hook}");
+        //    //object[] objArray = Utils.ArrayPool.Get(2);
+        //    //objArray[0] = obj1;
+        //    //objArray[1] = obj2;
+        //    //object result = Auxide.Scripts.BroadcastReturn(hook, objArray);
+        //    //object result = Auxide.Scripts.BroadcastReturn(hook, obj1, obj2);
+        //    ScriptManager obj = new ScriptManager();
+        //	return obj.BroadcastReturn(hook, obj1, obj2);
+        //	//Utils.ArrayPool.Free(objArray);
+        //	//return result;
+        //}
 
         internal void ScriptLoading(IScriptReference script)
         {
@@ -238,6 +290,7 @@ namespace Auxide
 
         internal void ScriptUnloading(IScriptReference script)
         {
+            Narrowcast("Unload", script);
             OnScriptUnloading?.Invoke(script);
         }
 
@@ -397,19 +450,54 @@ namespace Auxide
         //        playerTakingDamage = false;
         //    }
         //}
+
         public object OnTakeDamageHook(BaseCombatEntity target = null, HitInfo info = null)
         {
             if (target == null) return null;
             if (info == null) return null;
+            if (info?.HitEntity == null) return null;
+
+            if (info?.damageTypes.GetMajorityDamageType() == Rust.DamageType.Decay)
+            {
+                BaseVehicle vehicle = target as BaseVehicle;
+                BaseVehicleModule vehicleModule = target as BaseVehicleModule;
+                if (vehicle != null)
+                {
+                    if (vehicleTakingDamage) return null;
+                    vehicleTakingDamage = true;
+                    try
+                    {
+                        if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for decay of BaseVehicle {vehicle?.ShortPrefabName}");
+                        return BroadcastReturn("OnTakeDamage", vehicle, info);
+                    }
+                    finally
+                    {
+                        vehicleTakingDamage = false;
+                    }
+                }
+                else if (vehicleModule != null)
+                {
+                    if (vehicleTakingDamage) return null;
+                    vehicleTakingDamage = true;
+                    try
+                    {
+                        if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for decay of BaseVehicleModule {vehicleModule?.ShortPrefabName}");
+                        return BroadcastReturn("OnTakeDamage", vehicleModule, info);
+                    }
+                    finally
+                    {
+                        vehicleTakingDamage = false;
+                    }
+                }
+
+                if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for decay of {target?.ShortPrefabName}");
+                return BroadcastReturn("OnTakeDamage", target, info);
+            }
 
             BasePlayer player = target as BasePlayer;
-            BaseVehicle vehicle = target as BaseVehicle;
-            BaseVehicleModule vehicleModule = target as BaseVehicleModule;
-            if (player != null && playerTakingDamage) return null;
-            if (vehicleModule != null && vehicleTakingDamage) return null;
-
             if (player != null)
             {
+                if (playerTakingDamage) return null;
                 playerTakingDamage = true;
                 try
                 {
@@ -421,41 +509,15 @@ namespace Auxide
                     playerTakingDamage = false;
                 }
             }
-            else if (vehicle != null)
-            {
-                vehicleTakingDamage = true;
-                try
-                {
-                    if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity.ShortPrefabName} attacking BaseVehicle {vehicle?.ShortPrefabName}");
-                    return BroadcastReturn("OnTakeDamage", vehicle, info);
-                }
-                finally
-                {
-                    vehicleTakingDamage = false;
-                }
-            }
-            else if (vehicleModule != null)
-            {
-                vehicleTakingDamage = true;
-                try
-                {
-                    if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity.ShortPrefabName} attacking BaseVehicleModule {vehicleModule?.ShortPrefabName}");
-                    return BroadcastReturn("OnTakeDamage", vehicleModule, info);
-                }
-                finally
-                {
-                    vehicleTakingDamage = false;
-                }
-            }
             if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity.ShortPrefabName} attacking {target?.ShortPrefabName}");
             return BroadcastReturn("OnTakeDamage", target, info);
         }
 
-        public void OnEntitySavedHook(BaseNetworkable entity, BaseNetworkable.SaveInfo saveInfo)
+        public object OnEntitySavedHook(BaseNetworkable entity, BaseNetworkable.SaveInfo saveInfo)
         {
-            if (entity == null) return;
-            if (!serverInitialized || saveInfo.forConnection == null) return;
-            Broadcast("OnEntitySaved", entity, saveInfo);
+            if (entity == null) return null;
+            if (!serverInitialized || saveInfo.forConnection == null) return null;
+            return BroadcastReturn("OnEntitySaved", entity, saveInfo);
         }
 
         public object OnPlayerTickHook(BasePlayer player, PlayerTick msg, bool wasPlayerStalled)
@@ -766,7 +828,7 @@ namespace Auxide
         {
             //lock (_sync)
             //{
-                script.InvokeProcedure(methodName);
+            script.InvokeProcedure(methodName);
             //}
         }
 
@@ -809,7 +871,7 @@ namespace Auxide
             {
                 foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
-                   script.InvokeProcedure(methodName, arg0, arg1);
+                    script.InvokeProcedure(methodName, arg0, arg1);
                 }
             }
         }
@@ -820,7 +882,7 @@ namespace Auxide
             {
                 foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
-                   script.InvokeProcedure(methodName, arg0, arg1, arg2);
+                    script.InvokeProcedure(methodName, arg0, arg1, arg2);
                 }
             }
         }
@@ -831,7 +893,7 @@ namespace Auxide
             {
                 foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
-                   script.InvokeProcedure(methodName, arg0, arg1, arg2, arg3);
+                    script.InvokeProcedure(methodName, arg0, arg1, arg2, arg3);
                 }
             }
         }
@@ -842,7 +904,7 @@ namespace Auxide
             {
                 foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
-                   script.InvokeProcedure(methodName, arg0, arg1, arg2, arg3, arg4);
+                    script.InvokeProcedure(methodName, arg0, arg1, arg2, arg3, arg4);
                 }
             }
         }
@@ -861,10 +923,10 @@ namespace Auxide
                     rtrn = script.InvokeFunction<object>(methodName);
                     if (lastRet != null && !rtrn.Equals(lastRet))
                     {
-                        Utils.DoLog($"Conflict between {lastScript} and {script.Name} return values!");
+                        UnityEngine.Debug.LogWarning($"Conflict between {lastScript} and {script?.Name} return values!");
                     }
                     lastRet = rtrn;
-                    lastScript = script.Name;
+                    lastScript = script?.Name;
                 }
                 rtrn = lastRet;
             }
@@ -885,10 +947,10 @@ namespace Auxide
                     rtrn = script.InvokeFunction<object, T0>(methodName, arg0);
                     if (lastRet != null && !rtrn.Equals(lastRet))
                     {
-                        Utils.DoLog($"Conflict between {lastScript} and {script.Name} return values!");
+                        UnityEngine.Debug.LogWarning($"Conflict between {lastScript} and {script?.Name} return values!");
                     }
                     lastRet = rtrn;
-                    lastScript = script.Name;
+                    lastScript = script?.Name;
                 }
                 rtrn = lastRet;
             }
@@ -906,13 +968,13 @@ namespace Auxide
             {
                 foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
                 {
-                    rtrn = (object) script.InvokeFunction<T0, T1, object>(methodName, arg0, arg1);
+                    rtrn = script.InvokeFunction<T0, T1, object>(methodName, arg0, arg1);
                     if (lastRet != null && !rtrn.Equals(lastRet))
                     {
-                        Utils.DoLog($"Conflict between {lastScript} and {script.Name} return values!");
+                        UnityEngine.Debug.LogWarning($"Conflict between {lastScript} and {script?.Name} return values!");
                     }
                     lastRet = rtrn;
-                    lastScript = script.Name;
+                    lastScript = script?.Name;
                 }
                 rtrn = lastRet;
             }
@@ -933,10 +995,10 @@ namespace Auxide
                     rtrn = script.InvokeFunction<T0, T1, T2, object>(methodName, arg0, arg1, arg2);
                     if (lastRet != null && !rtrn.Equals(lastRet))
                     {
-                        Utils.DoLog($"Conflict between {lastScript} and {script.Name} return values!");
+                        UnityEngine.Debug.LogWarning($"Conflict between {lastScript} and {script?.Name} return values!");
                     }
                     lastRet = rtrn;
-                    lastScript = script.Name;
+                    lastScript = script?.Name;
                 }
                 rtrn = lastRet;
             }
@@ -957,10 +1019,10 @@ namespace Auxide
                     rtrn = script.InvokeFunction<T0, T1, T2, T3, object>(methodName, arg0, arg1, arg2, arg3);
                     if (lastRet != null && !rtrn.Equals(lastRet))
                     {
-                        Utils.DoLog($"Conflict between {lastScript} and {script.Name} return values!");
+                        UnityEngine.Debug.LogWarning($"Conflict between {lastScript} and {script?.Name} return values!");
                     }
                     lastRet = rtrn;
-                    lastScript = script.Name;
+                    lastScript = script?.Name;
                 }
                 rtrn = lastRet;
             }
@@ -968,28 +1030,28 @@ namespace Auxide
             return rtrn;
         }
 
-        //public object BroadcastReturn<T0, T1, T2, T3, T4>(string methodName, T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
-        //{
-        //    object rtrn = null;
-        //    object lastRet = null;
-        //    string lastScript = "";
+        public object BroadcastReturn<T0, T1, T2, T3, T4>(string methodName, T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        {
+            object rtrn = null;
+            object lastRet = null;
+            string lastScript = "";
 
-        //    lock (_sync)
-        //    {
-        //        foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
-        //        {
-        //            rtrn = script.InvokeFunction<T0, T1, T2, T3, T4, object>(methodName, arg0, arg1, arg2, arg3, arg4);
-        //            if (lastRet != null && !rtrn.Equals(lastRet))
-        //            {
-        //                Utils.DoLog($"Conflict between {lastScript} and {script.Name} return values!");
-        //            }
-        //            lastRet = rtrn;
-        //            lastScript = script.Name;
-        //        }
-        //        rtrn = lastRet;
-        //    }
+            lock (_sync)
+            {
+                foreach (Script script in _scripts.Values.Where(x => x.initialized == true))
+                {
+                    rtrn = script.InvokeFunction<T0, T1, T2, T3, T4, object>(methodName, arg0, arg1, arg2, arg3, arg4);
+                    if (lastRet != null && !rtrn.Equals(lastRet))
+                    {
+                        UnityEngine.Debug.LogWarning($"Conflict between {lastScript} and {script?.Name} return values!");
+                    }
+                    lastRet = rtrn;
+                    lastScript = script?.Name;
+                }
+                rtrn = lastRet;
+            }
 
-        //    return rtrn;
-        //}
+            return rtrn;
+        }
     }
 }

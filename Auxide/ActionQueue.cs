@@ -28,7 +28,7 @@ namespace Auxide
 
         public void Consume(float delta = 0)
         {
-            // Execute all queued actions in order
+            // Execute all queued actions in order after delay
             if (delta > 0)
             {
                 Timer timer = new Timer(delta, () => Consume(0));
@@ -41,6 +41,15 @@ namespace Auxide
                 // Execute the action
                 action();
             }
+            //Thread thread = new Thread(() =>
+            //{
+            //    if (actions.Count > 0)
+            //    {
+            //        Action action = Dequeue();
+            //        action();
+            //    }
+            //});
+            //thread.Start();
         }
     }
 }

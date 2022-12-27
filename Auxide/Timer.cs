@@ -20,6 +20,8 @@ namespace Auxide
         // Indicates whether the timer is running
         private bool isRunning;
 
+        public Timer() { }
+
         public Timer(float interval, Action action)
         {
             // Validate the interval
@@ -102,16 +104,23 @@ namespace Auxide
             timerThread.Join();
         }
 
-        public void Once(float delay, Action action, out Timer timerobj)
+        public Timer Once(float delay, Action action)
         {
-            timerobj = this; // WTH
-            // Set the interval to Timeout.Infinite to stop the timer after it elapses
-            interval = Timeout.Infinite;
+            Timer timer = new Timer
+            {
+                // Set the interval to Timeout.Infinite to stop the timer after it elapses
+                interval = Timeout.Infinite,
+                // Set the action to be executed on the timer tick
+                action = action
+            };
 
-            // Set the action to be executed on the timer tick
-            this.action = action;
+            timer.Start(delay);
+            return timer;
+        }
 
-            Start(delay);
+        public void Destroy()
+        {
+            this.Destroy();
         }
 
         public void Repeat(float interval, int repeatCount, Action action)
@@ -128,18 +137,12 @@ namespace Auxide
                 throw new ArgumentOutOfRangeException(nameof(repeatCount), "The repeat count must be a positive integer.");
             }
 
-            // Validate the action
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action), "The action must not be null.");
-            }
-
             // Set the interval and repeat count
             this.interval = interval;
             this.repeatCount = repeatCount;
 
             // Set the action to be executed on the timer tick
-            this.action = action;
+            this.action = action ?? throw new ArgumentNullException(nameof(action), "The action must not be null.");
 
             // Start the timer
             Start();
