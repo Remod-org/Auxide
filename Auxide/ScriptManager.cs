@@ -28,7 +28,6 @@ namespace Auxide
         private readonly Stopwatch _timeSinceUpdate;
 
         internal bool playerTakingDamage;
-        internal bool vehicleTakingDamage;
         internal bool serverInitialized;
 
         /// <summary>
@@ -457,43 +456,6 @@ namespace Auxide
             if (info == null) return null;
             if (info?.HitEntity == null) return null;
 
-            if (info?.damageTypes.GetMajorityDamageType() == Rust.DamageType.Decay)
-            {
-                BaseVehicle vehicle = target as BaseVehicle;
-                BaseVehicleModule vehicleModule = target as BaseVehicleModule;
-                if (vehicle != null)
-                {
-                    if (vehicleTakingDamage) return null;
-                    vehicleTakingDamage = true;
-                    try
-                    {
-                        if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for decay of BaseVehicle {vehicle?.ShortPrefabName}");
-                        return BroadcastReturn("OnTakeDamage", vehicle, info);
-                    }
-                    finally
-                    {
-                        vehicleTakingDamage = false;
-                    }
-                }
-                else if (vehicleModule != null)
-                {
-                    if (vehicleTakingDamage) return null;
-                    vehicleTakingDamage = true;
-                    try
-                    {
-                        if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for decay of BaseVehicleModule {vehicleModule?.ShortPrefabName}");
-                        return BroadcastReturn("OnTakeDamage", vehicleModule, info);
-                    }
-                    finally
-                    {
-                        vehicleTakingDamage = false;
-                    }
-                }
-
-                if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for decay of {target?.ShortPrefabName}");
-                return BroadcastReturn("OnTakeDamage", target, info);
-            }
-
             BasePlayer player = target as BasePlayer;
             if (player != null)
             {
@@ -513,7 +475,15 @@ namespace Auxide
             return BroadcastReturn("OnTakeDamage", target, info);
         }
 
-        public object OnEntitySavedHook(BaseNetworkable entity, BaseNetworkable.SaveInfo saveInfo)
+        //public object OnEntitySavedHook(BuildingPrivlidge entity, BaseNetworkable.SaveInfo saveInfo)
+        //{
+        //    //return OnEntitySavedHook(entity as BaseNetworkable, saveInfo);
+        //    if (entity == null) return null;
+        //    if (!serverInitialized || saveInfo.forConnection == null) return null;
+        //    return BroadcastReturn("OnEntitySaved", entity, saveInfo);
+        //}
+        //public object OnEntitySavedHook(BaseNetworkable entity, ref BaseNetworkable.SaveInfo saveInfo)
+        public object OnEntitySavedHook(object entity, BaseNetworkable.SaveInfo saveInfo)
         {
             if (entity == null) return null;
             if (!serverInitialized || saveInfo.forConnection == null) return null;

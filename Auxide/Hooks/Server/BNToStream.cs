@@ -123,7 +123,7 @@ namespace Auxide.Hooks.Server
                     new CodeInstruction(OpCodes.Ldarg_2),
                     //new CodeInstruction(OpCodes.Box, typeof(BaseNetworkable.SaveInfo)),
                     //new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ScriptManager), "CallHook")),
-                    new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(ScriptManager), "OnEntitySavedHook")),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ScriptManager), "OnEntitySavedHook")),
                     new CodeInstruction(OpCodes.Pop)
                 };
 
