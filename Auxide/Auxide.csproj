@@ -587,7 +587,9 @@
     <Compile Include="Exceptions\ScriptInvocationException.cs" />
     <Compile Include="Exceptions\ScriptLoadException.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Hooks\Server\AdventCalendarAwardGift.cs" />
     <Compile Include="Hooks\Server\BaseOvenSV.cs" />
+    <Compile Include="Hooks\Server\BCEOnPickedUp.cs" />
     <Compile Include="Hooks\Server\BCEHurt1.cs" />
     <Compile Include="Hooks\Server\ServerMgrRestartServer.cs" />
     <Compile Include="Scripting\ScriptAttributes.cs" />
@@ -615,7 +617,7 @@
     <Compile Include="Hooks\Server\OnServerShutdown.cs" />
     <Compile Include="Hooks\Server\PlayerConnect.cs" />
     <Compile Include="Hooks\Server\PlayerDisconnect.cs" />
-    <None Include="Hooks\Server\PlayerOnReceiveTick.cs" />
+    <Compile Include="Hooks\Server\PlayerOnReceiveTick.cs" />
     <Compile Include="Hooks\Server\PlayerOnAttacked.cs" />
     <Compile Include="Hooks\Server\ResOnAttacked.cs" />
     <Compile Include="Hooks\Server\CorpseLoot.cs" />

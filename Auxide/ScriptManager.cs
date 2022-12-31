@@ -301,140 +301,147 @@ namespace Auxide
         }
 
         #region Standard Hooks
-
-        public void OnTickHook()
+        internal void OnTickHook()
         {
             Broadcast("OnTick");
         }
 
-        public void OnServerInitializedHook()
+        internal void OnServerInitializedHook()
         {
             serverInitialized = true;
             Broadcast("OnServerInitialized");
         }
 
-        public void OnServerShutdownHook()
+        internal void OnServerShutdownHook()
         {
             Broadcast("OnServerShutdown");
         }
 
-        public void OnServerSaveHook()
+        internal void OnServerSaveHook()
         {
             Broadcast("OnServerSave");
         }
 
-        public void OnNewSaveHook()
+        internal void OnNewSaveHook()
         {
             Broadcast("OnNewSave");
         }
 
-        public void OnGroupCreatedHook(string group, string title, int rank)
+        internal void OnGroupCreatedHook(string group, string title, int rank)
         {
             Broadcast("OnGroupCreated", group, title, rank);
         }
 
-        public void OnUserGroupAddedHook(string id, string name)
+        internal void OnUserGroupAddedHook(string id, string name)
         {
             Broadcast("OnUserGroupAdded", id, name);
         }
 
-        public object CanUseUIHook(BasePlayer player, string json)
+        internal object CanUseUIHook(BasePlayer player, string json)
         {
             return BroadcastReturn("CanUseUI", player, json);
         }
 
-        public void OnDestroyUIHook(BasePlayer player, string elem)
+        internal void OnDestroyUIHook(BasePlayer player, string elem)
         {
             Broadcast("OnDestroyUI", player, elem);
         }
 
-        public object CanAdminTCHook(BuildingPrivlidge bp, BasePlayer player)
+        internal object CanAdminTCHook(BuildingPrivlidge bp, BasePlayer player)
         {
             if (bp == null) return null;
             if (player == null) return null;
             return BroadcastReturn("CanAdminTC", bp, player);
         }
 
-        public object CanToggleSwitchHook(BaseOven oven, BasePlayer player)
+        internal object CanToggleSwitchHook(BaseOven oven, BasePlayer player)
         {
             if (oven == null) return null;
             if (player == null) return null;
             return BroadcastReturn("CanToggleSwitch", oven, player);
         }
 
-        public object CanToggleSwitchHook(ElectricSwitch sw, BasePlayer player)
+        internal object CanToggleSwitchHook(ElectricSwitch sw, BasePlayer player)
         {
             if (sw == null) return null;
             if (player == null) return null;
             return BroadcastReturn("CanToggleSwitch", sw, player);
         }
 
-        public void OnToggleSwitchHook(BaseOven oven, BasePlayer player)
+        internal void OnToggleSwitchHook(BaseOven oven, BasePlayer player)
         {
             if (oven == null) return;
             if (player == null) return;
             Broadcast("OnToggleSwitch", oven, player);
         }
 
-        public void OnToggleSwitchHook(ElectricSwitch sw, BasePlayer player)
+        internal void OnToggleSwitchHook(ElectricSwitch sw, BasePlayer player)
         {
             if (sw == null) return;
             if (player == null) return;
             Broadcast("OnToggleSwitch", sw, player);
         }
 
-        public object CanMountHook(BaseMountable entity = null, BasePlayer player = null)
+        internal object CanMountHook(BaseMountable entity = null, BasePlayer player = null)
         {
             if (entity == null) return null;
             if (player == null) return null;
             return BroadcastReturn("CanMount", entity, player);
         }
 
-        public void OnMountedHook(BaseMountable entity = null, BasePlayer player = null)
+        internal void OnMountedHook(BaseMountable entity = null, BasePlayer player = null)
         {
             if (entity == null) return;
             if (player == null) return;
             Broadcast("OnMounted", entity, player);
         }
 
-        public object CanAcceptItemHook(ItemContainer container, Item item, int targetPos)
+        internal object CanAcceptItemHook(ItemContainer container, Item item, int targetPos)
         {
             if (container == null) return null;
             if (item == null) return null;
             return BroadcastReturn("CanAcceptItem", container, item, targetPos);
         }
 
-        public object CanLootHook(BaseEntity entity = null, BasePlayer player = null, string panelName = null)
+        internal object CanLootHook(BaseEntity entity = null, BasePlayer player = null, string panelName = null)
         {
             if (entity == null) return null;
             if (player == null) return null;
             return BroadcastReturn("CanLoot", entity, player, panelName);
         }
 
-        public void OnLootedHook(BaseEntity entity = null, BasePlayer player = null)
+        internal void OnLootedHook(BaseEntity entity = null, BasePlayer player = null)
         {
             Broadcast("OnLooted", entity, player);
         }
 
-        public object CanPickupHook(ContainerIOEntity entity = null, BasePlayer player = null)
+        internal object CanPickupHook(ContainerIOEntity entity = null, BasePlayer player = null)
         {
             if (entity == null) return null;
             if (player == null) return null;
             return BroadcastReturn("CanPickup", entity, player);
         }
 
-        public object CanPickupHook(StorageContainer entity = null, BasePlayer player = null)
+        internal object CanPickupHook(StorageContainer entity = null, BasePlayer player = null)
         {
             if (entity == null) return null;
             if (player == null) return null;
             return BroadcastReturn("CanPickup", entity, player);
         }
 
-        public object CanPickupHook(BaseCombatEntity entity = null, BasePlayer player = null)
+        internal object CanPickupHook(BaseCombatEntity entity = null, BasePlayer player = null)
         {
             if (entity == null) return null;
             if (player == null) return null;
             return BroadcastReturn("CanPickup", entity, player);
+        }
+
+        internal void OnPickedUpHook(BaseCombatEntity entity = null, Item item = null, BasePlayer player = null)
+        {
+            if (entity == null) return;
+            if (item == null) return;
+            if (player == null) return;
+            Broadcast("OnPickedUp", entity, item, player);
         }
 
         //public object OnTakeDamageHook(BasePlayer player = null, HitInfo info = null)
@@ -450,7 +457,7 @@ namespace Auxide
         //    }
         //}
 
-        public object OnTakeDamageHook(BaseCombatEntity target = null, HitInfo info = null)
+        internal object OnTakeDamageHook(BaseCombatEntity target = null, HitInfo info = null)
         {
             if (target == null) return null;
             if (info == null) return null;
@@ -483,35 +490,35 @@ namespace Auxide
         //    return BroadcastReturn("OnEntitySaved", entity, saveInfo);
         //}
         //public object OnEntitySavedHook(BaseNetworkable entity, ref BaseNetworkable.SaveInfo saveInfo)
-        public object OnEntitySavedHook(object entity, BaseNetworkable.SaveInfo saveInfo)
+        internal object OnEntitySavedHook(object entity, BaseNetworkable.SaveInfo saveInfo)
         {
             if (entity == null) return null;
             if (!serverInitialized || saveInfo.forConnection == null) return null;
             return BroadcastReturn("OnEntitySaved", entity, saveInfo);
         }
 
-        public object OnPlayerTickHook(BasePlayer player, PlayerTick msg, bool wasPlayerStalled)
+        internal object OnPlayerTickHook(BasePlayer player, PlayerTick msg, bool wasPlayerStalled)
         {
             if (player == null) return null;
-            if (msg == null) return null;
+            //if (msg == null) return null;
             return BroadcastReturn("OnPlayerTick", player, msg, wasPlayerStalled);
         }
 
-        public object OnPlayerInputHook(BasePlayer player, InputState input)
+        internal object OnPlayerInputHook(BasePlayer player = null, InputState input = null)
         {
             if (player == null) return null;
             if (input == null) return null;
             return BroadcastReturn("OnPlayerInput", player, input);
         }
 
-        public void OnEntityDeathHook(BaseCombatEntity entity, HitInfo info = null)
+        internal void OnEntityDeathHook(BaseCombatEntity entity, HitInfo info = null)
         {
             if (entity == null) return;
             if (info == null) return;
             Broadcast("OnEntityDeath", entity, info);
         }
 
-        public void OnPlayerJoinHook(BasePlayer player = null)
+        internal void OnPlayerJoinHook(BasePlayer player = null)
         {
             if (player == null) return;
             if (player.IsAdmin) Permissions.AddGroupMember("admin", player.UserIDString);
@@ -520,14 +527,14 @@ namespace Auxide
             Broadcast("OnPlayerJoin", player);
         }
 
-        public void OnPlayerLeaveHook(BasePlayer player = null)
+        internal void OnPlayerLeaveHook(BasePlayer player = null)
         {
             if (player == null) return;
             Broadcast("OnPlayerLeave", player);
         }
 
         //public object OnConsoleCommandHook(ConsoleSystem.Arg arg)
-        public object OnConsoleCommandHook(string command, object[] args)
+        internal object OnConsoleCommandHook(string command, object[] args)
         {
             if (Auxide.full)
             {
@@ -538,7 +545,7 @@ namespace Auxide
             return null;
         }
 
-        public object OnServerCommandHook(ConsoleSystem.Arg arg)
+        internal object OnServerCommandHook(ConsoleSystem.Arg arg)
         {
             if (Auxide.full)
             {
@@ -561,6 +568,21 @@ namespace Auxide
                 return true;
             }
             return null;
+        }
+
+        internal object CanBeAwardedAdventGiftHook(AdventCalendar advent, BasePlayer player)
+        {
+            return BroadcastReturn("CanBeAwardedAdventGift", advent, player);
+        }
+
+        internal object OnAdventGiftAwardHook(AdventCalendar advent, BasePlayer player)
+        {
+            return BroadcastReturn("OnAdventGiftAward", advent, player);
+        }
+
+        internal void OnAdventGiftAwardedHook(AdventCalendar advent, BasePlayer player)
+        {
+            Broadcast("OnAdventGiftAwarded", advent, player);
         }
 
         internal void OnChatCommandHook(BasePlayer player, string chat, object[] args = null)

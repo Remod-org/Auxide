@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection.Emit;
 using Harmony;
-using ProtoBuf;
 
 namespace Auxide.Hooks.Server
 {
