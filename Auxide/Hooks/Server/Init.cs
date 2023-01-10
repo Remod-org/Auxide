@@ -3,7 +3,7 @@
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(Bootstrap), "StartupShared")]
-    public class Init
+    public static class Init
     {
         public static void Prefix() => Auxide.Init();
     }

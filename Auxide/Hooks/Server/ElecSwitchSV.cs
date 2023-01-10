@@ -3,7 +3,7 @@
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(ElectricSwitch), "SVSwitch")]//, typeof(BaseEntity.RPCMessage))]
-    public class ElecSwitchSV
+    public static class ElecSwitchSV
     {
         public static bool Prefix(ElectricSwitch __instance, ref BaseEntity.RPCMessage msg)
         {

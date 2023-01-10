@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(SaveRestore), "Load")]
-    public class OnNewSave
+    public static class OnNewSave
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {

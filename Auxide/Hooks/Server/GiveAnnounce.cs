@@ -7,24 +7,21 @@ using Harmony;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(Inventory), "give", typeof(ConsoleSystem.Arg))]
-    public class GiveAnnounce
+    public static class GiveAnnounce
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {
-            //if (!Auxide.hideGiveNotices) return instr;
+            if (!(Auxide.hideGiveNotices || Auxide.full)) return instr;
 
             List<CodeInstruction> codes = new List<CodeInstruction>(instr);
 
             Label newLabel = il.DefineLabel();
-            //int startIndex = instr.Count() - 1;
             int startIndex = -1;
 
             int i;
             for (i = 0; i < codes.Count; i++)
             {
                 if (codes[i].opcode == OpCodes.Ldc_I4_5 && codes[i + 1].opcode == OpCodes.Newarr && startIndex == -1)
-                //if (codes[i].opcode == OpCodes.Ldloc_0 && codes[i + 2].opcode == OpCodes.Brfalse_S && startIndex == -1)
-                //if (codes[i].opcode == OpCodes.Ldloc_0 && codes[i + 2].opcode == OpCodes.Brfalse_S && startIndex == -1)
                 {
                     startIndex = i;
                     codes[startIndex].labels.Add(newLabel);

@@ -8,7 +8,7 @@ namespace Auxide.Hooks.Server
     // Compiles but is not being called on mount for chair, minicopter, etc.
     //[HarmonyPatch(typeof(BaseMountable), "MountPlayer", new Type[] { typeof(BasePlayer) })]
     [HarmonyPatch(typeof(BaseMountable), "MountPlayer", typeof(BasePlayer))]
-    public class CanMount1
+    public static class CanMount1
     {
         //[HarmonyTranspiler]
         //static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(ServerMgr), "Update")]
-    public class ServerUpdateHook
+    public static class ServerUpdateHook
     {
         [HarmonyPostfix]
         public static void Postfix(ServerMgr __instance)

@@ -4,7 +4,7 @@ namespace Auxide.Hooks.Server
 {
     // UNTESTED 11-03-2022
     [HarmonyPatch(typeof(ContainerIOEntity), "CanPickup", typeof(BasePlayer))]
-    public class CanPickup1
+    public static class CanPickup1
     {
         public static bool Prefix(ContainerIOEntity __instance, ref bool __result, ref BasePlayer player)
         {
@@ -38,7 +38,7 @@ namespace Auxide.Hooks.Server
     }
 
     [HarmonyPatch(typeof(StorageContainer), "CanPickup", typeof(BasePlayer))]
-    public class CanPickup2
+    public static class CanPickup2
     {
         public static bool Prefix(StorageContainer __instance, ref bool __result, ref BasePlayer player)
         {
@@ -71,7 +71,7 @@ namespace Auxide.Hooks.Server
     }
 
     [HarmonyPatch(typeof(BaseCombatEntity), "CanPickup", typeof(BasePlayer))]
-    public class CanPickup3
+    public static class CanPickup3
     {
         public static bool Prefix(BaseCombatEntity __instance, ref bool __result, ref BasePlayer player)
         {

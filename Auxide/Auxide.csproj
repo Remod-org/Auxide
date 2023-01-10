@@ -587,10 +587,12 @@
     <Compile Include="Exceptions\ScriptInvocationException.cs" />
     <Compile Include="Exceptions\ScriptLoadException.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Hooks\Server\AdventCalendarAwardGift.cs" />
     <Compile Include="Hooks\Server\BaseOvenSV.cs" />
     <Compile Include="Hooks\Server\BCEOnPickedUp.cs" />
     <Compile Include="Hooks\Server\BCEHurt1.cs" />
+    <Compile Include="Hooks\Server\OnServerMessage.cs" />
     <Compile Include="Hooks\Server\ServerMgrRestartServer.cs" />
     <Compile Include="Scripting\ScriptAttributes.cs" />
     <Compile Include="SubscriptionClient.cs" />
@@ -609,7 +611,7 @@
     <None Include="FodyWeavers.xsd">
       <SubType>Designer</SubType>
     </None>
-    <Compile Include="Hooks\Server\GiveAnnounce.cs" />
+    <None Include="Hooks\Server\GiveAnnounce.cs" />
     <Compile Include="Hooks\Server\Init.cs" />
     <Compile Include="Hooks\Server\OnServerInitialized.cs" />
     <Compile Include="Hooks\Server\OnNewSave.cs" />

@@ -3,7 +3,7 @@
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(AdventCalendar), "AwardGift")]
-    public class AdventCalendarAwardGift
+    public static class AdventCalendarAwardGift
     {
         public static bool Prefix(AdventCalendar __instance, ref BasePlayer player)
         {
@@ -26,7 +26,7 @@ namespace Auxide.Hooks.Server
     }
 
     [HarmonyPatch(typeof(AdventCalendar), "WasAwardedTodaysGift")]
-    public class WasAwardedTodaysGift
+    public static class WasAwardedTodaysGift
     {
         public static bool Prefix(AdventCalendar __instance, ref BasePlayer player)
         {

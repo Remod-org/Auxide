@@ -3,7 +3,7 @@
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(ServerMgr), "Shutdown")]
-    public class OnServerShutdown
+    public static class OnServerShutdown
     {
         internal static TimeSince _lastcall;
         public static void Postfix()

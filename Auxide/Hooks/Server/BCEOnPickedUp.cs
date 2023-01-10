@@ -3,7 +3,7 @@
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(BaseCombatEntity), "OnPickedUp")]
-    public class BCEOnPickedUp
+    public static class BCEOnPickedUp
     {
         public static void Prefix(BaseCombatEntity __instance, ref Item createdItem, ref BasePlayer player)
         {

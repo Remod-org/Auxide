@@ -4,7 +4,7 @@ using Harmony;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(StorageContainer), "CanOpenLootPanel", new Type[] { typeof(BasePlayer), typeof(string) })]
-    public class SCLoot
+    public static class SCLoot
     {
         // Working 11-03-2022 (minimal)
         public static bool Prefix(StorageContainer __instance, ref bool __result, ref BasePlayer player, ref string panelName)

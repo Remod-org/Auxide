@@ -463,6 +463,8 @@ namespace Auxide
             if (info == null) return null;
             if (info?.HitEntity == null) return null;
 
+            bool selfdamage = false;
+            if (info?.HitEntity == target) selfdamage = true;
             BasePlayer player = target as BasePlayer;
             if (player != null)
             {
@@ -470,7 +472,7 @@ namespace Auxide
                 playerTakingDamage = true;
                 try
                 {
-                    if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity.ShortPrefabName} attacking BasePlayer");
+                    if (Auxide.verbose && !selfdamage) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity.ShortPrefabName} attacking BasePlayer");
                     return BroadcastReturn("OnTakeDamage", player, info);
                 }
                 finally
@@ -478,7 +480,7 @@ namespace Auxide
                     playerTakingDamage = false;
                 }
             }
-            if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity.ShortPrefabName} attacking {target?.ShortPrefabName}");
+            if (Auxide.verbose && !selfdamage) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity.ShortPrefabName} attacking {target?.ShortPrefabName}");
             return BroadcastReturn("OnTakeDamage", target, info);
         }
 
@@ -489,12 +491,18 @@ namespace Auxide
         //    if (!serverInitialized || saveInfo.forConnection == null) return null;
         //    return BroadcastReturn("OnEntitySaved", entity, saveInfo);
         //}
-        //public object OnEntitySavedHook(BaseNetworkable entity, ref BaseNetworkable.SaveInfo saveInfo)
+        //internal object OnEntitySavedHook(object entity, BaseNetworkable.SaveInfo saveInfo)
+        //internal object OnEntitySavedHook(BaseNetworkable entity, BaseNetworkable.SaveInfo saveInfo)
         internal object OnEntitySavedHook(object entity, BaseNetworkable.SaveInfo saveInfo)
         {
             if (entity == null) return null;
             if (!serverInitialized || saveInfo.forConnection == null) return null;
             return BroadcastReturn("OnEntitySaved", entity, saveInfo);
+        }
+
+        internal object OnServerMessageHook(string message, string username, string color, ulong userid)
+        {
+            return BroadcastReturn("OnServerMessage", message, username, color, userid);
         }
 
         internal object OnPlayerTickHook(BasePlayer player, PlayerTick msg, bool wasPlayerStalled)

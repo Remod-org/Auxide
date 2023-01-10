@@ -3,7 +3,7 @@
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(ServerMgr), "OpenConnection")]
-    public class OnServerInitialized
+    public static class OnServerInitialized
     {
         internal static TimeSince _lastcall;
         public static void Postfix()

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Auxide;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -6,6 +7,24 @@ using System.Reflection;
 
 namespace Auxide
 {
+    public static class Interface
+    {
+        public static object CallHook(string hook)
+        {
+            return Auxide.Scripts.BroadcastReturn(hook);
+        }
+
+        public static object CallHook(string hook, object arg1)
+        {
+            return Auxide.Scripts.BroadcastReturn(hook, arg1);
+        }
+
+        public static object CallHook(string hook, object arg1, object arg2)
+        {
+            return Auxide.Scripts.BroadcastReturn(hook, arg1, arg2);
+        }
+    }
+
     public sealed class Utils : Auxide
     {
         public static bool IsFriend(ulong playerid, ulong ownerid)

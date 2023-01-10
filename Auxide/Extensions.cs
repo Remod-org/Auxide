@@ -68,6 +68,41 @@ namespace Auxide
             }
         }
     }
+    public class CodeLockExtension
+    {
+        public string code
+        {
+            get
+            {
+                // Use reflection to get the value of the private code field in the base class
+                FieldInfo codeFieldInfo = typeof(CodeLock).GetField("code", BindingFlags.NonPublic | BindingFlags.Instance);
+                return (string)codeFieldInfo.GetValue(this);
+            }
+            set
+            {
+                // Use reflection to set the value of the private inventory field in the base class
+                FieldInfo codeFieldInfo = typeof(CodeLock).GetField("code", BindingFlags.NonPublic | BindingFlags.Instance);
+                codeFieldInfo.SetValue(this, value);
+            }
+        }
+
+        public string guestCode
+        {
+            get
+            {
+                // Use reflection to get the value of the private guestCode field in the base class
+                FieldInfo guestCodeFieldinfo = typeof(CodeLock).GetField("guestCode", BindingFlags.NonPublic | BindingFlags.Instance);
+                return (string)guestCodeFieldinfo.GetValue(this);
+            }
+            set
+            {
+                // Use reflection to set the value of the private inventory field in the base class
+                FieldInfo guestCodeFieldInfo = typeof(CodeLock).GetField("guestCode", BindingFlags.NonPublic | BindingFlags.Instance);
+                guestCodeFieldInfo.SetValue(this, value);
+            }
+        }
+    }
+
     public class StorageContainerExtension : StorageContainer
     {
         public bool _limitedNetworking

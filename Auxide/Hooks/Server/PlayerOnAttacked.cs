@@ -6,7 +6,7 @@ using Harmony;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(BasePlayer), "OnAttacked", typeof(HitInfo))]
-    public class PlayerOnAttacked
+    public static class PlayerOnAttacked
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {

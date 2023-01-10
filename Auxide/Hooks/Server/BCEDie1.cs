@@ -6,7 +6,7 @@ using Harmony;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(BaseCombatEntity), "Die", typeof(HitInfo))]
-    public class BCEDie1
+    public static class BCEDie1
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {

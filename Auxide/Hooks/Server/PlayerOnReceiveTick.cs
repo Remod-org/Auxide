@@ -7,7 +7,7 @@ using Harmony;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(BasePlayer), "OnReceiveTick", new Type[] { typeof(PlayerTick), typeof(bool) })]
-    public class PlayerOnReceiveTick
+    public static class PlayerOnReceiveTick
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {

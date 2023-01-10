@@ -3,7 +3,7 @@
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(ServerMgr), "DoTick")]
-    public class ServerMgrDoTick
+    public static class ServerMgrDoTick
     {
         [HarmonyPrefix]
         public static void Prefix(ServerMgr __instance)

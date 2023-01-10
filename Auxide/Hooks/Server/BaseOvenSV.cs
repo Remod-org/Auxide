@@ -3,7 +3,7 @@
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(BaseOven), "SVSwitch")]//, typeof(BaseEntity.RPCMessage))]
-    public class BaseOvenSV
+    public static class BaseOvenSV
     {
         public static bool Prefix(BaseOven __instance, ref BaseEntity.RPCMessage msg)
         {

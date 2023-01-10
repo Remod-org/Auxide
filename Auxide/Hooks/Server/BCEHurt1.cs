@@ -7,7 +7,7 @@ namespace Auxide.Hooks.Server
 {
     // THIS IS FOR PVP DAMAGE
     [HarmonyPatch(typeof(BaseCombatEntity), "Hurt", typeof(HitInfo))]
-    public class BCEHurt1
+    public static class BCEHurt1
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {

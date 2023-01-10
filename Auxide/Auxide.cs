@@ -1,7 +1,5 @@
 ﻿using Auxide.Scripting;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -12,7 +10,7 @@ namespace Auxide
         internal readonly static Version AssemblyVersion;
 
         public readonly static VersionNumber Version;
-        public static ScriptManager Scripts { get; internal set; }
+        public static ScriptManager Scripts { get; set; }
         //public static string BinPath { get; internal set; }
         public static string TopPath { get; internal set; }
         public static string ScriptPath { get; internal set; }

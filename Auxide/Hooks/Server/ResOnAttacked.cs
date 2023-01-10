@@ -6,7 +6,7 @@ using Harmony;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(ResourceEntity), "OnAttacked", typeof(HitInfo))]
-    public class ResOnAttacked
+    public static class ResOnAttacked
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {
