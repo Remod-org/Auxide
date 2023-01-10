@@ -500,6 +500,13 @@ namespace Auxide
             return BroadcastReturn("OnEntitySaved", entity, saveInfo);
         }
 
+        internal object OnHammerHitHook(BasePlayer ownerPlayer, HitInfo hitInfo)
+        {
+            if (ownerPlayer == null) return null;
+            if (hitInfo?.HitEntity == null) return null;
+            return BroadcastReturn("OnHammerHit", ownerPlayer, hitInfo);
+        }
+
         internal object OnServerMessageHook(string message, string username, string color, ulong userid)
         {
             return BroadcastReturn("OnServerMessage", message, username, color, userid);

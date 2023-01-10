@@ -592,6 +592,7 @@
     <Compile Include="Hooks\Server\BaseOvenSV.cs" />
     <Compile Include="Hooks\Server\BCEOnPickedUp.cs" />
     <Compile Include="Hooks\Server\BCEHurt1.cs" />
+    <Compile Include="Hooks\Server\OnHammerHit.cs" />
     <Compile Include="Hooks\Server\OnServerMessage.cs" />
     <Compile Include="Hooks\Server\ServerMgrRestartServer.cs" />
     <Compile Include="Scripting\ScriptAttributes.cs" />

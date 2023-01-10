@@ -68,7 +68,7 @@ namespace Auxide
             }
         }
     }
-    public class CodeLockExtension
+    public class CodeLockExtension : CodeLock
     {
         public string code
         {
