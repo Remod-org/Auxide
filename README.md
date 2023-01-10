@@ -156,6 +156,8 @@ object BroadcastReturn("CanPickup", StorageContainer, BasePlayer);
 
 object BroadcastReturn("OnTakeDamage", BaseCombatEntity, HitInfo);
 
+object BroadcastReturn("OnHammerHit", BasePlayer, HitInfo);
+
 void Broadcast("OnPlayerJoin", BasePlayer);
 
 void Broadcast("OnPlayerLeave", BasePlayer);
