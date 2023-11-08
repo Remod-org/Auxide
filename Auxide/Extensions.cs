@@ -1,8 +1,26 @@
-﻿using System.Reflection;
+﻿using Steamworks.Data;
+using System.Reflection;
 using System.Text;
 
 namespace Auxide
 {
+    public static class UlongExtension
+    {
+        public static bool IsSteamId(this string id)
+        {
+            if (!ulong.TryParse(id, out ulong num))
+            {
+                return false;
+            }
+            return num > 76561197960265728L;
+        }
+
+        public static bool IsSteamId(this ulong id)
+        {
+            return id > 76561197960265728L;
+        }
+    }
+
     public static class StringExtension
     {
         public static string Titleize(this string s)
@@ -33,7 +51,7 @@ namespace Auxide
 
     public class DroppedItemContainerExtension : DroppedItemContainer
     {
-        public ItemContainer inventory
+        public new ItemContainer inventory
         {
             get
             {
@@ -68,6 +86,7 @@ namespace Auxide
             }
         }
     }
+
     public class CodeLockExtension : CodeLock
     {
         public string code

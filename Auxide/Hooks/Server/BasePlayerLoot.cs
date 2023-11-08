@@ -4,7 +4,7 @@ using Harmony;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(BasePlayer), "CanBeLooted", new Type[] { typeof(BasePlayer) })]
-    public class BasePlayerLoot
+    public static class BasePlayerLoot
     {
         // NOT YET WORKING 15-Nov-2022
         public static bool Prefix(StorageContainer __instance, ref bool __result, ref BasePlayer player)

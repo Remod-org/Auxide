@@ -11,7 +11,7 @@ namespace Auxide
 
         public readonly static VersionNumber Version;
         public static ScriptManager Scripts { get; set; }
-        //public static string BinPath { get; internal set; }
+        public static string BinPath { get; internal set; }
         public static string TopPath { get; internal set; }
         public static string ScriptPath { get; internal set; }
         public static string ConfigPath { get; internal set; }
@@ -23,6 +23,7 @@ namespace Auxide
         private static string configFile;
         public static AuxideConfig config;
         public static Permissions permissions;
+        public static Interface Interface;
 
         private static bool initialized;
         public static bool full;
@@ -31,8 +32,6 @@ namespace Auxide
 
         private static ActionQueue queue;
         private static Action<float> onFrame;
-//        private static List<Action> nextTickQueue;
-//        private static Queue<Action> lastTickQueue;
 
         public static bool hideGiveNotices { get; internal set; }
         //public static bool useInternal = false;
@@ -57,18 +56,18 @@ namespace Auxide
                 UnityEngine.Debug.LogWarning($"[Auxide ({now})] Opening config file: {configFile}");
                 LoadConfig();
 
-                UnityEngine.Debug.LogWarning(full ? $"[Auxide ({now})] Operating in full mode with plugins..." : $"[Auxide ({now})] Operating in minimal mode with no plugins...");
+                UnityEngine.Debug.LogWarning(full ? $"[Auxide ({now})] Operating in full plugin mode..." : $"[Auxide ({now})] Operating in minimal, non-plugin mode...");
                 TopPath = Path.Combine(AppContext.BaseDirectory, "auxide");
-                //BinPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Bin");
-                ScriptPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Scripts");
-                ConfigPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Config");
-                DataPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Data");
-                LangPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Lang");
-                LogPath = Path.Combine(AppContext.BaseDirectory, "auxide", "Logs");
+                BinPath = Path.Combine(AppContext.BaseDirectory, "auxide", "bin");
+                ScriptPath = Path.Combine(AppContext.BaseDirectory, "auxide", "scripts");
+                ConfigPath = Path.Combine(AppContext.BaseDirectory, "auxide", "config");
+                DataPath = Path.Combine(AppContext.BaseDirectory, "auxide", "data");
+                LangPath = Path.Combine(AppContext.BaseDirectory, "auxide", "lang");
+                LogPath = Path.Combine(AppContext.BaseDirectory, "auxide", "logs");
 
                 if (verbose)
                 {
-                    //UnityEngine.Debug.LogWarning($"[Auxide ({now})] BinPath: {BinPath}");
+                    UnityEngine.Debug.LogWarning($"[Auxide ({now})] BinPath: {BinPath}");
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] ScriptPath: {ScriptPath}");
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] ConfigPath: {ConfigPath}");
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] DataPath: {DataPath}");
@@ -76,10 +75,10 @@ namespace Auxide
                     UnityEngine.Debug.LogWarning($"[Auxide ({now})] LogPath: {LogPath}");
                 }
 
-                //if (!Directory.Exists(BinPath))
-                //{
-                //    Directory.CreateDirectory(BinPath);
-                //}
+                if (!Directory.Exists(BinPath))
+                {
+                    Directory.CreateDirectory(BinPath);
+                }
                 if (!Directory.Exists(ScriptPath))
                 {
                     Directory.CreateDirectory(ScriptPath);
@@ -107,6 +106,7 @@ namespace Auxide
                 queue = new ActionQueue();
                 permissions = new Permissions();
                 initialized = true;
+                Interface = new Interface();
                 if (verbose) Utils.DoLog(full ? "Initialized full mode with plugins..." : "Initialized minimal mode with no plugins...", false);
             }
             catch (Exception e)

@@ -3,6 +3,7 @@ using System.IO;
 using Mono.Data.Sqlite;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 
 namespace Auxide
 {
@@ -43,10 +44,10 @@ namespace Auxide
                 using (SqliteCommand cmd = new SqliteCommand(c))
                 using (SqliteTransaction transaction = c.BeginTransaction())
                 {
-                    cmd.CommandText += $"CREATE TABLE permissions (plugin varchar(32), source int(1) DEFAULT 0, permname varchar(32), userid varchar(32), isgroup int(1) DEFAULT 0);";
-                    cmd.CommandText += $"CREATE TABLE groups (groupname varchar(32), members varchar(256));";
-                    cmd.CommandText += $"INSERT INTO groups VALUES('default', '');";
-                    cmd.CommandText += $"INSERT INTO groups VALUES('admin', '');";
+                    cmd.CommandText += "CREATE TABLE permissions (plugin varchar(32), source int(1) DEFAULT 0, permname varchar(32), userid varchar(32), isgroup int(1) DEFAULT 0);";
+                    cmd.CommandText += "CREATE TABLE groups (groupname varchar(32), members varchar(256));";
+                    cmd.CommandText += "INSERT INTO groups VALUES('default', '');";
+                    cmd.CommandText += "INSERT INTO groups VALUES('admin', '');";
                     Utils.DoLog(cmd.CommandText);
                     cmd.ExecuteNonQuery();
                     transaction.Commit();
@@ -193,6 +194,27 @@ namespace Auxide
                     }
                 }
             }
+        }
+
+        public static string ShowPermissions(string userid)
+        {
+            string message = string.Empty;
+            using (SqliteConnection c = new SqliteConnection(connStr))
+            {
+                c.Open();
+                using (SqliteCommand cmd = new SqliteCommand($"SELECT plugin, permname FROM permissions WHERE userid='{userid}' AND isgroup=0", c))
+                {
+                    using (SqliteDataReader rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read() && !rdr.IsDBNull(0) && !rdr.IsDBNull(1))
+                        {
+                            // User has direct permission.
+                            message += rdr.GetString(0) + ": " + rdr.GetString(1) + "\n";
+                        }
+                    }
+                }
+            }
+            return message;
         }
 
         public static bool UserHasPermission(string permname, string userid)

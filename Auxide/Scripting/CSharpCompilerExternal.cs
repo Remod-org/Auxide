@@ -94,6 +94,19 @@ namespace Auxide.Scripting
             return tree;
         }
 
+        private static string GetReferenceAlt(string assemblyName, string path, bool global = false)
+        {
+            string main = global ? "global " : "";
+            ref oldOrNew = ref CollectionsMarshal.GetValueRefOrAddDefault(referenceCache, assemblyName, out var exists);
+            if (!exists)
+            {
+                if (Auxide.verbose) Utils.DoLog($"Loading new {main}reference to {path} for {assemblyName}", false);
+                referenceCache.Add(assemblyName, path);
+                return $" /reference:{path}";
+            }
+            if (Auxide.verbose) Utils.DoLog($"Loading cached {main}reference to {path} for {assemblyName}", false);
+            return $" /reference:{referenceCache[assemblyName]}";
+        }
         private static string GetReference(string assemblyName, string path, bool global = false)
         {
             string main = global ? "global " : "";

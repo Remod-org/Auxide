@@ -1,15 +1,18 @@
 ﻿using System;
 
-[AttributeUsage(AttributeTargets.Method)]
-public class CommandAttribute : Attribute
+namespace Auxide
 {
-    public string[] Commands
+    [AttributeUsage(AttributeTargets.Method)]
+    public class CommandAttribute : Attribute
     {
-        get;
-    }
+        public string[] Commands
+        {
+            get;
+        }
 
-    public CommandAttribute(params string[] commands)
-    {
-        Commands = commands;
+        public CommandAttribute(params string[] commands)
+        {
+            Commands = commands;
+        }
     }
 }

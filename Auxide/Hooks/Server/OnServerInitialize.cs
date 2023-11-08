@@ -2,8 +2,8 @@
 
 namespace Auxide.Hooks.Server
 {
-    [HarmonyPatch(typeof(SaveRestore), "DoAutomatedSave")]
-    public static class OnServerSave
+    [HarmonyPatch(typeof(ServerMgr), "Initialize")]
+    public static class OnServerInitialize
     {
         internal static TimeSince _lastcall;
         public static void Prefix()
@@ -14,10 +14,9 @@ namespace Auxide.Hooks.Server
                 {
                     return;
                 }
-                Auxide.Scripts?.OnServerSaveHook();
+                Auxide.Scripts?.OnServerInitializeHook();
                 _lastcall = 0f;
             }
-            Auxide.LoadConfig();
         }
     }
 }

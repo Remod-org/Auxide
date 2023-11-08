@@ -1,5 +1,4 @@
-﻿using Auxide;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,21 +6,46 @@ using System.Reflection;
 
 namespace Auxide
 {
-    public static class Interface
+    public class Interface
     {
-        public static object CallHook(string hook)
+        internal bool playerTakingDamage;
+        public object CallHook(string hook)
         {
             return Auxide.Scripts.BroadcastReturn(hook);
         }
 
-        public static object CallHook(string hook, object arg1)
+        public object CallHook(string hook, object arg1)
         {
             return Auxide.Scripts.BroadcastReturn(hook, arg1);
         }
 
-        public static object CallHook(string hook, object arg1, object arg2)
+        public object CallHook(string hook, object arg1, object arg2)
         {
+            if (hook == "OnTakeDamage" && arg1 is BasePlayer)
+            {
+                if (playerTakingDamage)
+                {
+                    playerTakingDamage = false;
+                    return null;
+                }
+                playerTakingDamage = true;
+            }
             return Auxide.Scripts.BroadcastReturn(hook, arg1, arg2);
+        }
+
+        public object CallHook(string hook, object arg1, object arg2, object arg3)
+        {
+            return Auxide.Scripts.BroadcastReturn(hook, arg1, arg2, arg3);
+        }
+
+        public object CallHook(string hook, object arg1, object arg2, object arg3, object arg4)
+        {
+            return Auxide.Scripts.BroadcastReturn(hook, arg1, arg2, arg3, arg4);
+        }
+
+        public object CallHook(string hook, object arg1, object arg2, object arg3, object arg4, object arg5)
+        {
+            return Auxide.Scripts.BroadcastReturn(hook, arg1, arg2, arg3, arg4, arg5);
         }
     }
 
@@ -30,6 +54,7 @@ namespace Auxide
         public static bool IsFriend(ulong playerid, ulong ownerid)
         {
             if (playerid == 0) return true;
+            if (ownerid == 0) return true;
 
             DoLog($"IsFriend player {playerid} owner {ownerid}");
             BasePlayer player = BasePlayer.FindByID(playerid);
@@ -47,7 +72,7 @@ namespace Auxide
         public static void GetNewLog()
         {
             //string now = DateTime.Now.ToString("yyyyMdd-HH:mm");
-            string now = DateTime.Now.ToString("yyyyMdd");
+            string now = DateTime.Now.ToString("yyyyMMdd");
             LogFile = Path.Combine(LogPath, $"auxide_{now}.log");
         }
 
@@ -68,9 +93,15 @@ namespace Auxide
             ConsoleNetwork.SendClientCommand(player.net.connection, "chat.add", objArray);
         }
 
-        public static void DoLog(string tolog, bool logCaller = true)
+        public static void DoLog(string tolog)
+        {
+            DoLog(tolog, false, false);
+        }
+
+        public static void DoLog(string tolog, bool logCaller = true, bool warning = false)
         {
             string caller = logCaller ? GetCaller() : "Auxide";
+            string warn = warning ? "WARNING " : "";
             string now = DateTime.Now.ToShortTimeString();
 
             //using (FileStream fs = new FileStream(LogFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
@@ -78,15 +109,32 @@ namespace Auxide
             {
                 using (StreamWriter sw = new StreamWriter(fs))
                 {
-                    sw.WriteLine($"[{caller} ({now})] {tolog}");
+                    sw.WriteLine($"[{warn}{caller} ({now})] {tolog}");
                 }
+            }
+        }
+
+        public static void LogToFile(string filename, string text, RustScript plugin, bool timeStamp = true)
+        {
+            string str = Path.Combine(LogPath, plugin.Name);
+            if (!Directory.Exists(str))
+            {
+                Directory.CreateDirectory(str);
+            }
+            string[] lower = new string[] { plugin.Name.ToLower(), "_", filename.ToLower(), null, null };
+            lower[3] = (timeStamp ? string.Format("-{0:yyyy-MM-dd}", DateTime.Now) : "");
+            lower[4] = ".txt";
+            filename = string.Concat(lower);
+            using (StreamWriter streamWriter = new StreamWriter(Path.Combine(str, filename), true))
+            {
+                streamWriter.WriteLine((timeStamp ? string.Format("[{0:yyyy-MM-dd HH:mm:ss}] {1}", DateTime.Now, text) : text));
             }
         }
 
         private static string GetCaller(int level = 2)
         {
-            MethodBase m = new StackTrace().GetFrame(level).GetMethod();
-            return m?.DeclaringType?.FullName;
+            MethodBase m = new StackTrace()?.GetFrame(level)?.GetMethod();
+            return m?.DeclaringType?.FullName ?? "";
         }
 
         public static bool GetBoolValue(string value)

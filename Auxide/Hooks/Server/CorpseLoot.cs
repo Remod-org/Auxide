@@ -4,7 +4,7 @@ using Harmony;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(PlayerCorpse), "OnStartBeingLooted", new Type[] { typeof(BasePlayer) })]
-    public class CorpseLoot
+    public static class CorpseLoot
     {
         // NOT YET WORKING 15-Nov-2022
         public static bool Prefix(PlayerCorpse __instance, ref bool __result, ref BasePlayer baseEntity)

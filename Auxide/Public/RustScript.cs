@@ -1,6 +1,5 @@
 ﻿using Auxide;
 using System;
-using System.IO;
 using Auxide.Scripting;
 
 public abstract class RustScript : IDisposable
@@ -22,7 +21,7 @@ public abstract class RustScript : IDisposable
 
     public Timer timer;
 
-    public RustScript()
+    protected RustScript()
     {
         timer = new Timer();
         Name = GetType().Name;
@@ -61,22 +60,11 @@ public abstract class RustScript : IDisposable
         Utils.SendReply(player, string.Format(lang.Get(input), args));
     }
 
-    protected void LogToFile(string filename, string text, RustScript plugin, bool timeStamp = true)
-    {
-        string str = Path.Combine(Auxide.Auxide.LogPath, plugin.Name);
-        if (!Directory.Exists(str))
-        {
-            Directory.CreateDirectory(str);
-        }
-        string[] lower = new string[] { plugin.Name.ToLower(), "_", filename.ToLower(), null, null };
-        lower[3] = (timeStamp ? string.Format("-{0:yyyy-MM-dd}", DateTime.Now) : "");
-        lower[4] = ".txt";
-        filename = string.Concat(lower);
-        using (StreamWriter streamWriter = new StreamWriter(Path.Combine(str, filename), true))
-        {
-            streamWriter.WriteLine((timeStamp ? string.Format("[{0:yyyy-MM-dd HH:mm:ss}] {1}", DateTime.Now, text) : text));
-        }
-    }
+    protected virtual void DoLog(string text) => Utils.DoLog(text, false, false);
+
+    protected void LogWarning(string text) => Utils.DoLog(text, false, true);
+
+    protected void LogToFile(string filename, string text, RustScript plugin, bool timeStamp = true) => Utils.LogToFile(filename, text, plugin, timeStamp);
 
     protected void NextFrame(Action callback)
     {

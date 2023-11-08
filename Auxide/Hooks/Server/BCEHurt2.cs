@@ -10,7 +10,7 @@ namespace Auxide.Hooks.Server
     // THIS IS FOR DECAY
     [HarmonyPatch(typeof(BaseCombatEntity), "Hurt", new Type[] { typeof(float), typeof(DamageType), typeof(BaseEntity), typeof(bool) })]
 
-    public class BCEHurt2
+    public static class BCEHurt2
     {
         // WORKING 11-03-2022
         public static void Prefix(BaseCombatEntity __instance, ref float amount, ref DamageType type, ref BaseEntity attacker, ref bool useProtection)
@@ -22,7 +22,7 @@ namespace Auxide.Hooks.Server
                     //if (verbose) Debug.LogWarning($"Decay called for {__instance.GetType().Name}({__instance.ShortPrefabName})");
                     if (type == DamageType.Decay)
                     {
-                        if ((__instance as BuildingBlock) != null && __instance.OwnerID != 0 && Auxide.config.Options.minimal.blockBuildingDecay)
+                        if (__instance is BuildingBlock && __instance.OwnerID != 0 && Auxide.config.Options.minimal.blockBuildingDecay)
                         {
                             if (Auxide.verbose) Utils.DoLog($"Blocking building block decay on {__instance.ShortPrefabName}");
                             amount = 0;

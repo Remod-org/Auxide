@@ -11,6 +11,7 @@ namespace Auxide
 {
     internal partial class Script : IEquatable<Script>, IDisposable
     {
+        public CommandAttribute CommandAttribute { get; private set; }
         public ScriptManager Manager { get; }
         public string Name { get; }
         public bool remote { get; set; }
@@ -42,7 +43,7 @@ namespace Auxide
             try
             {
                 Debug.LogWarning($"Script {Instance?.GetType().Name} unloaded...");
-                Utils.DoLog($"Script {Instance?.GetType().Name} unloaded...");
+                DoLog($"Script {Instance?.GetType().Name} unloaded...");
                 Instance?.Dispose();
             }
             catch (Exception e)
@@ -62,9 +63,9 @@ namespace Auxide
             string code = "";
             try
             {
-                Utils.DoLog($"Trying to load dll from remote data");
+                DoLog($"Trying to load dll from remote data");
                 Assembly assembly = Assembly.Load(data);
-                Utils.DoLog($"Loaded assembly: {assembly.GetType()}!");
+                DoLog($"Loaded assembly: {assembly.GetType()}!");
 
                 Initialize(null, code, assembly);
                 initialized = true;
@@ -72,7 +73,7 @@ namespace Auxide
             catch (Exception e)
             {
                 initialized = false;
-                Utils.DoLog($"Failed to load dll from remote data: {e}");
+                DoLog($"Failed to load dll from remote data: {e}");
                 throw new ScriptLoadException(Name, $"Failed to load dll from remote data", e);
             }
         }
@@ -86,12 +87,12 @@ namespace Auxide
             //{
             //    try
             //    {
-            //        Utils.DoLog($"Trying to load code from {path}");
+            //        DoLog($"Trying to load code from {path}");
             //        code = File.ReadAllText(path);
             //    }
             //    catch (Exception e)
             //    {
-            //        Utils.DoLog($"Failed to load script code at path: {path}: {e}");
+            //        DoLog($"Failed to load script code at path: {path}: {e}");
             //        throw new ScriptLoadException(Name, $"Failed to load script code at path: {path}", e);
             //    }
 
@@ -108,10 +109,11 @@ namespace Auxide
             //{
             try
             {
-                Utils.DoLog($"Trying to load dll from {path}");
+                DoLog($"Trying to load dll from {path}");
                 //Assembly assembly = Assembly.LoadFile(path);
-                Assembly assembly = Assembly.Load(File.ReadAllBytes(path));
-                Utils.DoLog($"Loaded assembly: {assembly.GetType()}!");
+                //Assembly assembly = Assembly.Load(File.ReadAllBytes(path));
+                Assembly assembly = Assembly.Load(ReadAllBytes(path));
+                DoLog($"Loaded assembly: {assembly.GetType()}!");
 
                 Initialize(path, code, assembly);
                 initialized = true;
@@ -119,10 +121,21 @@ namespace Auxide
             catch (Exception e)
             {
                 initialized = false;
-                Utils.DoLog($"Failed to load dll at path: {path}: {e}");
+                DoLog($"Failed to load dll at path: {path}: {e}");
                 throw new ScriptLoadException(Name, $"Failed to load dll at path: {path}", e);
             }
             //}
+        }
+
+        public byte[] ReadAllBytes(string fileName)
+        {
+            byte[] buffer = null;
+            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            {
+                buffer = new byte[fs.Length];
+                _ = fs.Read(buffer, 0, checked((int)fs.Length));
+            }
+            return buffer;
         }
 
         //private void GetCompiler()
@@ -146,7 +159,7 @@ namespace Auxide
 
         //private void Compile(string path, string code)
         //{
-        //    Utils.DoLog($"Compiling {Name} @ {path}");
+        //    DoLog($"Compiling {Name} @ {path}");
 
         //    CompilationResult result = null;
         //    if (Auxide.useInternal)
@@ -161,7 +174,7 @@ namespace Auxide
         //    if (!result.IsSuccess)
         //    {
         //        string errorList = string.Join("\n", result.Errors);
-        //        Utils.DoLog($"Script compile failed:\n{errorList}");
+        //        DoLog($"Script compile failed:\n{errorList}");
         //        throw new ScriptLoadException(Name, $"Script compile failed:\n{errorList}");
         //    }
 
@@ -170,28 +183,30 @@ namespace Auxide
         //    try
         //    {
         //        assembly = Assembly.Load(result.AssemblyData);
-        //        Utils.DoLog($"Loaded assembly!");
+        //        DoLog($"Loaded assembly!");
         //    }
         //    catch (Exception e)
         //    {
-        //        Utils.DoLog($"Failed to load assembly: {e}");
+        //        DoLog($"Failed to load assembly: {e}");
         //        throw new ScriptLoadException(Name, "Failed to load assembly", e);
         //    }
 
-        //    Utils.DoLog($"Initializing {path}");
+        //    DoLog($"Initializing {path}");
         //    Initialize(path, code, assembly);
         //}
+
+        private void DoLog(string text) => Utils.DoLog(text, false, false);
 
         private void Initialize(string path, string code, Assembly assembly)
         {
             Dispose(); // Hrm...
-            Utils.DoLog($"Initializing assembly");
+            DoLog("Initializing assembly");
 
             Type type = assembly.GetType(Name);
 
             if (type == null)
             {
-                Utils.DoLog($"Unable to find class '{Name}' in the compiled script.");
+                DoLog($"Unable to find class '{Name}' in the compiled script.");
                 throw new ScriptLoadException(Name, $"Unable to find class '{Name}' in the compiled script.");
             }
 
@@ -199,19 +214,19 @@ namespace Auxide
 
             try
             {
-                Utils.DoLog($"Attempting to create instance of type {type}");
+                DoLog($"Attempting to create instance of type {type}");
                 instance = Activator.CreateInstance(type);// as RustScript;
-                Utils.DoLog($"Created instance of type {instance.GetType().FullName}");
+                DoLog($"Created instance of type {instance.GetType().FullName}");
             }
             catch (Exception e)
             {
-                Utils.DoLog($"Exception thrown in script '{Name}' constructor.");
+                DoLog($"Exception thrown in script '{Name}' constructor.");
                 throw new ScriptLoadException(Name, $"Exception thrown in script '{Name}' constructor.", e);
             }
 
             if (!(instance is RustScript scriptInstance))
             {
-                Utils.DoLog($"Script class ({instance.GetType()}:{instance.GetType().BaseType}) must derive from RustScript.");
+                DoLog($"Script class ({instance.GetType()}:{instance.GetType().BaseType}) must derive from RustScript.");
                 throw new ScriptLoadException(Name, $"Script class ({type.FullName}) must derive from RustScript.");
             }
 
@@ -240,19 +255,19 @@ namespace Auxide
             List<string> allSoftReferences = Manager.PopulateScriptReferences(Instance).ToList();
             SoftDependencies.UnionWith(allSoftReferences);
 
-            if (Auxide.verbose) Utils.DoLog("Running ScriptLoading");
+            if (Auxide.verbose) DoLog("Running ScriptLoading");
             Manager.ScriptLoading(this);
-            Utils.DoLog("Ran ScriptLoading");
+            DoLog("Ran ScriptLoading");
 
             try
             {
-                if (Auxide.verbose) Utils.DoLog("Initializing Instance");
+                if (Auxide.verbose) DoLog("Initializing Instance");
                 Instance.Initialize();
-                if (Auxide.verbose) Utils.DoLog("Initialized Instance");
+                if (Auxide.verbose) DoLog("Initialized Instance");
             }
             catch (Exception e)
             {
-                if (Auxide.verbose) Utils.DoLog("Initialize error");
+                if (Auxide.verbose) DoLog("Initialize error");
                 ReportError("Initialize", e);
             }
 

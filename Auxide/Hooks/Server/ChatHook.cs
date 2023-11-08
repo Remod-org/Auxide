@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Auxide.Hooks.Server
 {
     [HarmonyPatch(typeof(Chat), "sayImpl", new[] { typeof(Chat.ChatChannel), typeof(ConsoleSystem.Arg) })]
-    public class ChatHook
+    public static class ChatHook
     {
         public static bool Prefix(Chat __instance, ref Chat.ChatChannel targetChannel, ref ConsoleSystem.Arg arg)
         {
