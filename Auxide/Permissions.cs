@@ -57,7 +57,7 @@ namespace Auxide
 
         private static string GetUserIDString(string usernameorid)
         {
-            BasePlayer player = BasePlayer.Find(usernameorid);
+            BasePlayer player = BasePlayer.allPlayerList.First(x => string.Equals(x.displayName, usernameorid, StringComparison.CurrentCultureIgnoreCase));
             if (player != null)
             {
                 return player.UserIDString;
@@ -67,7 +67,7 @@ namespace Auxide
 
         private static string GetDisplayName(string usernameorid)
         {
-            BasePlayer player = BasePlayer.Find(usernameorid);
+            BasePlayer player = BasePlayer.allPlayerList.First(x => x.userID == ulong.Parse(usernameorid));
             if (player != null)
             {
                 return player.displayName;
@@ -196,12 +196,12 @@ namespace Auxide
             }
         }
 
-        public static string ShowPermissions(string userid)
+        public static string ShowPermissions(string useridorname)
         {
-            ulong.TryParse(userid, out ulong uid);
+            ulong.TryParse(useridorname, out ulong uid);
             if (uid == 0)
             {
-                BasePlayer player = BasePlayer.allPlayerList.First(x => string.Equals(x.displayName, userid, StringComparison.CurrentCultureIgnoreCase));
+                BasePlayer player = BasePlayer.allPlayerList.First(x => string.Equals(x.displayName, useridorname, StringComparison.CurrentCultureIgnoreCase));
                 uid = player.userID;
             }
             string message = string.Empty;

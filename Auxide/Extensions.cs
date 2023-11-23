@@ -1,4 +1,6 @@
 ﻿using Steamworks.Data;
+using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -23,7 +25,17 @@ namespace Auxide
 
     public static class StringExtension
     {
-        public static string Titleize(this string s)
+        public static string TitleCase(this string text)
+        {
+            return CultureInfo.InstalledUICulture.TextInfo.ToTitleCase(text.Contains('\u005F') ? text.Replace('\u005F', ' ') : text);
+        }
+
+        public static string Titleize(this string text)
+        {
+            return text.TitleCase();
+        }
+
+        public static string OldTitleize(this string s)
         {
             bool IsNewSentence = true;
             StringBuilder result = new StringBuilder(s.Length);

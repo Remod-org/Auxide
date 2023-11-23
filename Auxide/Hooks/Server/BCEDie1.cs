@@ -14,14 +14,15 @@ namespace Auxide.Hooks.Server
 
             List<CodeInstruction> codes = new List<CodeInstruction>(instr);
             int startIndex = -1;
-            int fixJump = -1;
+            //int fixJump = -1;
             Label newLabel = il.DefineLabel();
 
-            for (int i = 0; i < codes.Count; i++)
+            int i;
+            for (i = 0; i < codes.Count; i++)
             {
-                if (codes[i].opcode == OpCodes.Brfalse_S && codes[i + 1].opcode == OpCodes.Ldarg_1)
+                if (codes[i].opcode == OpCodes.Brfalse && codes[i + 1].opcode == OpCodes.Ldarg_1 && startIndex == -1)
                 {
-                    startIndex = i + 1;
+                    startIndex = i - 2;
                     break;
                 }
             }
@@ -41,16 +42,16 @@ namespace Auxide.Hooks.Server
                 codes[startIndex].labels.Add(newLabel);
             }
 
-            if (fixJump > -1)
-            {
-                // Fix jump from saveInfo.msg.baseNetworkable == null to avoid skipping our new code
-                List<CodeInstruction> instructionsToInsert = new List<CodeInstruction>()
-                {
-                    new CodeInstruction(OpCodes.Brtrue_S, newLabel)
-                };
-                codes.RemoveRange(fixJump, 1);
-                codes.InsertRange(fixJump, instructionsToInsert);
-            }
+            //if (fixJump > -1)
+            //{
+            //    // Fix jump from saveInfo.msg.baseNetworkable == null to avoid skipping our new code
+            //    List<CodeInstruction> instructionsToInsert = new List<CodeInstruction>()
+            //    {
+            //        new CodeInstruction(OpCodes.Brtrue_S, newLabel)
+            //    };
+            //    codes.RemoveRange(fixJump, 1);
+            //    codes.InsertRange(fixJump, instructionsToInsert);
+            //}
 
             return codes.AsEnumerable();
         }
