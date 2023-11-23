@@ -1,4 +1,5 @@
-﻿using Facepunch.Extend;
+﻿using ConVar;
+using Facepunch.Extend;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -578,24 +579,12 @@ namespace Auxide
             Broadcast("OnPlayerLeave", player);
         }
 
-        //public object OnConsoleCommandHook(ConsoleSystem.Arg arg)
-        internal object OnConsoleCommandHook(string command, object[] args)
-        {
-            if (Auxide.full)
-            {
-                Utils.DoLog($"OnConsoleCommandHook was called for command {command}");
-                return BroadcastReturn("OnConsoleCommand", command, args);
-            }
-            //OnChatCommandHook(null, command);
-            return null;
-        }
-
         internal object OnServerCommandHook(ConsoleSystem.Arg arg)
         {
             if (Auxide.full)
             {
                 Utils.DoLog("OnServerCommandHook was called");
-                if (arg == null || arg.Connection != null && arg.Player() == null)
+                if (arg == null || (arg.Connection != null && arg.Player() == null))
                 {
                     return true;
                 }
@@ -606,7 +595,7 @@ namespace Auxide
                 string[] args = arg.FullString.SplitQuotesStrings(2147483647);
                 object obj = BroadcastReturn("OnServerCommand", arg);
                 object obj1 = BroadcastReturn("OnServerCommand", arg.cmd.FullName, args);
-                if ((obj == null ? obj1 == null : obj == null))
+                if (obj == null ? obj1 == null : obj == null)
                 {
                     return null;
                 }
@@ -630,6 +619,18 @@ namespace Auxide
             Broadcast("OnAdventGiftAwarded", advent, player);
         }
 
+        //public object OnConsoleCommandHook(ConsoleSystem.Arg arg)
+        internal object OnConsoleCommandHook(string command, object[] args)
+        {
+            OnChatCommandHook(null, command, args);
+            if (Auxide.full)
+            {
+                Utils.DoLog($"OnConsoleCommandHook was called for command {command}");
+                return BroadcastReturn("OnConsoleCommand", command, args);
+            }
+            return null;
+        }
+
         internal void OnChatCommandHook(BasePlayer player, string chat, object[] args = null)
         {
             string[] hookArgs = chat.Split(' '); // Extract command and args
@@ -638,10 +639,11 @@ namespace Auxide
             bool serverCmd = false;
             if (Auxide.verbose)
             {
-                Utils.DoLog($"OnChatCommandHook called for {player.displayName}, command '{command}', args '{string.Join(",", hookArgs)}'");
+                //Utils.DoLog($"OnChatCommandHook called for {player?.displayName}, command '{command}', args '{string.Join(",", args)}'");
+                Utils.DoLog($"OnChatCommandHook called for {player?.displayName}, command '{command}', args '{string.Join(",", hookArgs)}'");
             }
 
-            if (player.IsAdmin)
+            if (player?.IsAdmin != false)
             {
                 switch (command)
                 {
@@ -652,7 +654,12 @@ namespace Auxide
                             Assembly assem = Assembly.GetExecutingAssembly();
                             AssemblyName assemName = assem.GetName();
                             Version ver = assemName.Version;
-                            player.ChatMessage($"{assemName} {ver}");
+                            if (player == null)
+                            {
+                                Utils.DoLog($"{assemName} {ver}");
+                                break;
+                            }
+                            player?.ChatMessage($"{assemName} {ver}");
                         }
                         break;
                     case "a.verbose":
@@ -660,20 +667,22 @@ namespace Auxide
                         {
                             serverCmd = true;
                             Auxide.verbose = !Auxide.verbose;
-                            player.ChatMessage($"Verbose is now {Auxide.verbose}");
+                            if (player == null)
+                            {
+                                Utils.DoLog($"Verbose is now {Auxide.verbose}");
+                                break;
+                            }
+                            player?.ChatMessage($"Verbose is now {Auxide.verbose}");
                         }
                         break;
                     case "a.unload":
                     case "auxide.unload":
                         {
                             serverCmd = true;
-                            if (hookArgs.Length == 1)
+                            if (hookArgs.Length == 1 && _scripts.TryGetValue(hookArgs[0], out Script script))
                             {
-                                if (_scripts.TryGetValue(hookArgs[0], out Script script))
-                                {
-                                    script.Dispose();
-                                    _scripts.Remove(hookArgs[0]);
-                                }
+                                script.Dispose();
+                                _scripts.Remove(hookArgs[0]);
                             }
                         }
                         break;
@@ -723,7 +732,7 @@ namespace Auxide
                             AssemblyName assemName = assem.GetName();
                             Version ver = assemName.Version;
                             string msg = $"{assemName} {ver}\nRun Mode: {runMode}\nVerboseLogging: {verbose}";
-                            player.ChatMessage(msg);
+                            player?.ChatMessage(msg);
                         }
                         break;
                     case "a.list":
@@ -735,7 +744,12 @@ namespace Auxide
                             {
                                 mess += $"{script.Key}, {script.Value.Instance.Version} {script.Value.Instance.Description}\n";
                             }
-                            player.ChatMessage(mess);
+                            if (player == null)
+                            {
+                                Utils.DoLog(mess);
+                                break;
+                            }
+                            player?.ChatMessage(mess);
                         }
                         break;
                     case "listgroupmembers":
@@ -749,7 +763,12 @@ namespace Auxide
                                 string isgroup = member.Value ? " (group)" : "";
                                 message += $"\t{member.Key}{isgroup}\n";
                             }
-                            player.ChatMessage(message);
+                            if (player == null)
+                            {
+                                Utils.DoLog(message);
+                                break;
+                            }
+                            player?.ChatMessage(message);
                         }
                         break;
                     case "listgroups":
@@ -761,7 +780,12 @@ namespace Auxide
                             {
                                 message += $"\t{group}\n";
                             }
-                            player.ChatMessage(message);
+                            if (player == null)
+                            {
+                                Utils.DoLog(message);
+                                break;
+                            }
+                            player?.ChatMessage(message);
                         }
                         break;
                     case "addgroup":
@@ -815,9 +839,14 @@ namespace Auxide
                         break;
                     case "showperm":
                         serverCmd = true;
+                        if (player == null)
+                        {
+                            Utils.DoLog(Permissions.ShowPermissions(hookArgs[0]));
+                            break;
+                        }
                         if (hookArgs.Length == 1)
                         {
-                            player.ChatMessage(Permissions.ShowPermissions(hookArgs[0]));
+                            player?.ChatMessage(Permissions.ShowPermissions(hookArgs[0]));
                         }
                         break;
                 }

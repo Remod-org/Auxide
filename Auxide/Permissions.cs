@@ -198,11 +198,17 @@ namespace Auxide
 
         public static string ShowPermissions(string userid)
         {
+            ulong.TryParse(userid, out ulong uid);
+            if (uid == 0)
+            {
+                BasePlayer player = BasePlayer.allPlayerList.First(x => string.Equals(x.displayName, userid, StringComparison.CurrentCultureIgnoreCase));
+                uid = player.userID;
+            }
             string message = string.Empty;
             using (SqliteConnection c = new SqliteConnection(connStr))
             {
                 c.Open();
-                using (SqliteCommand cmd = new SqliteCommand($"SELECT plugin, permname FROM permissions WHERE userid='{userid}' AND isgroup=0", c))
+                using (SqliteCommand cmd = new SqliteCommand($"SELECT plugin, permname FROM permissions WHERE userid='{uid}' AND isgroup=0", c))
                 {
                     using (SqliteDataReader rdr = cmd.ExecuteReader())
                     {

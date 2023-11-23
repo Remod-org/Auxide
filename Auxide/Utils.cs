@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Facepunch;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -127,7 +128,7 @@ namespace Auxide
             filename = string.Concat(lower);
             using (StreamWriter streamWriter = new StreamWriter(Path.Combine(str, filename), true))
             {
-                streamWriter.WriteLine((timeStamp ? string.Format("[{0:yyyy-MM-dd HH:mm:ss}] {1}", DateTime.Now, text) : text));
+                streamWriter.WriteLine(timeStamp ? string.Format("[{0:yyyy-MM-dd HH:mm:ss}] {1}", DateTime.Now, text) : text);
             }
         }
 
@@ -153,6 +154,27 @@ namespace Auxide
                 default:
                     return false;
             }
+        }
+
+        public static object OnRunCommandLine()
+        {
+            foreach (KeyValuePair<string, string> @switch in CommandLine.GetSwitches())
+            {
+                string value = @switch.Value;
+                if (value?.Length == 0)
+                {
+                    value = "1";
+                }
+                string str = @switch.Key.Substring(1);
+                ConsoleSystem.Option unrestricted = ConsoleSystem.Option.Unrestricted;
+                unrestricted.PrintOutput = false;
+                if (Scripts?.OnConsoleCommandHook(str, new object[] { value }) == null)
+                {
+                    return null;
+                }
+                ConsoleSystem.Run(unrestricted, str, new object[] { value });
+            }
+            return false;
         }
 
         public static class ArrayPool

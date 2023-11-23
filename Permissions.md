@@ -37,6 +37,8 @@ No feedback is currently given in response to these commands.
 - `/remfromgroup GROUPNAME USERGROUP` -- Removes the named user or group from the group called GROUPNAME
 - `/removefromgroup GROUPNAME USERGROUP` -- Alias for the above.
 
+- `/showperm USERNAMEORSTEAMID` -- Show granted permissions for a user
+
 ### Example 1
 
 1. Create a new group called banker using /addgroup banker

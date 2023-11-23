@@ -52,6 +52,7 @@ namespace Auxide
             }
 
             Instance = null;
+
             Assembly = null;
 
             Manager.ScriptUnloaded(this);
@@ -60,10 +61,10 @@ namespace Auxide
         internal void Update(byte[] data = null)
         {
             if (data == null) return;
-            string code = "";
+            const string code = "";
             try
             {
-                DoLog($"Trying to load dll from remote data");
+                DoLog("Trying to load dll from remote data");
                 Assembly assembly = Assembly.Load(data);
                 DoLog($"Loaded assembly: {assembly.GetType()}!");
 
@@ -74,14 +75,14 @@ namespace Auxide
             {
                 initialized = false;
                 DoLog($"Failed to load dll from remote data: {e}");
-                throw new ScriptLoadException(Name, $"Failed to load dll from remote data", e);
+                throw new ScriptLoadException(Name, "Failed to load dll from remote data", e);
             }
         }
 
         internal void Update(string path = null)
         {
             if (path == null) return;
-            string code = "";
+            const string code = "";
 
             //if (Auxide.config.Options.cSharpScripts)
             //{

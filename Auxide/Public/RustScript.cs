@@ -21,6 +21,11 @@ public abstract class RustScript : IDisposable
 
     public Timer timer;
 
+    //public Assembly Load(string file)
+    //{
+    //    return Assembly.LoadFile(file);
+    //}
+
     protected RustScript()
     {
         timer = new Timer();
