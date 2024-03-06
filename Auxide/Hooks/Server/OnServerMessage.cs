@@ -1,5 +1,5 @@
-﻿using Harmony;
-using ConVar;
+﻿using ConVar;
+using Harmony;
 
 namespace Auxide.Hooks.Server
 {

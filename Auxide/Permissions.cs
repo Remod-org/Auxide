@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
-using Mono.Data.Sqlite;
+﻿using Mono.Data.Sqlite;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 
 namespace Auxide
 {
@@ -379,7 +378,7 @@ namespace Auxide
             if (!string.IsNullOrEmpty(dbmembers))
             {
                 List<string> memberList = dbmembers.Split(',').ToList();
-                foreach(string member in memberList)
+                foreach (string member in memberList)
                 {
                     if (groups.Contains(member))
                     {

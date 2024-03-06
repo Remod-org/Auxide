@@ -40,7 +40,7 @@ namespace Auxide
             this.action = action;
         }
 
-        public void Start(float delay=0)
+        public void Start(float delay = 0)
         {
             // Check if the timer is already running
             if (isRunning)

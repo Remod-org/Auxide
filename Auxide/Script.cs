@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Auxide.Exceptions;
+using Auxide.Scripting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Auxide.Exceptions;
-using Auxide.Scripting;
 using UnityEngine;
 
 namespace Auxide

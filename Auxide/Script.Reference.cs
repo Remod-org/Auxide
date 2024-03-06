@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Auxide.Exceptions;
 using Auxide.Scripting;
-using Auxide.Exceptions;
+using System;
 
 namespace Auxide
 {
@@ -53,7 +53,7 @@ namespace Auxide
             {
                 return;
             }
-                    
+
             try
             {
                 ScriptInvoker<T0>.Procedure(Instance, methodName, arg0);
@@ -63,7 +63,7 @@ namespace Auxide
                 ReportError($"InvokeProcedure('{methodName}', {typeof(T0).FullName})", e);
             }
         }
-        
+
         public T1 InvokeFunction<T0, T1>(string methodName, T0 arg0)
         {
             if (Instance == null)

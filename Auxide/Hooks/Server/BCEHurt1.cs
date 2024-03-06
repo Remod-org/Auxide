@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Harmony;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
-using Harmony;
 
 namespace Auxide.Hooks.Server
 {
@@ -20,9 +20,11 @@ namespace Auxide.Hooks.Server
             int i;
             for (i = 0; i < codes.Count; i++)
             {
-                if (codes[i].opcode == OpCodes.Call && codes[i + 4].opcode == OpCodes.Ldfld && startIndex == -1)// && codes[i].operand == typeof(BaseCombatEntity).GetMethod(nameof(DebugHurt))
+                //if (codes[i].opcode == OpCodes.Call && codes[i + 4].opcode == OpCodes.Ldfld && startIndex == -1)// && codes[i].operand == typeof(BaseCombatEntity).GetMethod(nameof(DebugHurt))
+                if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+2].opcode == OpCodes.Call && codes[i + 6].opcode == OpCodes.Ldfld && startIndex == -1)// && codes[i].operand == typeof(BaseCombatEntity).GetMethod(nameof(DebugHurt))
                 {
-                    startIndex = i - 2;
+                    //startIndex = i - 2;
+                    startIndex = i;
                     codes[startIndex].labels.Add(newLabel);
                     break;
                 }

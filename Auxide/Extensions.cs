@@ -1,8 +1,10 @@
-﻿using Steamworks.Data;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Auxide
 {
@@ -25,6 +27,25 @@ namespace Auxide
 
     public static class StringExtension
     {
+        private readonly static Regex regexSplitQuotes;
+
+        private static char[] spaceOrQuote;
+
+        private static StringBuilder _quoteSafeBuilder;
+
+        private static char[] FilenameDelim;
+
+        private readonly static char[] _badCharacters;
+
+        static StringExtension()
+        {
+            regexSplitQuotes = new Regex("\"([^\"]+)\"|'([^']+)'|\\S+");
+            spaceOrQuote = new char[] { ' ', '\"' };
+            _quoteSafeBuilder = new StringBuilder();
+            FilenameDelim = new char[] { '/', '\\' };
+            _badCharacters = new char[] { '\0', '\u0001', '\u0002', '\u0003', '\u0004', '\u0005', '\u0006', '\a', '\b', '\t', '\v', '\f', '\r', '\u000E', '\u000F', '\u0010', '\u0012', '\u0013', '\u0014', '\u0016', '\u0017', '\u0018', '\u0019', '\u001A', '\u001B', '\u001C', '\u001D', '\u001E', '\u001F', '\u00A0', '­', '\u2000', '\u2001', '\u2002', '\u2003', '\u2004', '\u2005', '\u2006', '\u2007', '\u2008', '\u2009', '\u200A', '\u200B', '\u200C', '\u200D', '\u200E', '\u200F', '‐', '‑', '‒', '–', '—', '―', '‖', '‗', '‘', '’', '‚', '‛', '“', '”', '„', '‟', '\u2028', '\u2029', '\u202F', '\u205F', '\u2060', '\u2420', '\u2422', '\u2423', '\u3000', '\uFEFF' };
+        }
+
         public static string TitleCase(this string text)
         {
             return CultureInfo.InstalledUICulture.TextInfo.ToTitleCase(text.Contains('\u005F') ? text.Replace('\u005F', ' ') : text);
@@ -35,121 +56,110 @@ namespace Auxide
             return text.TitleCase();
         }
 
-        public static string OldTitleize(this string s)
+        public static string[] SplitQuotesStrings(this string input, int maxCount = 2147483647)
         {
-            bool IsNewSentence = true;
-            StringBuilder result = new StringBuilder(s.Length);
-            for (int i = 0; i < s.Length; i++)
+            input = input.Replace("\\\"", "&qute;");
+            List<string> strs = new List<string>();
+            Match match = regexSplitQuotes.Match(input);
+            for (int i = 0; i < maxCount && match.Success; i++)
             {
-                if (IsNewSentence && char.IsLetter(s[i]))
-                {
-                    result.Append(char.ToUpper(s[i]));
-                    IsNewSentence = false;
-                }
-                else
-                {
-                    result.Append(s[i]);
-                }
-
-                if (s[i] == '!' || s[i] == '?' || s[i] == '.')
-                {
-                    IsNewSentence = true;
-                }
+                string str = match.Value.Trim(spaceOrQuote);
+                strs.Add(str.Replace("&qute;", "\""));
+                match = match.NextMatch();
             }
-
-            return result.ToString();
+            return strs.ToArray();
         }
     }
 
-    public class DroppedItemContainerExtension : DroppedItemContainer
+    public static class DroppedItemContainerExtension
     {
-        public new ItemContainer inventory
+        public static ItemContainer GetInventory(this object obj)
         {
-            get
+            FieldInfo field = obj.GetType().GetField("inventory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            return (ItemContainer)field?.GetValue(obj);
+        }
+
+        public static void SetInventory(this object obj, ItemContainer val)
+        {
+            Type t = obj.GetType();
+            if (t.GetProperty("inventory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) == null)
             {
-                // Use reflection to get the value of the private inventory field in the base class
-                FieldInfo inventoryFieldInfo = typeof(DroppedItemContainer).GetField("inventory", BindingFlags.NonPublic | BindingFlags.Instance);
-                return (ItemContainer)inventoryFieldInfo.GetValue(this);
+                throw new ArgumentOutOfRangeException("inventory", string.Format("Property {0} was not found in Type {1}", "inventory", obj.GetType().FullName));
             }
-            set
-            {
-                // Use reflection to set the value of the private inventory field in the base class
-                FieldInfo inventoryFieldInfo = typeof(DroppedItemContainer).GetField("inventory", BindingFlags.NonPublic | BindingFlags.Instance);
-                inventoryFieldInfo.SetValue(this, value);
-            }
+            t.InvokeMember("inventory", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance, null, obj, new object[] { val });
         }
     }
 
-    public class BaseNetworkableExtension : BaseNetworkable
+    public static class BaseNetworkableExtension
     {
-        public bool _limitedNetworking
+        public static bool GetLimitedNetworking(this object obj)
         {
-            get
+            FieldInfo field = obj.GetType().GetField("_limitedNetworking", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            return (bool)field?.GetValue(obj);
+        }
+
+        public static void SetLimitedNetworking(this object obj, bool val)
+        {
+            Type t = obj.GetType();
+            if (t.GetProperty("_limitedNetworking", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) == null)
             {
-                // Use reflection to get the value of the private inventory field in the base class
-                FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
-                return (BaseNetworkable)limitedNetworkingFieldInfo.GetValue(this);
+                throw new ArgumentOutOfRangeException("_limitedNetworking", string.Format("Property {0} was not found in Type {1}", "_limitedNetworking", obj.GetType().FullName));
             }
-            set
-            {
-                // Use reflection to set the value of the private inventory field in the base class
-                FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
-                limitedNetworkingFieldInfo.SetValue(this, value);
-            }
+            t.InvokeMember("_limitedNetworking", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance, null, obj, new object[] { val });
         }
     }
 
-    public class CodeLockExtension : CodeLock
+    public static class CodeLockExtension
     {
-        public string code
+        public static string GetCode(this object obj)
         {
-            get
-            {
-                // Use reflection to get the value of the private code field in the base class
-                FieldInfo codeFieldInfo = typeof(CodeLock).GetField("code", BindingFlags.NonPublic | BindingFlags.Instance);
-                return (string)codeFieldInfo.GetValue(this);
-            }
-            set
-            {
-                // Use reflection to set the value of the private inventory field in the base class
-                FieldInfo codeFieldInfo = typeof(CodeLock).GetField("code", BindingFlags.NonPublic | BindingFlags.Instance);
-                codeFieldInfo.SetValue(this, value);
-            }
+            FieldInfo field = obj.GetType().GetField("code", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            return (string)field?.GetValue(obj);
         }
 
-        public string guestCode
+        public static void SetCode(this object obj, string val)
         {
-            get
+            Type t = obj.GetType();
+            if (t.GetProperty("code", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) == null)
             {
-                // Use reflection to get the value of the private guestCode field in the base class
-                FieldInfo guestCodeFieldinfo = typeof(CodeLock).GetField("guestCode", BindingFlags.NonPublic | BindingFlags.Instance);
-                return (string)guestCodeFieldinfo.GetValue(this);
+                throw new ArgumentOutOfRangeException("code", string.Format("Property {0} was not found in Type {1}", "code", obj.GetType().FullName));
             }
-            set
+            t.InvokeMember("code", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance, null, obj, new object[] { val });
+        }
+
+        public static string GetGuestCode(this object obj)
+        {
+            FieldInfo field = obj.GetType().GetField("guestCode", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            return (string)field?.GetValue(obj);
+        }
+
+        public static void SetGuestCode(this object obj, string val)
+        {
+            Type t = obj.GetType();
+            if (t.GetProperty("guestCode", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) == null)
             {
-                // Use reflection to set the value of the private inventory field in the base class
-                FieldInfo guestCodeFieldInfo = typeof(CodeLock).GetField("guestCode", BindingFlags.NonPublic | BindingFlags.Instance);
-                guestCodeFieldInfo.SetValue(this, value);
+                throw new ArgumentOutOfRangeException("guestCode", string.Format("Property {0} was not found in Type {1}", "guestCode", obj.GetType().FullName));
             }
+            t.InvokeMember("guestCode", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance, null, obj, new object[] { val });
         }
     }
 
-    public class StorageContainerExtension : StorageContainer
-    {
-        public bool _limitedNetworking
-        {
-            get
-            {
-                // Use reflection to get the value of the private inventory field in the base class
-                FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
-                return (BaseNetworkable)limitedNetworkingFieldInfo.GetValue(this);
-            }
-            set
-            {
-                // Use reflection to set the value of the private inventory field in the base class
-                FieldInfo limitedNetworkingFieldInfo = typeof(BaseNetworkable).GetField("_limitedNetworking", BindingFlags.NonPublic | BindingFlags.Instance);
-                limitedNetworkingFieldInfo.SetValue(this, value);
-            }
-        }
-    }
+    //public static class StorageContainerExtension
+    //{
+    //    public static bool GetLimitedNetworking(this object obj)
+    //    {
+    //        FieldInfo field = obj.GetType().GetField("_limitedNetworking", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+    //        return (bool)field?.GetValue(obj);
+    //    }
+
+    //    public static void SetLimitedNetworking(this object obj, bool val)
+    //    {
+    //        Type t = obj.GetType();
+    //        if (t.GetProperty("_limitedNetworking", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) == null)
+    //        {
+    //            throw new ArgumentOutOfRangeException("_limitedNetworking", string.Format("Property {0} was not found in Type {1}", "_limitedNetworking", obj.GetType().FullName));
+    //        }
+    //        t.InvokeMember("_limitedNetworking", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance, null, obj, new object[] { val });
+    //    }
+    //}
 }

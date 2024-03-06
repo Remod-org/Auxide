@@ -39,7 +39,7 @@ namespace Auxide.Scripting
         {
             if (script == null) throw new ArgumentNullException(nameof(script));
             if (string.IsNullOrWhiteSpace(method)) throw new ArgumentNullException(nameof(method));
-            
+
             Action<T0> invoker;
             lock (_procedureCache)
             {
@@ -58,7 +58,7 @@ namespace Auxide.Scripting
         {
             if (script == null) throw new ArgumentNullException(nameof(script));
             if (string.IsNullOrWhiteSpace(method)) throw new ArgumentNullException(nameof(method));
-            
+
             Func<T0> invoker;
             lock (_functionCache)
             {
@@ -105,7 +105,7 @@ namespace Auxide.Scripting
         {
             if (script == null) throw new ArgumentNullException(nameof(script));
             if (string.IsNullOrWhiteSpace(method)) throw new ArgumentNullException(nameof(method));
-            
+
             Func<T0, T1> invoker;
             lock (_functionCache)
             {
@@ -152,7 +152,7 @@ namespace Auxide.Scripting
         {
             if (script == null) throw new ArgumentNullException(nameof(script));
             if (string.IsNullOrWhiteSpace(method)) throw new ArgumentNullException(nameof(method));
-            
+
             Func<T0, T1, T2> invoker;
             lock (_functionCache)
             {
@@ -199,7 +199,7 @@ namespace Auxide.Scripting
         {
             if (script == null) throw new ArgumentNullException(nameof(script));
             if (string.IsNullOrWhiteSpace(method)) throw new ArgumentNullException(nameof(method));
-            
+
             Func<T0, T1, T2, T3> invoker;
             lock (_functionCache)
             {
@@ -246,7 +246,7 @@ namespace Auxide.Scripting
         {
             if (script == null) throw new ArgumentNullException(nameof(script));
             if (string.IsNullOrWhiteSpace(method)) throw new ArgumentNullException(nameof(method));
-            
+
             Func<T0, T1, T2, T3, T4> invoker;
             lock (_functionCache)
             {

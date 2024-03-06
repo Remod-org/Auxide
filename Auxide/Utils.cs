@@ -10,6 +10,7 @@ namespace Auxide
     public class Interface
     {
         internal bool playerTakingDamage;
+
         public object CallHook(string hook)
         {
             return Auxide.Scripts.BroadcastReturn(hook);
@@ -156,7 +157,16 @@ namespace Auxide
             }
         }
 
-        public static object OnRunCommandLine()
+        public static string[] ExtractArgs(ConsoleSystem.Arg arg)
+        {
+            if (arg?.HasArgs(1) != true)
+            {
+                return new string[0];
+            }
+            return arg.FullString.SplitQuotesStrings(2147483647);
+        }
+
+        public static object OnRunCommandLine(ConsoleSystem.Arg arg)
         {
             foreach (KeyValuePair<string, string> @switch in CommandLine.GetSwitches())
             {

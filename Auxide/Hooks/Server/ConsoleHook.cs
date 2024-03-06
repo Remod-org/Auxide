@@ -2,12 +2,27 @@
 
 namespace Auxide.Hooks.Server
 {
-    [HarmonyPatch(typeof(ConsoleSystem), "UpdateValuesFromCommandLine")]
+    [HarmonyPatch(typeof(ConsoleSystem), "Internal")]
     public static class ConsoleHook
     {
-        public static bool Prefix()
+        public static bool Prefix(ConsoleSystem.Arg arg, ref bool __result)
         {
-            return Utils.OnRunCommandLine() == null;
+            if (Auxide.full)
+            {
+                if (arg.Invalid)
+                {
+                    __result = false;
+                    return false;
+                }
+                string cmd = arg.cmd.FullName;
+                object obj = Auxide.Scripts?.OnConsoleCommandHook(cmd, Utils.ExtractArgs(arg));
+                if (obj is bool)
+                {
+                    __result = false;
+                    return false;// (bool)obj;
+                }
+            }
+            return true;
         }
     }
     //[HarmonyPatch(typeof(ConsoleSystem), "Run", new Type[] { typeof(ConsoleSystem.Option), typeof(string), typeof(object[]) })]

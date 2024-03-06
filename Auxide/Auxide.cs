@@ -46,6 +46,7 @@ namespace Auxide
         public static void Init()
         {
             if (initialized) return;
+            Interface = new Interface();
 
             nextTickLock = new object();
             //CosturaUtility.Initialize();

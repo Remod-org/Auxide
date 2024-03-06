@@ -1,6 +1,6 @@
 ﻿using Auxide;
-using System;
 using Auxide.Scripting;
+using System;
 
 public abstract class RustScript : IDisposable
 {

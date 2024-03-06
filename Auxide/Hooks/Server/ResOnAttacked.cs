@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Harmony;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
-using Harmony;
 
 namespace Auxide.Hooks.Server
 {
@@ -17,7 +17,7 @@ namespace Auxide.Hooks.Server
 
             for (int i = 0; i < codes.Count; i++)
             {
-                if (codes[i].opcode == OpCodes.Ldfld && codes[i-1].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldnull)
+                if (codes[i].opcode == OpCodes.Ldfld && codes[i - 1].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Ldnull)
                 {
                     startIndex = i - 1;
                     codes[startIndex].labels.Add(newLabel);
