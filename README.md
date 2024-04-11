@@ -166,6 +166,10 @@ void Broadcast("OnChatCommand", BasePlayer, string, object[]);
 
 void Broadcast("OnEntityDeath", BaseCombatEntity, HitInfo);
 
+object BroadcastReturn("OnDecayHeal", DecayEntity);
+
+object BroadcastReturn("OnDecayDamage", DecayEntity);
+
 PENDING:
 
 
