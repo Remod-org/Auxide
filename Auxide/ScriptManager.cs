@@ -486,6 +486,20 @@ namespace Auxide
         //    }
         //}
 
+        internal object OnDecayHealHook(DecayEntity target)
+        {
+            if (target == null) return null;
+            if (Auxide.verbose) Utils.DoLog($"OnDecayHealHook for {target?.ShortPrefabName}");
+            return BroadcastReturn("OnDecayHeal", target);
+        }
+
+        internal object OnDecayDamageHook(DecayEntity target)
+        {
+            if (target == null) return null;
+            if (Auxide.verbose) Utils.DoLog($"OnDecayDamageHook for {target?.ShortPrefabName}");
+            return BroadcastReturn("OnDecayDamage", target);
+        }
+
         internal object OnTakeDamageHook(BaseCombatEntity target = null, HitInfo info = null)
         {
             if (target == null) return null;
@@ -857,8 +871,7 @@ namespace Auxide
         {
             Type type = rustScript.GetType();
 
-            FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (FieldInfo field in fields)
+            foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 if (field.FieldType != typeof(IScriptReference) || field.IsSpecialName)
                 {
@@ -875,8 +888,7 @@ namespace Auxide
                 yield return script.Name;
             }
 
-            PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (PropertyInfo property in properties)
+            foreach (PropertyInfo property in type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 if (property.PropertyType != typeof(IScriptReference) || !property.CanWrite)
                 {

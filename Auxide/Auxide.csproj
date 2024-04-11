@@ -588,6 +588,7 @@
     <Compile Include="Exceptions\ScriptLoadException.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Hooks\Server\DecayTickHooks.cs" />
     <Compile Include="Hooks\Server\MarketTerminalPatch.cs" />
     <Compile Include="Hooks\Server\AdventCalendarAwardGift.cs" />
     <Compile Include="Hooks\Server\BaseOvenSV.cs" />
