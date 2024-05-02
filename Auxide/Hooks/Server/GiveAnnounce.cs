@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection.Emit;
 using ConVar;
-using Harmony;
+using HarmonyLib;
 
 namespace Auxide.Hooks.Server
 {

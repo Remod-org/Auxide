@@ -1,5 +1,5 @@
 ﻿using ConVar;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 
 namespace Auxide.Hooks.Server
