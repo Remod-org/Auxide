@@ -326,9 +326,9 @@ namespace Auxide
             Broadcast("OnServerSave");
         }
 
-        internal void OnNewSaveHook()
+        internal void OnNewSaveHook(string strFileName)
         {
-            Broadcast("OnNewSave");
+            Broadcast("OnNewSave", strFileName);
         }
 
         internal void OnGroupCreatedHook(string group, string title, int rank)

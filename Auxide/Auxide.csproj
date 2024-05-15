@@ -619,7 +619,7 @@
     <None Include="Hooks\Server\GiveAnnounce.cs" />
     <Compile Include="Hooks\Server\Init.cs" />
     <Compile Include="Hooks\Server\OnServerInitialized.cs" />
-    <None Include="Hooks\Server\OnNewSave.cs" />
+    <Compile Include="Hooks\Server\OnNewSave.cs" />
     <Compile Include="Hooks\Server\OnServerSave.cs" />
     <Compile Include="Hooks\Server\OnServerShutdown.cs" />
     <Compile Include="Hooks\Server\PlayerConnect.cs" />
