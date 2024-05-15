@@ -19,9 +19,10 @@ namespace Auxide.Hooks.Server
             int i;
             for (i = 0; i < codes.Count; i++)
             {
+                //if (codes[i].opcode == OpCodes.Brtrue_S && codes[i + 1].opcode == OpCodes.Ldstr && startIndex == -1)
                 if (codes[i].opcode == OpCodes.Ldstr && codes[i - 1].opcode == OpCodes.Brtrue_S && startIndex == -1)
                 {
-                    startIndex = i;
+                    startIndex = i + 1;
                     codes[startIndex].labels.Add(newLabel);
                     break;
                 }

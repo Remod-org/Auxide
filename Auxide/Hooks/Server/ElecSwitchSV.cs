@@ -2,17 +2,13 @@
 
 namespace Auxide.Hooks.Server
 {
-    [HarmonyPatch(typeof(ElectricSwitch), "SVSwitch")]//, typeof(BaseEntity.RPCMessage))]
+    [HarmonyPatch(typeof(ElectricSwitch), "RPC_Switch")]//, typeof(BaseEntity.RPCMessage))]
     public static class ElecSwitchSV
     {
         public static bool Prefix(ElectricSwitch __instance, ref BaseEntity.RPCMessage msg)
         {
             object res = Auxide.Scripts.CanToggleSwitchHook(__instance, msg.player);
-            if (res is bool)
-            {
-                return false;
-            }
-            return true;
+            return !(res is bool);
         }
 
         public static void Postfix(BaseOven __instance, ref BaseEntity.RPCMessage msg)

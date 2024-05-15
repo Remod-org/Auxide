@@ -26,13 +26,13 @@ namespace Auxide.Hooks.Server
             {
                 if (codes[i].opcode == OpCodes.Calli && codes[i+1].opcode == OpCodes.Ldc_R4 && codes[i + 2].opcode == OpCodes.Ble_Un_S && startIndexA == -1)
                 {
-                    startIndexA = i + 1;
+                    startIndexA = i + 2;
                     codes[startIndexA].labels.Add(newLabelA);
                     break;
                 }
-                if (codes[i].opcode == OpCodes.Ldloc_S && codes[i+1].opcode == OpCodes.Ldc_R4 && codes[i + 2].opcode == OpCodes.Ble_Un_S && startIndexB == -1)
+                if (codes[i].opcode == OpCodes.Ldloc_S && codes[i+1].opcode == OpCodes.Ldc_R4 && codes[i + 2].opcode == OpCodes.Ble_Un_S && startIndexA > -1 && startIndexB == -1)
                 {
-                    startIndexB = i + 1;
+                    startIndexB = i + 2;
                     codes[startIndexB].labels.Add(newLabelB);
                     break;
                 }
