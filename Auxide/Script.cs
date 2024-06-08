@@ -26,7 +26,7 @@ namespace Auxide
         public DynamicConfigFile config { get; private set; }
         public DataFileSystem data { get; private set; }
 
-        //public string compileProc;
+        public string compileProc;
 
         public bool initialized;
         public Script(ScriptManager manager, string name)
@@ -82,32 +82,32 @@ namespace Auxide
         internal void Update(string path = null)
         {
             if (path == null) return;
-            const string code = "";
+            string code = "";
 
-            //if (Auxide.config.Options.cSharpScripts)
-            //{
-            //    try
-            //    {
-            //        DoLog($"Trying to load code from {path}");
-            //        code = File.ReadAllText(path);
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        DoLog($"Failed to load script code at path: {path}: {e}");
-            //        throw new ScriptLoadException(Name, $"Failed to load script code at path: {path}", e);
-            //    }
+            if (Auxide.config.Options.cSharpScripts)
+            {
+                try
+                {
+                    DoLog($"Trying to load code from {path}");
+                    code = File.ReadAllText(path);
+                }
+                catch (Exception e)
+                {
+                    DoLog($"Failed to load script code at path: {path}: {e}");
+                    throw new ScriptLoadException(Name, $"Failed to load script code at path: {path}", e);
+                }
 
-            //    if (code != SourceCode)
-            //    {
-            //        if (!Auxide.useInternal)
-            //        {
-            //            GetCompiler();
-            //        }
-            //        Compile(path, code);
-            //    }
-            //}
-            //else
-            //{
+                if (code != SourceCode)
+                {
+                    if (!Auxide.useInternal)
+                    {
+                        GetCompiler();
+                    }
+                    Compile(path, code);
+                }
+            }
+            else
+            {
             try
             {
                 DoLog($"Trying to load dll from {path}");
@@ -125,7 +125,7 @@ namespace Auxide
                 DoLog($"Failed to load dll at path: {path}: {e}");
                 throw new ScriptLoadException(Name, $"Failed to load dll at path: {path}", e);
             }
-            //}
+            }
         }
 
         public byte[] ReadAllBytes(string fileName)
@@ -139,62 +139,63 @@ namespace Auxide
             return buffer;
         }
 
-        //private void GetCompiler()
-        //{
-        //    if (Auxide.useInternal) return;
+        private void GetCompiler()
+        {
+            if (Auxide.useInternal) return;
 
-        //    string proc = "csc.exe";
-        //    switch (Environment.OSVersion.Platform)
-        //    {
-        //        case PlatformID.Unix:
-        //        case PlatformID.MacOSX:
-        //            proc = "mcs";
-        //            break;
-        //    }
-        //    compileProc = System.IO.Path.Combine(Auxide.BinPath, proc);
-        //    using (WebClient client = new WebClient())
-        //    {
-        //        client.DownloadFile($"https://code.remod.org/{proc}", compileProc);
-        //    }
-        //}
+            //string proc = "csc.exe";
+            //switch (Environment.OSVersion.Platform)
+            //{
+            //    case PlatformID.Unix:
+            //    case PlatformID.MacOSX:
+            //        proc = "mcs";
+            //        break;
+            //}
+            //compileProc = System.IO.Path.Combine(Auxide.BinPath, proc);
+            //using (WebClient client = new WebClient())
+            //{
+            //    client.DownloadFile($"https://code.remod.org/{proc}", compileProc);
+            //}
+        }
 
-        //private void Compile(string path, string code)
-        //{
-        //    DoLog($"Compiling {Name} @ {path}");
+        private void Compile(string path, string code)
+        {
+            DoLog($"Compiling {Name} @ {path}");
 
-        //    CompilationResult result = null;
-        //    if (Auxide.useInternal)
-        //    {
-        //        result = CSharpCompiler.Build(Name, code, compileProc, path);
-        //    }
-        //    else
-        //    {
-        //        result = CSharpCompilerExternal.Build(Name, code, compileProc, path);
-        //    }
+            CompilationResult result;
+            result = CSharpCompiler.Build(Name, code, compileProc, path);
+            //if (Auxide.useInternal)
+            //{
+            //    result = CSharpCompiler.Build(Name, code, compileProc, path);
+            //}
+            //else
+            //{
+            //    result = CSharpCompilerExternal.Build(Name, code, compileProc, path);
+            //}
 
-        //    if (!result.IsSuccess)
-        //    {
-        //        string errorList = string.Join("\n", result.Errors);
-        //        DoLog($"Script compile failed:\n{errorList}");
-        //        throw new ScriptLoadException(Name, $"Script compile failed:\n{errorList}");
-        //    }
+            if (!result.IsSuccess)
+            {
+                string errorList = string.Join("\n", result.Errors);
+                DoLog($"Script compile failed:\n{errorList}");
+                throw new ScriptLoadException(Name, $"Script compile failed:\n{errorList}");
+            }
 
-        //    Assembly assembly;
+            Assembly assembly;
 
-        //    try
-        //    {
-        //        assembly = Assembly.Load(result.AssemblyData);
-        //        DoLog($"Loaded assembly!");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        DoLog($"Failed to load assembly: {e}");
-        //        throw new ScriptLoadException(Name, "Failed to load assembly", e);
-        //    }
+            try
+            {
+                assembly = Assembly.Load(result.AssemblyData);
+                DoLog("Loaded assembly!");
+            }
+            catch (Exception e)
+            {
+                DoLog($"Failed to load assembly: {e}");
+                throw new ScriptLoadException(Name, "Failed to load assembly", e);
+            }
 
-        //    DoLog($"Initializing {path}");
-        //    Initialize(path, code, assembly);
-        //}
+            DoLog($"Initializing {path}");
+            Initialize(path, code, assembly);
+        }
 
         private void DoLog(string text) => Utils.DoLog(text, false, false);
 
@@ -239,10 +240,10 @@ namespace Auxide
             SourceCode = code;
 
             string BaseName = Name.Replace(".dll", "");
-            //if (Auxide.config.Options.cSharpScripts)
-            //{
-            //    BaseName = Name.Replace(".cs", "");
-            //}
+            if (Auxide.config.Options.cSharpScripts)
+            {
+                BaseName = Name.Replace(".cs", "");
+            }
 
             ConfigPath = System.IO.Path.Combine(Auxide.ConfigPath, $"{BaseName}.json");
             DataPath = System.IO.Path.Combine(Auxide.DataPath, BaseName);

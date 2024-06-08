@@ -10,8 +10,8 @@ namespace Auxide
 {
     public class ScriptManager : IDisposable
     {
-        //private const string ScriptExtension = ".cs";
-        private const string ScriptExtension = ".dll";
+        private const string ScriptExtension = ".cs";
+        //private const string ScriptExtension = ".dll";
         //private const string DLLExtension = ".dll";
         private string ScriptFilter = "*" + ScriptExtension;
         private const double UpdateFrequency = 2;// / 1; // per sec
@@ -527,22 +527,6 @@ namespace Auxide
             return BroadcastReturn("OnTakeDamage", target, info);
         }
 
-        //public object OnEntitySavedHook(BuildingPrivlidge entity, BaseNetworkable.SaveInfo saveInfo)
-        //{
-        //    //return OnEntitySavedHook(entity as BaseNetworkable, saveInfo);
-        //    if (entity == null) return null;
-        //    if (!serverInitialized || saveInfo.forConnection == null) return null;
-        //    return BroadcastReturn("OnEntitySaved", entity, saveInfo);
-        //}
-        //internal object OnEntitySavedHook(object entity, BaseNetworkable.SaveInfo saveInfo)
-        //internal object OnEntitySavedHook(BaseNetworkable entity, BaseNetworkable.SaveInfo saveInfo)
-        internal object OnEntitySavedHook(object entity, BaseNetworkable.SaveInfo saveInfo)
-        {
-            if (entity == null) return null;
-            if (!serverInitialized || saveInfo.forConnection == null) return null;
-            return BroadcastReturn("OnEntitySaved", entity, saveInfo);
-        }
-
         internal object OnHammerHitHook(BasePlayer ownerPlayer, HitInfo hitInfo)
         {
             if (ownerPlayer == null) return null;
@@ -583,6 +567,32 @@ namespace Auxide
             Permissions.AddGroupMember("default", player.UserIDString);
 
             Broadcast("OnPlayerJoin", player);
+        }
+
+        //public object OnEntitySavedHook(BuildingPrivlidge entity, BaseNetworkable.SaveInfo saveInfo)
+        //{
+        //    //return OnEntitySavedHook(entity as BaseNetworkable, saveInfo);
+        //    if (entity == null) return null;
+        //    if (!serverInitialized || saveInfo.forConnection == null) return null;
+        //    return BroadcastReturn("OnEntitySaved", entity, saveInfo);
+        //}
+        //internal object OnEntitySavedHook(object entity, BaseNetworkable.SaveInfo saveInfo)
+        //internal object OnEntitySavedHook(BaseNetworkable entity, BaseNetworkable.SaveInfo saveInfo)
+        //internal object OnEntitySavedHook(BaseNetworkable entity, BaseNetworkable.SaveInfo saveInfo)
+        //{
+        //    return OnEntitySavedHook(entity, saveInfo);
+        //}
+
+        //internal object OnEntitySavedHook(object entity, BaseNetworkable.SaveInfo saveInfo)
+        internal object OnEntitySavedHook(BaseNetworkable entity, BaseNetworkable.SaveInfo saveInfo)
+        {
+            if (entity == null) return null;
+            //if (!(entity is BaseNetworkable)) return null;
+            if (!serverInitialized || saveInfo.forConnection == null) return null;
+            //return BroadcastReturn("OnEntitySaved", entity as BaseNetworkable, saveInfo);
+            //Broadcast("OnEntitySaved", entity as BaseNetworkable, saveInfo);
+            Broadcast("OnEntitySaved", entity, saveInfo);
+            return null;
         }
 
         internal void OnPlayerLeaveHook(BasePlayer player = null)

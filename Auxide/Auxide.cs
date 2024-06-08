@@ -34,7 +34,7 @@ namespace Auxide
         private static Action<float> onFrame;
 
         public static bool hideGiveNotices { get; internal set; }
-        //public static bool useInternal = false;
+        public static bool useInternal = false;
 
         static Auxide()
         {
@@ -130,7 +130,7 @@ namespace Auxide
 
             full = config.Options.full;
             verbose = config.Options.verbose;
-            //useInternal = config.Options.useInternalCompiler;
+            useInternal = config.Options.useInternalCompiler;
             hideGiveNotices = config.Options.hideGiveNotices;
 
             if (verbose)

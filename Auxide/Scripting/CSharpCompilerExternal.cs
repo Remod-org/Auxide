@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Auxide.Scripting
 {

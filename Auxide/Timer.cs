@@ -118,6 +118,18 @@ namespace Auxide
             return timer;
         }
 
+        public Timer Every(float interval, Action callback)
+        {
+            Timer timer = new Timer()
+            {
+                interval = interval,
+                action = callback,
+                repeatCount = -1
+            };
+            timer.Start();
+            return timer;
+        }
+
         public void Destroy()
         {
             this.Destroy();

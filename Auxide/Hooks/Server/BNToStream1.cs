@@ -14,9 +14,14 @@ namespace Auxide.Hooks.Server
         // This patch disables the TC decay warning in minimal mode
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr, ILGenerator il)
         {
-            if (Auxide.full || !Auxide.config.Options.minimal.disableTCWarning)
+            if (Auxide.full)
             {
-                return instr;
+                return null;
+            }
+            if (!Auxide.config.Options.minimal.disableTCWarning)
+            {
+                //return instr;
+                return null;
             }
 
             List<CodeInstruction> codes = new List<CodeInstruction>(instr);
@@ -82,18 +87,21 @@ namespace Auxide.Hooks.Server
             return codes.AsEnumerable();
         }
 
-        public static void Postfix(BaseNetworkable __instance, Stream stream, BaseNetworkable.SaveInfo saveInfo)
-        {
-            if (!Auxide.full)
-            {
-                if (__instance.gameObject.GetComponent<BuildingPrivilege>() != null)
-                {
-                    saveInfo.msg.buildingPrivilege.protectedMinutes = 4400f;
-                    saveInfo.msg.buildingPrivilege.upkeepPeriodMinutes = 4400f;
-                }
-                return;
-            }
-            Auxide.Scripts.OnEntitySavedHook(__instance, saveInfo);
-        }
+        //public static void Postfix(BaseNetworkable __instance, Stream stream, ref BaseNetworkable.SaveInfo saveInfo)
+        //{
+        //    if (!Auxide.full)
+        //    {
+        //        if (__instance.gameObject.GetComponent<BuildingPrivilege>() != null)
+        //        {
+        //            saveInfo.msg.buildingPrivilege.protectedMinutes = 4400f;
+        //            saveInfo.msg.buildingPrivilege.upkeepPeriodMinutes = 4400f;
+        //        }
+        //        return;
+        //    }
+        //    if (saveInfo.forConnection == null) return;
+        //    Auxide.Scripts.OnEntitySavedHook(__instance, saveInfo);
+        //    saveInfo.msg?.ToProto(stream);
+        //    __instance?.PostSave(saveInfo);
+        //}
     }
 }
