@@ -31,11 +31,11 @@ namespace Auxide.Scripting
         {
             if (Auxide.verbose) Utils.DoLog($"Entered Build({name})", false);
             string propertyInfo = "";
-            foreach(DictionaryEntry e in Environment.GetEnvironmentVariables())
-            {
-                propertyInfo += e.Key + ":" + e.Value + "\n";
-            }
-            if (Auxide.verbose) Utils.DoLog($"ENV:\n{propertyInfo}", false);
+            //foreach(DictionaryEntry e in Environment.GetEnvironmentVariables())
+            //{
+            //    propertyInfo += e.Key + ":" + e.Value + "\n";
+            //}
+            //if (Auxide.verbose) Utils.DoLog($"ENV:\n{propertyInfo}", false);
 
             SyntaxTree syntaxTree = ParseCode(code);
             SyntaxTree[] st = new SyntaxTree[] { syntaxTree };

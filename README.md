@@ -13,7 +13,7 @@ It offers the admin two modes of operation:
 
 - FULL (Work in progress)
   - Provides full plugin support (Auxide plugins only)
-  - Plugins are currently required to be in DLL form, and several examples are provided.
+  - Plugins are currently required to be in CS form, and several examples are provided.
   - See https://github.com/Remod-org/AuxidePlugins for the core/included plugins.
 
 Additionally, Auxide should work just fine month to month for **vanilla and staging** servers without monthly updates.
@@ -35,11 +35,11 @@ The following folders are created in both modes.  Only the Logs folder is used i
 
 - TOPLEVEL
   - auxide
-    - Bin (temporary download location for the compiler when using external, currently unused and will be temporarily removed)
-    - Config (plugin config files)
-    - Data (plugin data files including automatic creation of subfolders for each plugin)
-    - Logs (Auxide logging, especially in verbose mode)
-    - Scripts (plugins)
+    - bin (temporary download location for the compiler when using external, currently unused and will be temporarily removed)
+    - config (plugin config files)
+    - data (plugin data files including automatic creation of subfolders for each plugin)
+    - logs (Auxide logging, especially in verbose mode)
+    - scripts (plugins)
 
 ### Minimal (working)
 
@@ -210,7 +210,6 @@ The rest is from Facepunch ModLoader.
 
 ### TODO
 
-- Revisit cs file compilation
 - Fix hideGiveNotices
 - I am sure there are issues I have missed.
 

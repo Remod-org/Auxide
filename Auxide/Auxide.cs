@@ -1,7 +1,9 @@
 ﻿using Auxide.Scripting;
+using Mono.Unix.Native;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Auxide
 {

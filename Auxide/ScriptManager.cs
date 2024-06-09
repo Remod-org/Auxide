@@ -62,7 +62,7 @@ namespace Auxide
         {
             _sync = new object();
             _sourcePath = sourcePath ?? throw new ArgumentNullException(nameof(sourcePath));
-            _scripts = new Dictionary<string, Script>(StringComparer.OrdinalIgnoreCase);
+            _scripts = new Dictionary<string, Script>();// StringComparer.OrdinalIgnoreCase);
             _pendingRefresh = new HashSet<RefreshItem>();
             _timeSinceChange = Stopwatch.StartNew();
             _timeSinceUpdate = Stopwatch.StartNew();
@@ -93,17 +93,26 @@ namespace Auxide
             _watcher = new FileSystemWatcher(sourcePath, ScriptFilter)
             {
                 InternalBufferSize = 32 * 1024,
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
                 EnableRaisingEvents = true,
+                IncludeSubdirectories = false
             };
 
+            _watcher.Error += Watcher_Error;
+            _watcher.Changed += (sender, args) => Refresh(args.FullPath);
             _watcher.Created += (sender, args) => Refresh(args.FullPath);
             _watcher.Deleted += (sender, args) => Refresh(args.FullPath);
-            _watcher.Changed += (sender, args) => Refresh(args.FullPath);
             _watcher.Renamed += (sender, args) =>
             {
                 Refresh(args.FullPath);
                 Refresh(args.OldFullPath);
             };
+            GC.KeepAlive(_watcher);
+        }
+
+        private void Watcher_Error(object sender, ErrorEventArgs e)
+        {
+            Auxide.NextTick(() => Utils.DoLog($"Script Watcher error: {e.GetException()}"));
         }
 
         public object GetAll()
@@ -155,6 +164,7 @@ namespace Auxide
                     else
                     {
                         Script newScript = new Script(this, item.Name);
+                        Utils.DoLog($"Adding {item.Name} to _scripts");
                         _scripts.Add(item.Name, newScript);
 
                         UpdateScript(newScript, item.Path);
@@ -179,6 +189,7 @@ namespace Auxide
 
         private void Refresh(string scriptPath)
         {
+            Utils.DoLog($"Refresh {scriptPath}");
             string name = Path.GetFileNameWithoutExtension(scriptPath);
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -644,11 +655,27 @@ namespace Auxide
         //public object OnConsoleCommandHook(ConsoleSystem.Arg arg)
         internal object OnConsoleCommandHook(string command, object[] args)
         {
-            OnChatCommandHook(null, command, args);
+            object[] newargs = new object[args.Length];
+            if (command.Contains("global.say"))
+            {
+                command = command.Replace("global.say", args[0].ToString());
+                newargs = args.Skip(1).ToArray();
+            }
+            else if (command.Contains("chat.say"))
+            {
+                command = command.Replace("chat.say", args[0].ToString());
+                newargs = args.Skip(1).ToArray();
+            }
+            else
+            {
+                newargs = args;
+            }
+
+            OnChatCommandHook(null, command.Trim(), args);
             if (Auxide.full)
             {
                 Utils.DoLog($"OnConsoleCommandHook was called for command {command}");
-                return BroadcastReturn("OnConsoleCommand", command, args);
+                return BroadcastReturn("OnConsoleCommand", command.Trim(), newargs);
             }
             return null;
         }
@@ -714,13 +741,14 @@ namespace Auxide
                             serverCmd = true;
                             if (hookArgs.Length == 1)
                             {
-                                string scriptName = hookArgs[0].Replace(".dll", "");
+                                string scriptName = hookArgs[0].Replace(".cs", "");
                                 if (_scripts.TryGetValue(scriptName, out Script script))
                                 {
                                     script.Dispose();
                                     _scripts.Remove(scriptName);
 
-                                    Script newScript = new Script(this, Path.Combine(Auxide.ScriptPath, $"{scriptName}.dll"));
+                                    Script newScript = new Script(this, Path.Combine(Auxide.ScriptPath, $"{scriptName}.cs"));
+                                    Utils.DoLog($"Adding {scriptName} to _scripts");
                                     _scripts.Add(scriptName, newScript);
                                     UpdateScript(newScript, scriptName);
                                 }
@@ -733,10 +761,10 @@ namespace Auxide
                             serverCmd = true;
                             if (hookArgs.Length == 1)
                             {
-                                string scriptName = hookArgs[0].Replace(".dll", "");
+                                string scriptName = hookArgs[0].Replace(".cs", "");
                                 if (!_scripts.TryGetValue(scriptName, out _))
                                 {
-                                    Script newScript = new Script(this, Path.Combine(Auxide.ScriptPath, $"{scriptName}.dll"));
+                                    Script newScript = new Script(this, Path.Combine(Auxide.ScriptPath, $"{scriptName}.cs"));
                                     _scripts.Add(scriptName, newScript);
                                     UpdateScript(newScript, scriptName);
                                 }
