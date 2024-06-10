@@ -60,10 +60,10 @@ public abstract class RustScript : IDisposable
         return string.Format(lang.Get(input), args);
     }
 
-    protected virtual object Call(string hook, params object[] args)
-    {
-        return ("hook", this.scr);
-    }
+    //protected virtual object Call(string hook, params object[] args)
+    //{
+    //    return ("hook", this.scr);
+    //}
 
     protected virtual object CallHook(string hook, params object[] args)
     {

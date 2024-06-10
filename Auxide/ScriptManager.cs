@@ -653,7 +653,7 @@ namespace Auxide
         }
 
         //public object OnConsoleCommandHook(ConsoleSystem.Arg arg)
-        internal object OnConsoleCommandHook(string command, object[] args)
+        internal object OnConsoleCommandHook(BasePlayer player, string command, object[] args)
         {
             object[] newargs = new object[args.Length];
             if (command.Contains("global.say"))
@@ -671,7 +671,7 @@ namespace Auxide
                 newargs = args;
             }
 
-            OnChatCommandHook(null, command.Trim(), args);
+            OnChatCommandHook(player, command.Trim(), args);
             if (Auxide.full)
             {
                 Utils.DoLog($"OnConsoleCommandHook was called for command {command}");
@@ -782,6 +782,12 @@ namespace Auxide
                             AssemblyName assemName = assem.GetName();
                             Version ver = assemName.Version;
                             string msg = $"{assemName} {ver}\nRun Mode: {runMode}\nVerboseLogging: {verbose}";
+                            if (player == null || player.isServer)
+                            {
+                                UnityEngine.Debug.Log(msg);
+                                Utils.DoLog(msg);
+                                break;
+                            }
                             player?.ChatMessage(msg);
                         }
                         break;
@@ -794,8 +800,9 @@ namespace Auxide
                             {
                                 mess += $"{script.Key}, {script.Value.Instance.Version} {script.Value.Instance.Description}\n";
                             }
-                            if (player == null)
+                            if (player == null || player.isServer)
                             {
+                                UnityEngine.Debug.Log(mess);
                                 Utils.DoLog(mess);
                                 break;
                             }
@@ -813,8 +820,9 @@ namespace Auxide
                                 string isgroup = member.Value ? " (group)" : "";
                                 message += $"\t{member.Key}{isgroup}\n";
                             }
-                            if (player == null)
+                            if (player == null || player.isServer)
                             {
+                                UnityEngine.Debug.Log(message);
                                 Utils.DoLog(message);
                                 break;
                             }
@@ -830,8 +838,9 @@ namespace Auxide
                             {
                                 message += $"\t{group}\n";
                             }
-                            if (player == null)
+                            if (player == null || player.isServer)
                             {
+                                UnityEngine.Debug.Log(message);
                                 Utils.DoLog(message);
                                 break;
                             }
@@ -896,6 +905,12 @@ namespace Auxide
                         }
                         if (hookArgs.Length == 1)
                         {
+                            if (player == null || player.isServer)
+                            {
+                                UnityEngine.Debug.Log(Permissions.ShowPermissions(hookArgs[0]));
+                                Utils.DoLog(Permissions.ShowPermissions(hookArgs[0]));
+                                break;
+                            }
                             player?.ChatMessage(Permissions.ShowPermissions(hookArgs[0]));
                         }
                         break;

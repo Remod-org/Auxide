@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using UnityEngine;
 
 namespace Auxide
 {
@@ -178,7 +179,7 @@ namespace Auxide
                 string str = @switch.Key.Substring(1);
                 ConsoleSystem.Option unrestricted = ConsoleSystem.Option.Unrestricted;
                 unrestricted.PrintOutput = false;
-                if (Scripts?.OnConsoleCommandHook(str, new object[] { value }) == null)
+                if (Scripts?.OnConsoleCommandHook(null, str, new object[] { value }) == null)
                 {
                     return null;
                 }

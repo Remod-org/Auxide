@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using UnityEngine;
 
 namespace Auxide.Hooks.Server
 {
@@ -15,7 +16,8 @@ namespace Auxide.Hooks.Server
                     return false;
                 }
                 string cmd = arg.cmd.FullName;
-                object obj = Auxide.Scripts?.OnConsoleCommandHook(cmd, Utils.ExtractArgs(arg));
+                BasePlayer player = arg.Connection?.player as BasePlayer;
+                object obj = Auxide.Scripts?.OnConsoleCommandHook(player, cmd, Utils.ExtractArgs(arg));
                 if (obj is bool)
                 {
                     __result = false;

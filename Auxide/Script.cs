@@ -42,13 +42,13 @@ namespace Auxide
 
             try
             {
-                Debug.LogWarning($"Script {Instance?.GetType().Name} unloaded...");
-                DoLog($"Script {Instance?.GetType().Name} unloaded...");
+                Debug.LogWarning($"Script {Name} unloaded...");
+                DoLog($"Script {Name} unloaded...");
                 Instance?.Dispose();
             }
             catch (Exception e)
             {
-                Debug.LogError($"{Instance?.GetType().Name}::Dispose threw: {e}");
+                Debug.LogError($"{Name}::Dispose threw: {e}");
             }
 
             Instance = null;
