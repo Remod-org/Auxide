@@ -26,7 +26,7 @@ namespace Auxide
         private readonly Stopwatch _timeSinceChange;
         private readonly Stopwatch _timeSinceUpdate;
 
-        internal bool playerTakingDamage;
+        //internal bool playerTakingDamage;
         internal bool serverInitialized;
 
         /// <summary>
@@ -362,6 +362,64 @@ namespace Auxide
             Broadcast("OnDestroyUI", player, elem);
         }
 
+        #region OnEngineStart
+        internal void OnEngineStartHook(AttackHelicopter vehicleEngineController)//, BasePlayer player)
+        {
+            Broadcast("OnEngineStart", vehicleEngineController);//, player);
+        }
+
+        internal void OnEngineStartHook(BaseSubmarine vehicleEngineController)//, BasePlayer player)
+        {
+            Broadcast("OnEngineStart", vehicleEngineController);//, player);
+        }
+
+        internal void OnEngineStartHook(Bike vehicleEngineController)//, BasePlayer player)
+        {
+            Broadcast("OnEngineStart", vehicleEngineController);//, player);
+        }
+
+        internal void OnEngineStartHook(DiverPropulsionVehicle vehicleEngineController)//, BasePlayer player)
+        {
+            Broadcast("OnEngineStart", vehicleEngineController);//, player);
+        }
+
+        //internal void OnEngineStartHook(VehicleEngineController<PlayerHelicopter> vehicleEngineController)//, BasePlayer player)
+        //{
+        //    Broadcast("OnEngineStart", vehicleEngineController);//, player);
+        //}
+
+        internal void OnEngineStartHook(GroundVehicle vehicleEngineController)//, BasePlayer player)
+        {
+            Broadcast("OnEngineStart", vehicleEngineController);//, player);
+        }
+
+        internal void OnEngineStartHook(Minicopter vehicleEngineController)//, BasePlayer player)
+        {
+            Broadcast("OnEngineStart", vehicleEngineController);//, player);
+        }
+
+        internal void OnEngineStartHook(ModularCar vehicleEngineController)//, BasePlayer player)
+        {
+            Broadcast("OnEngineStart", vehicleEngineController);//, player);
+        }
+
+        internal void OnEngineStartHook(PlayerHelicopter playerHeli)//, BasePlayer player)
+        {
+            Utils.DoLog("OnEngineStartHook called for PlayerHelicopter");
+            Broadcast("OnEngineStart", playerHeli);//, player);
+        }
+
+        internal void OnEngineStartHook(Snowmobile vehicleEngineController)//, BasePlayer player)
+        {
+            Broadcast("OnEngineStart", vehicleEngineController);//, player);
+        }
+
+        internal void OnEngineStartHook(TrainEngine vehicleEngineController)//, BasePlayer player)
+        {
+            Broadcast("OnEngineStart", vehicleEngineController);//, player);
+        }
+        #endregion OnEngineStart
+
         internal object CanAdminTCHook(BuildingPrivlidge bp, BasePlayer player)
         {
             if (bp == null) return null;
@@ -655,27 +713,24 @@ namespace Auxide
         //public object OnConsoleCommandHook(ConsoleSystem.Arg arg)
         internal object OnConsoleCommandHook(BasePlayer player, string command, object[] args)
         {
-            object[] newargs = new object[args.Length];
+            object[] newargs = args;
+            string newcommand = command;
             if (command.Contains("global.say"))
             {
-                command = command.Replace("global.say", args[0].ToString());
+                newcommand = command.Replace("global.say", args[0].ToString());
                 newargs = args.Skip(1).ToArray();
             }
             else if (command.Contains("chat.say"))
             {
-                command = command.Replace("chat.say", args[0].ToString());
+                newcommand = command.Replace("chat.say", args[0].ToString());
                 newargs = args.Skip(1).ToArray();
             }
-            else
-            {
-                newargs = args;
-            }
 
-            OnChatCommandHook(player, command.Trim(), args);
+            OnChatCommandHook(player, newcommand.Trim(), newargs);
             if (Auxide.full)
             {
-                Utils.DoLog($"OnConsoleCommandHook was called for command {command}");
-                return BroadcastReturn("OnConsoleCommand", command.Trim(), newargs);
+                Utils.DoLog($"OnConsoleCommandHook was called for command {newcommand}");
+                return BroadcastReturn("OnConsoleCommand", newcommand.Trim(), newargs);
             }
             return null;
         }
@@ -705,6 +760,7 @@ namespace Auxide
                             Version ver = assemName.Version;
                             if (player == null)
                             {
+                                UnityEngine.Debug.Log($"{assemName} {ver}");
                                 Utils.DoLog($"{assemName} {ver}");
                                 break;
                             }
@@ -718,6 +774,7 @@ namespace Auxide
                             Auxide.verbose = !Auxide.verbose;
                             if (player == null)
                             {
+                                UnityEngine.Debug.Log($"Verbose is now {Auxide.verbose}");
                                 Utils.DoLog($"Verbose is now {Auxide.verbose}");
                                 break;
                             }

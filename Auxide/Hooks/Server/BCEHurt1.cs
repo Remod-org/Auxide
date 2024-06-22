@@ -21,7 +21,12 @@ namespace Auxide.Hooks.Server
             for (i = 0; i < codes.Count; i++)
             {
                 //if (codes[i].opcode == OpCodes.Call && codes[i + 4].opcode == OpCodes.Ldfld && startIndex == -1)// && codes[i].operand == typeof(BaseCombatEntity).GetMethod(nameof(DebugHurt))
-                if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+2].opcode == OpCodes.Call && codes[i + 6].opcode == OpCodes.Ldfld && startIndex == -1)// && codes[i].operand == typeof(BaseCombatEntity).GetMethod(nameof(DebugHurt))
+                //if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+2].opcode == OpCodes.Call && codes[i + 6].opcode == OpCodes.Ldfld && startIndex == -1)// && codes[i].operand == typeof(BaseCombatEntity).GetMethod(nameof(DebugHurt))
+                if (codes[i].opcode == OpCodes.Ldarg_0
+                    && codes[i + 1].opcode == OpCodes.Ldarg_1
+                    && codes[i + 2].opcode == OpCodes.Call
+                    && codes[i + 3].opcode == OpCodes.Ldarg_1
+                    && startIndex == -1)
                 {
                     //startIndex = i - 2;
                     startIndex = i;

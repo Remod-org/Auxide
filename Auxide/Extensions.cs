@@ -8,6 +8,13 @@ using System.Text.RegularExpressions;
 
 namespace Auxide
 {
+    public static class BasePlayerExtension
+    {
+        public static bool IsSteamId(this EncryptedValue<ulong> id)
+        {
+            return id > 76561197960265728L;
+        }
+    }
     public static class UlongExtension
     {
         public static bool IsSteamId(this string id)

@@ -24,7 +24,7 @@ namespace Auxide.Hooks.Server
             int i;
             for (i = 0; i < codes.Count; i++)
             {
-                if (codes[i].opcode == OpCodes.Calli && codes[i+1].opcode == OpCodes.Ldc_R4 && codes[i + 2].opcode == OpCodes.Ble_Un_S && startIndexA == -1)
+                if (codes[i].opcode == OpCodes.Ldloc_1&& codes[i+1].opcode == OpCodes.Ldarg_0 && codes[i + 2].opcode == OpCodes.Callvirt && startIndexA == -1)
                 {
                     startIndexA = i + 2;
                     codes[startIndexA].labels.Add(newLabelA);
@@ -47,9 +47,10 @@ namespace Auxide.Hooks.Server
                     new CodeInstruction(OpCodes.Ldarg_0),
                     new CodeInstruction(OpCodes.Ldarg_1),
                     new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(ScriptManager), "OnDecayHealHook")),
-                    new CodeInstruction(OpCodes.Ldnull),
-                    new CodeInstruction(OpCodes.Beq_S, newLabelA),
-                    new CodeInstruction(OpCodes.Ret)
+                    new CodeInstruction(OpCodes.Pop)
+                    //new CodeInstruction(OpCodes.Ldnull),
+                    //new CodeInstruction(OpCodes.Beq_S, newLabelA),
+                    //new CodeInstruction(OpCodes.Ret)
                 };
 
                 codes.InsertRange(startIndexA, instructionsToInsert);
@@ -64,9 +65,10 @@ namespace Auxide.Hooks.Server
                     new CodeInstruction(OpCodes.Ldarg_0),
                     new CodeInstruction(OpCodes.Ldarg_1),
                     new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(ScriptManager), "OnDecayDamageHook")),
-                    new CodeInstruction(OpCodes.Ldnull),
-                    new CodeInstruction(OpCodes.Beq_S, newLabelB),
-                    new CodeInstruction(OpCodes.Ret)
+                    new CodeInstruction(OpCodes.Pop)
+                    //new CodeInstruction(OpCodes.Ldnull),
+                    //new CodeInstruction(OpCodes.Beq_S, newLabelB),
+                    //new CodeInstruction(OpCodes.Ret)
                 };
 
                 codes.InsertRange(startIndexB, instructionsToInsert);

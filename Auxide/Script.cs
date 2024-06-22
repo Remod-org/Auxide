@@ -26,7 +26,7 @@ namespace Auxide
         public DynamicConfigFile config { get; private set; }
         public DataFileSystem data { get; private set; }
 
-        public string compileProc;
+        //public string compileProc;
 
         public bool initialized;
         public Script(ScriptManager manager, string name)
@@ -55,6 +55,7 @@ namespace Auxide
 
             Assembly = null;
 
+            CSharpCompiler.RemoveReference(Name);
             Manager.ScriptUnloaded(this);
         }
 
@@ -69,7 +70,6 @@ namespace Auxide
                 DoLog($"Loaded assembly: {assembly.GetType()}!");
 
                 Initialize(null, code, assembly);
-                initialized = true;
             }
             catch (Exception e)
             {
@@ -108,23 +108,23 @@ namespace Auxide
             }
             else
             {
-            try
-            {
-                DoLog($"Trying to load dll from {path}");
-                //Assembly assembly = Assembly.LoadFile(path);
-                //Assembly assembly = Assembly.Load(File.ReadAllBytes(path));
-                Assembly assembly = Assembly.Load(ReadAllBytes(path));
-                DoLog($"Loaded assembly: {assembly.GetType()}!");
+                try
+                {
+                    DoLog($"Trying to load dll from {path}");
+                    //Assembly assembly = Assembly.LoadFile(path);
+                    //Assembly assembly = Assembly.Load(File.ReadAllBytes(path));
+                    Assembly assembly = Assembly.Load(ReadAllBytes(path));
+                    DoLog($"Loaded assembly: {assembly.GetType()}!");
 
-                Initialize(path, code, assembly);
-                initialized = true;
-            }
-            catch (Exception e)
-            {
-                initialized = false;
-                DoLog($"Failed to load dll at path: {path}: {e}");
-                throw new ScriptLoadException(Name, $"Failed to load dll at path: {path}", e);
-            }
+                    Initialize(path, code, assembly);
+                    initialized = true;
+                }
+                catch (Exception e)
+                {
+                    initialized = false;
+                    DoLog($"Failed to load dll at path: {path}: {e}");
+                    throw new ScriptLoadException(Name, $"Failed to load dll at path: {path}", e);
+                }
             }
         }
 
@@ -163,7 +163,8 @@ namespace Auxide
             DoLog($"Compiling {Name} @ {path}");
 
             CompilationResult result;
-            result = CSharpCompiler.Build(Name, code, compileProc, path);
+            //result = CSharpCompiler.Build(Name, code, compileProc, path);
+            result = CSharpCompiler.Build(Name, code, null, path);
             //if (Auxide.useInternal)
             //{
             //    result = CSharpCompiler.Build(Name, code, compileProc, path);
@@ -195,6 +196,7 @@ namespace Auxide
 
             DoLog($"Initializing {path}");
             Initialize(path, code, assembly);
+            CSharpCompiler.ListReferences();
         }
 
         private void DoLog(string text) => Utils.DoLog(text, false, false);
@@ -273,7 +275,8 @@ namespace Auxide
                 ReportError("Initialize", e);
             }
 
-            Debug.LogWarning($"Script {path} loaded!");
+            initialized = true;
+            Debug.LogWarning($"Script {Name} loaded!");
             Manager.ScriptLoaded(this);
         }
 

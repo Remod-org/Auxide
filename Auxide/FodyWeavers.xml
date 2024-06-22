@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
-  <Costura DisableCleanup="false" DisableCompression="false" UseRuntimeReferencePaths="true">
+  <Costura DisableCleanup="true" DisableCompression="false" UseRuntimeReferencePaths="true">
     <ExcludeAssemblies>
       mscorlib|netstandard|0Harmony|Assembly-CSharp|Facepunch|Microsoft\.System$|System\.(Buffers|Core|Data|Diagnostics|Linq|Memory|Net|Numerics|Runtime$|Security|Text$|Threading)|UnityEngine
     </ExcludeAssemblies>

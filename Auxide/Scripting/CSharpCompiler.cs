@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Text;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
-using Microsoft.CodeAnalysis.Text;
-using UnityEngine;
 
 namespace Auxide.Scripting
 {
@@ -30,12 +28,6 @@ namespace Auxide.Scripting
         public static CompilationResult Build(string name, string code, string compileCmd = null, string path = null)
         {
             if (Auxide.verbose) Utils.DoLog($"Entered Build({name})", false);
-            string propertyInfo = "";
-            //foreach(DictionaryEntry e in Environment.GetEnvironmentVariables())
-            //{
-            //    propertyInfo += e.Key + ":" + e.Value + "\n";
-            //}
-            //if (Auxide.verbose) Utils.DoLog($"ENV:\n{propertyInfo}", false);
 
             SyntaxTree syntaxTree = ParseCode(code);
             SyntaxTree[] st = new SyntaxTree[] { syntaxTree };
@@ -49,10 +41,10 @@ namespace Auxide.Scripting
             using (MemoryStream ms = new MemoryStream())
             {
                 byte[] assemblyData = null;
-                if (Auxide.verbose) Utils.DoLog("pre-emit", false);
+                //if (Auxide.verbose) Utils.DoLog("pre-emit", false);
                 CancellationToken cancellationToken = new CancellationToken();
                 EmitResult emitResult = compilation.Emit(ms, null, null, null, null, EmitOptions, null, null, null, null, cancellationToken);
-                Utils.DoLog($"post-emit: success == {emitResult.Success}");
+                //Utils.DoLog($"post-emit: success == {emitResult.Success}");
 
                 if (!emitResult.Success)
                 {
@@ -66,7 +58,6 @@ namespace Auxide.Scripting
                 }
                 else
                 {
-                    // Never logged
                     if (Auxide.verbose) Utils.DoLog($"Build({name}) succeeded!", false);
                     ms.Seek(0, SeekOrigin.Begin);
                     assemblyData = ms.ToArray();
@@ -76,7 +67,32 @@ namespace Auxide.Scripting
                     .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
                     .Select(d => d.ToString())
                     .ToList();
+
+                // Add reference for the compiled dll image
+                RemoveReference(name);
+                referenceCache.Add(name, MetadataReference.CreateFromStream(ms));
                 return new CompilationResult(emitResult.Success, assemblyData, errors);
+            }
+        }
+
+        public static void RemoveReference(string name)
+        {
+            // Typically for plugin unload
+            if (referenceCache.ContainsKey(name))
+            {
+                if (Auxide.verbose) Utils.DoLog($"Removing reference for {name}");
+                referenceCache.Remove(name);
+            }
+        }
+
+        public static void ListReferences()
+        {
+            Utils.DoLog("List of collected references");
+            int i = 1;
+            foreach (KeyValuePair<string, MetadataReference> reference in referenceCache)
+            {
+                Utils.DoLog($"  {i}: {reference.Key}");
+                i++;
             }
         }
 
@@ -119,7 +135,7 @@ namespace Auxide.Scripting
             if (!string.IsNullOrEmpty(path1))
             {
                 // Load references for all DLL files in Managed folder.
-                foreach (var file in Directory.GetFiles(assemblyDir, "*.dll"))
+                foreach (string file in Directory.GetFiles(assemblyDir, "*.dll"))
                 {
                     yield return MetadataReference.CreateFromFile(file);
                 }
@@ -128,11 +144,11 @@ namespace Auxide.Scripting
             string path2 = Path.Combine(AppContext.BaseDirectory, "HarmonyMods", "Auxide.dll");
             yield return GetReference("RustScript", path2, true);
 
-            string path3 = typeof(Debug).Assembly.Location;
-            if (!string.IsNullOrEmpty(path3)) yield return GetReference("UnityEngine", path3, true);
+            //string path3 = typeof(Debug).Assembly.Location;
+            //if (!string.IsNullOrEmpty(path3)) yield return GetReference("UnityEngine", path3, true);
 
-            string path4 = typeof(ServerMgr).Assembly.Location;
-            if (!string.IsNullOrEmpty(path4)) yield return GetReference("Assembly-CSharp", path4, true);
+            //string path4 = typeof(ServerMgr).Assembly.Location;
+            //if (!string.IsNullOrEmpty(path4)) yield return GetReference("Assembly-CSharp", path4, true);
 
             foreach (SyntaxNode us in tree.GetRoot().DescendantNodes().Where(x => x.IsKind(SyntaxKind.UsingDirective)).ToArray())
             {
