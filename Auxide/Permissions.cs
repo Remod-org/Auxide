@@ -222,6 +222,25 @@ namespace Auxide
             return message;
         }
 
+        public static bool PermissionExists(string permname)
+        {
+            using (SqliteConnection c = new SqliteConnection(connStr))
+            {
+                c.Open();
+                using (SqliteCommand cmd = new SqliteCommand($"SELECT plugin FROM permissions WHERE permname='{permname}')", c))
+                {
+                    using (SqliteDataReader rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
         public static bool UserHasPermission(string permname, string userid)
         {
             using (SqliteConnection c = new SqliteConnection(connStr))
