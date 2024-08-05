@@ -378,10 +378,10 @@ namespace Auxide
             Broadcast("OnEngineStart", vehicleEngineController);//, player);
         }
 
-        internal void OnEngineStartHook(DiverPropulsionVehicle vehicleEngineController)//, BasePlayer player)
-        {
-            Broadcast("OnEngineStart", vehicleEngineController);//, player);
-        }
+        //internal void OnEngineStartHook(DiverPropulsionVehicle vehicleEngineController)//, BasePlayer player)
+        //{
+        //    Broadcast("OnEngineStart", vehicleEngineController);//, player);
+        //}
 
         //internal void OnEngineStartHook(VehicleEngineController<PlayerHelicopter> vehicleEngineController)//, BasePlayer player)
         //{
@@ -569,6 +569,11 @@ namespace Auxide
             return BroadcastReturn("OnDecayDamage", target);
         }
 
+        internal void OnTinCanAlarmTriggerHook(TinCanAlarm alarm)
+        {
+            Broadcast("OnTinCanAlarmTrigger", alarm);
+        }
+
         internal object OnTakeDamageHook(BaseCombatEntity target = null, HitInfo info = null)
         {
             if (target == null) return null;
@@ -592,7 +597,8 @@ namespace Auxide
             //        playerTakingDamage = false;
             //    }
             //}
-            if (Auxide.verbose && !selfdamage) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity?.ShortPrefabName} attacking {target?.ShortPrefabName}");
+            //if (Auxide.verbose && !selfdamage) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity?.ShortPrefabName} attacking {target?.ShortPrefabName}");
+            //if (Auxide.verbose) Utils.DoLog($"OnTakeDamageHook for {info?.HitEntity?.ShortPrefabName} attacking {target?.ShortPrefabName}");
             return BroadcastReturn("OnTakeDamage", target, info);
         }
 
@@ -655,9 +661,10 @@ namespace Auxide
         //internal object OnEntitySavedHook(object entity, BaseNetworkable.SaveInfo saveInfo)
         internal object OnEntitySavedHook(BaseNetworkable entity, BaseNetworkable.SaveInfo saveInfo)
         {
+            if (Auxide.verbose) Utils.DoLog("OnEntitySavedHook called");
             if (entity == null) return null;
             //if (!(entity is BaseNetworkable)) return null;
-            if (!serverInitialized || saveInfo.forConnection == null) return null;
+            if (!serverInitialized) return null;// || saveInfo.forConnection == null) return null;
             //return BroadcastReturn("OnEntitySaved", entity as BaseNetworkable, saveInfo);
             //Broadcast("OnEntitySaved", entity as BaseNetworkable, saveInfo);
             Broadcast("OnEntitySaved", entity, saveInfo);
@@ -726,7 +733,7 @@ namespace Auxide
                 newargs = args.Skip(1).ToArray();
             }
 
-            OnChatCommandHook(player, newcommand.Trim(), newargs);
+            //OnChatCommandHook(player, newcommand.Trim(), newargs);
             if (Auxide.full)
             {
                 Utils.DoLog($"OnConsoleCommandHook was called for command {newcommand}");

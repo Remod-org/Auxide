@@ -624,7 +624,7 @@
     <Compile Include="Hooks\Server\EngineStartMinicopter.cs" />
     <Compile Include="Hooks\Server\EngineStartBaseSubmarine.cs" />
     <Compile Include="Hooks\Server\EngineStartAttackHelicopter.cs" />
-    <Compile Include="Hooks\Server\EngineStartDiverPropulsionVehicle.cs" />
+    <None Include="Hooks\Server\EngineStartDiverPropulsionVehicle.cs" />
     <Compile Include="Hooks\Server\EngineStartMagnetCrane.cs" />
     <Compile Include="Hooks\Server\EngineStartTrainEngine.cs" />
     <Compile Include="Hooks\Server\EngineStartSnowmobile.cs" />
@@ -641,12 +641,14 @@
     <Compile Include="Hooks\Server\OnServerInitialize.cs" />
     <Compile Include="Hooks\Server\OnServerMessage.cs" />
     <Compile Include="Hooks\Server\ServerMgrRestartServer.cs" />
+    <Compile Include="Hooks\Server\TinCanAlarmT.cs" />
     <Compile Include="Scripting\ChatAttribute.cs" />
     <Compile Include="Scripting\HookMethodAttribute.cs" />
     <Compile Include="Scripting\Hash.cs" />
     <Compile Include="Scripting\CommandAttribute.cs" />
     <Compile Include="Scripting\PluginReferenceAttribute.cs" />
     <Compile Include="Scripting\ScriptAttributes.cs" />
+    <Compile Include="Scripting\UI.cs" />
     <Compile Include="SubscriptionClient.cs" />
     <Compile Include="WebClient.cs" />
     <None Include="app.config" />
