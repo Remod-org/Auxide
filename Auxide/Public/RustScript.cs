@@ -52,12 +52,22 @@ public abstract class RustScript : IDisposable
     }
 
     public virtual void Initialize() { }
-    public virtual void LoadDefaultMessages() { }
+    //public virtual void LoadDefaultMessages() { }
     public virtual void Dispose() { }
 
     public virtual string Lang(string input, params object[] args)
     {
         return string.Format(lang.Get(input), args);
+    }
+
+    protected virtual void LoadDefaultConfig()
+    {
+        CallHook("LoadDefaultConfig", null);
+    }
+
+    protected virtual void LoadDefaultMessages()
+    {
+        CallHook("LoadDefaultMessages", null);
     }
 
     //protected virtual object Call(string hook, params object[] args)
